@@ -1,0 +1,13 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "private": true,
+  "dependencies": {
+    "expo": "^25.0.0",
+    "react": "16.2.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-25.0.0.tar.gz",
+    "react-native-elements": "^0.19.0",
+    "react-native-hr-plus": "^1.0.5",
+    "react-navigation": "^1.5.7",
+    "styled-components": "^3.2.3"
+  }
+}
