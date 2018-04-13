@@ -6,11 +6,12 @@ import {
   Image, 
   SafeAreaView, 
   Dimensions, 
-  TouchableWithoutFeedback, 
+  TouchableWithoutFeedback,
+  TouchableOpacity,
   Keyboard, 
   Animated 
 } from 'react-native';
-import { Button, FormLabel, FormInput, SocialIcon } from 'react-native-elements';
+import { Button, FormLabel, FormInput, SocialIcon, Icon } from 'react-native-elements';
 import Hr from 'react-native-hr-plus';
 
 import Logo from '../assets/logo.png';
@@ -98,17 +99,27 @@ export default class SignIn extends Component {
                   fontWeight='700'
                   containerViewStyle={styles.button}
                 />
-                <Hr color="#1D7CF4" style={{ width: SCREEN_WIDTH - 70}}>
+                <Hr color="#bbb" style={{ width: SCREEN_WIDTH - 70}}>
                   <Text style={styles.text}>
                     OR
                   </Text>
                 </Hr>
-                <SocialIcon
-                  title='FACEBOOK'
-                  button
-                  type='facebook'
-                  style={{ width: SCREEN_WIDTH - 70, height: 45 }}
-                />
+                <View style={styles.socialContainer}>
+                  <SocialIcon
+                    title='FACEBOOK'
+                    button
+                    type='facebook'
+                    raised={false}
+                    style={{ width: SCREEN_WIDTH / 2 - 40, height: 45 }}
+                  />
+                  <SocialIcon
+                    title='GOOGLE'
+                    button
+                    raised={false}
+                    type='google-plus'
+                    style={{ width: SCREEN_WIDTH / 2 - 40, height: 45, backgroundColor: "#dd4b39" }}
+                  />
+                </View>
               </View>
             </Animated.View>
           </TouchableWithoutFeedback>
@@ -138,10 +149,13 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'center'
   },
+  socialContainer: {
+    flexDirection: 'row'
+  },
   text: {
     paddingHorizontal: 10,
     paddingVertical: 10,
-    color: '#1D7CF4',
+    color: '#bbb',
     fontSize: 12
   },
   input: {
