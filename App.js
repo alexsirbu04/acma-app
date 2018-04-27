@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
 
-import Welcome from './components/Welcome';
-import SignIn from './components/SignIn';
+import Welcome from './screens/Welcome';
+import SignIn from './screens/SignIn';
 
 export default class App extends Component {
   render() {
