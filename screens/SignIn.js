@@ -9,13 +9,15 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Keyboard, 
-  Animated 
+  Animated
 } from 'react-native';
 import { Button, FormLabel, FormInput, SocialIcon, Icon } from 'react-native-elements';
 import Hr from 'react-native-hr-plus';
 
 import Logo from '../assets/logo.png';
 import Background from '../assets/background.jpg';
+
+import FacebookLogin from '../components/FacebookLogin';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -66,6 +68,10 @@ export default class SignIn extends Component {
     }).start();
   }
 
+  onLoginPress() {
+    this.props.navigation.navigate('Dashboard');
+  }
+
   render() {
     return (
         <SafeAreaView style={styles.container}>
@@ -98,6 +104,7 @@ export default class SignIn extends Component {
                   rounded
                   fontWeight='700'
                   containerViewStyle={styles.button}
+                  onPress={this.onLoginPress.bind(this)}
                 />
                 <Hr color="#bbb" style={{ width: SCREEN_WIDTH - 70}}>
                   <Text style={styles.text}>
@@ -105,13 +112,7 @@ export default class SignIn extends Component {
                   </Text>
                 </Hr>
                 <View style={styles.socialContainer}>
-                  <SocialIcon
-                    title='FACEBOOK'
-                    button
-                    type='facebook'
-                    raised={false}
-                    style={{ width: SCREEN_WIDTH / 2 - 40, height: 45 }}
-                  />
+                  <FacebookLogin />
                   <SocialIcon
                     title='GOOGLE'
                     button

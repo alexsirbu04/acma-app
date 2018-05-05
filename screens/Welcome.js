@@ -5,9 +5,15 @@ import {
   Text, 
   StyleSheet, 
   Image,
-  Dimensions
+  Dimensions,
+  ActivityIndicator,
+  StatusBar    
 } from 'react-native';
 import { Button } from 'react-native-elements';
+import axios from 'axios';
+import { connect } from 'react-redux';
+
+import { storeHotels } from '../actions';
 
 import Logo from '../assets/logoSecond.png';
 import Background from '../assets/background.jpg';
@@ -15,9 +21,25 @@ import Background from '../assets/background.jpg';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-export default class Welcome extends Component {
+class Welcome extends Component {
   static navigationOptions = {
     header: null
+  }
+
+  state = {
+    loaded: false
+  }
+
+  componentWillMount() {
+    const hotels = [];
+    axios.get('https://secure-stream-51486.herokuapp.com/hotels')
+      .then(response => {
+        for (const hotel of response.data.hotels) {
+          hotels.push(hotel);
+        }
+        this.props.storeHotels(hotels);
+        this.setState({ loaded: true });
+      });
   }
 
   onPressLogin() {
@@ -27,6 +49,9 @@ export default class Welcome extends Component {
   render() {
     return(
       <SafeAreaView style={styles.container}>
+        <StatusBar
+          barStyle='light-content'
+        />
         <View style={styles.overlay}>
           <Image source={Background} style={styles.overlayImage} />
         </View>
@@ -41,6 +66,7 @@ export default class Welcome extends Component {
             </Text>
           </View>
         </View>
+        <ActivityIndicator size='large' color='#fff' animating={!this.state.loaded} />
         <View style={styles.buttonsContainer}>
           <Button
             backgroundColor='rgba(255, 255, 255, 0)'
@@ -116,3 +142,5 @@ const styles = StyleSheet.create({
     opacity: 0.1
   }
 });
+
+export default connect(null, { storeHotels })(Welcome);
