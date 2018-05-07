@@ -23,9 +23,7 @@ Arrow.propTypes = {
   onPress: PropTypes.func,
   direction: PropTypes.string.isRequired,
   color: PropTypes.string,
-  size: PropTypes.number,
-  iconContainerStyle: PropTypes.object,
-  iconStyle: PropTypes.object
+  size: PropTypes.number
 }
 
 export { Arrow };

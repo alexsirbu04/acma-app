@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import RoomDetail from './RoomDetail';
 
-class RoomList extends Component {
+export default class RoomList extends Component {
   renderRooms() {
-    const { rooms, navigation } = this.props;
+    const { rooms, navigation, hotelName } = this.props;
     return rooms.roomTypes.map(room =>
-      <RoomDetail navigation={navigation} key={room._id} room={room} />
+      <RoomDetail navigation={navigation} key={room._id} hotelName={hotelName} room={room} />
     );
   }
 
@@ -24,13 +23,6 @@ class RoomList extends Component {
 
 RoomList.propTypes = {
   rooms: PropTypes.object.isRequired,
+  hotelName: PropTypes.string.isRequired,
   navigation: PropTypes.object.isRequired
 };
-
-const mapStateToProps = state => {
-  return {
-    hotels: state.hotelsReducer.hotels
-   };
-};
-
-export default connect(mapStateToProps)(RoomList);

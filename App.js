@@ -4,9 +4,11 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
 import reducers from './reducers';
+
 import Welcome from './screens/Welcome';
 import SignIn from './screens/SignIn';
 import Dashboard from './screens/Dashboard';
+import Rooms from './screens/Rooms';
 import Booking from './screens/Booking';
 
 export default class App extends Component {
@@ -29,8 +31,12 @@ const AppStack = StackNavigator({
   Dashboard: {
     screen: Dashboard
   },
-  Booking: {
+  Rooms: {
     path: 'hotel/:id',
+    screen: Rooms
+  },
+  Booking: {
+    path: 'hotel/:name/:room',
     screen: Booking
   }
 });

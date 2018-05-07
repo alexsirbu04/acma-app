@@ -1,26 +1,34 @@
 import React from 'react';
-import { Text, View, SafeAreaView, Dimensions, Platform } from 'react-native';
+import { Text, View, Dimensions, Platform, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import { LinearGradient } from 'expo';
 
 import { Arrow } from './Arrow';
+import { DARK_BLUE, LIGHT_BLUE, WHITE } from '../assets/colors';
 
-let d = Dimensions.get('window');
-const { height, width } = d;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 let containerPaddingBottom = 10;
 let containerHeight = 65;
-if (Platform.OS === 'ios' && (height === 812 || width === 812)) {
+if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
   containerPaddingBottom = 0;
   containerHeight = 95;
 }
 
 const Header = ({ headerText, backArrow, onBackPress }) => {
-  const { textStyle, containerStyle, arrowContainerStyle } = styles;
+  const { textStyle, gradientStyle, containerStyle, arrowContainerStyle } = styles;
   if (backArrow === true) {
     return (
       <View style={containerStyle}>
+        <LinearGradient
+          colors={[DARK_BLUE, LIGHT_BLUE]}
+          start={[1, 1]}
+          style={styles.gradientStyle}
+        />
         <Arrow 
           direction='back' 
-          color='#fff' 
+          color={WHITE} 
           size={36} 
           iconContainerStyle={arrowContainerStyle} 
           iconStyle={{ paddingLeft: 10 }} 
@@ -33,6 +41,11 @@ const Header = ({ headerText, backArrow, onBackPress }) => {
   } else {
     return (
       <View style={containerStyle}>
+        <LinearGradient
+          colors={[DARK_BLUE, LIGHT_BLUE]}
+          start={[1, 1]}
+          style={styles.gradientStyle}
+        />
         <Text style={textStyle}>{headerText}</Text>
       </View>
     );
@@ -45,17 +58,22 @@ Header.propTypes = {
   onBackPress: PropTypes.func
 };
 
-const styles = {
+const styles = StyleSheet.create({
   textStyle: {
     fontSize: 18,
-    color: '#fff',
+    color: WHITE,
     fontWeight: '400'
+  },
+  gradientStyle: {
+    position: 'absolute', 
+    height: containerHeight, 
+    width: SCREEN_WIDTH
   },
   containerStyle: {
     paddingTop: 30,
     paddingBottom: containerPaddingBottom,
     height: containerHeight,
-    backgroundColor: '#1d7cf4',
+    width: SCREEN_WIDTH,
     position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,6 +83,6 @@ const styles = {
     flex: 1,
     alignItems: 'flex-start',
   }
-};
+});
 
 export { Header };

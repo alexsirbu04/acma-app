@@ -9,13 +9,14 @@ import {
   Modal 
 } from 'react-native';
 import { Constants } from 'expo';
-import { Icon, Button } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { CachedImage } from '../CachedImage';
+import { CachedImage, Button } from '../index';
+import { GREY, LIGHT_GREY, WHITE, MAIN_BLUE, GOLD } from '../../assets/colors';
 
 import ResortIcon from '../../assets/resort.png';
 import HotelIcon from '../../assets/hotel.png';
@@ -69,6 +70,7 @@ export default class HotelDetail extends Component {
       contactDataStyle,
       accTypeIconContainerStyle,
       buttonContainerStyle,
+      buttonStyle,
       imagesContainerStyle,
       bigImageContainerStyle,
       imageStyle,
@@ -85,9 +87,6 @@ export default class HotelDetail extends Component {
       telephone,
       email,
       stars,
-      rooms,
-      bars,
-      restaurants,
       firstImage,
       secondImage,
       thirdImage
@@ -127,14 +126,18 @@ export default class HotelDetail extends Component {
           <TouchableWithoutFeedback onPress={() => {this.openModal(0)}}>
             <View style={bigImageContainerStyle}>
                 <CachedImage
-                  style={imageStyle}
+                  style={[imageStyle, { borderTopLeftRadius: 5 }]}
                   source={{ uri: firstImage }}
                 />
             </View>
           </TouchableWithoutFeedback>
           <View style={{ flex: 2 }}>
             <TouchableWithoutFeedback onPress={() => {this.openModal(1)}}>
-              <View style={[smallImageContainerStyle, { borderBottomWidth: 1, borderColor: '#fff' }]}>
+              <View style={[smallImageContainerStyle, { 
+                borderBottomWidth: 1,
+                borderColor: WHITE
+                }]}
+              >
                 <CachedImage
                   style={imageStyle}
                   source={{ uri: secondImage }}
@@ -142,7 +145,7 @@ export default class HotelDetail extends Component {
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={() => {this.openModal(2)}}>
-            <View style={[smallImageContainerStyle, { borderTopWidth: 1, borderColor: '#fff' }]}>
+            <View style={[smallImageContainerStyle, { borderTopWidth: 1, borderColor: WHITE }]}>
                 <CachedImage
                   style={imageStyle}
                   source={{ uri: thirdImage }}
@@ -163,7 +166,7 @@ export default class HotelDetail extends Component {
                 maxStars={stars}
                 rating={stars}
                 starSize={15}
-                fullStarColor='#eed04d'
+                fullStarColor={GOLD}
                 containerStyle={{ paddingLeft: 8, paddingTop: 2 }}
               />
             </View>
@@ -175,7 +178,7 @@ export default class HotelDetail extends Component {
         <View style={contactContainerStyle}>
           <View style={{ flexDirection: 'row' }}>
             <View style={iconContainerStyle}>
-              <Icon name='phone' color='#555' style={iconStyle}/>
+              <Icon name='phone' color={GREY} style={iconStyle}/>
             </View>
             <View style={{ flex: 4 }}>
               <Text style={contactDataStyle}>{telephone}</Text>
@@ -183,7 +186,7 @@ export default class HotelDetail extends Component {
           </View>
           <View style={{ flexDirection: 'row' }}>
             <View style={iconContainerStyle}>
-              <Icon name='email' color='#555' style={iconStyle}/>
+              <Icon name='email' color={GREY} style={iconStyle}/>
             </View>
             <View style={{ flex: 4 }}>
               <Text style={contactDataStyle}>{email}</Text>
@@ -191,13 +194,10 @@ export default class HotelDetail extends Component {
           </View>
         </View>
         <Button
-          backgroundColor='#1d7cf4'
           title='VIEW ROOMS'
-          rounded
-          fontWeight='700'
-          onPress={() => navigate('Booking', { id: { _id } })}
-          buttonStyle={{ width: SCREEN_WIDTH - 60 }}
-          containerViewStyle={buttonContainerStyle}
+          onPress={() => navigate('Rooms', { id: { _id } })}
+          containerStyle={buttonContainerStyle}
+          buttonStyle={buttonStyle}
         />
       </View>
     );
@@ -211,16 +211,16 @@ HotelDetail.propTypes = {
 
 const styles = StyleSheet.create({
   containerStyle: {
-    borderBottomWidth: 1,
-    borderColor: '#bbb',
-    backgroundColor: '#fff',
-    marginBottom: 7.5
+    backgroundColor: WHITE,
+    marginBottom: 10,
+    borderRadius: 5,
+    width: SCREEN_WIDTH - 20
   },
   contentContainerStyle: {
     flexDirection: 'row',
     paddingBottom: 10,
     borderBottomWidth: 1,
-    borderColor: '#ddd'
+    borderColor: LIGHT_GREY
   },
   contactContainerStyle: {
     flex: 1,
@@ -233,12 +233,12 @@ const styles = StyleSheet.create({
   },
   nameStyle: {
     fontSize: 22,
-    color: '#555',
+    color: GREY,
     fontWeight: '400'
   },
   addressStyle: {
     fontSize: 12,
-    color: '#555'
+    color: GREY
   },
   headingContainerStyle: {
     flex: 4,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   iconStyle: {
     height: 10,
     width: 10,
-    tintColor: '#555'
+    tintColor: GREY
   },
   accTypeIconContainerStyle: {
     flex: 1,
@@ -262,31 +262,41 @@ const styles = StyleSheet.create({
   accTypeIconStyle: {
     height: 45,
     width: 45,
-    tintColor: '#555'
+    tintColor: GREY
   },
   contactDataStyle: {
     fontSize: 16,
-    color: '#555'
+    color: GREY
   },
   buttonContainerStyle: {
+    height: 45,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 15
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    overflow: 'hidden'
+  },
+  buttonStyle: {
+    fontWeight: '700',
+    color: WHITE
   },
   imagesContainerStyle: {
     flexDirection: 'row',
-    height: SCREEN_HEIGHT / 4
+    height: SCREEN_HEIGHT / 4,
   },
   bigImageContainerStyle: {
     flex: 3,
     borderRightWidth: 1,
-
-    borderTopWidth: 1,
-    borderColor: '#fff'
+    borderColor: WHITE,
+    borderTopLeftRadius: 5,
+    overflow: 'hidden'
   },
   smallImageContainerStyle: {
     flex: 1,
     borderLeftWidth: 1,
-    borderColor: '#fff'
+    borderColor: WHITE,
+    borderTopRightRadius: 5,
+    overflow: 'hidden'
   },
   imageStyle: {
     height: '100%',

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, Platform } from 'react-native';
-import { Button, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import ViewMoreText from 'react-native-view-more-text';
 import PropTypes from 'prop-types';
+import { LinearGradient } from 'expo';
 
-import { CachedImage } from '../CachedImage';
+import { CachedImage, Button } from '../index';
+import { DARK_BLUE, LIGHT_BLUE, WHITE, DARK_GREY, LIGHT_GREY, MAIN_BLUE } from '../../assets/colors';
 
 import SingleBedIcon from '../../assets/single-bed.png';
 import DoubleBedIcon from '../../assets/double-bed.png';
@@ -14,9 +16,9 @@ import DiningTable from '../../assets/dining-table.png';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const top = SCREEN_WIDTH / 3;
+const top = SCREEN_WIDTH / 3 + 20;
 if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
-  top = SCREEN_WIDTH / 2;
+  top = SCREEN_WIDTH / 2 + 20;
 }
 
 export default class RoomDetail extends Component {
@@ -108,6 +110,7 @@ export default class RoomDetail extends Component {
   render() {
     const {
       containerStyle,
+      imageContainerStyle,
       imageStyle,
       headingContainerStyle,
       headingStyle,
@@ -115,9 +118,12 @@ export default class RoomDetail extends Component {
       roomNameStyle,
       roomPriceStyle,
       buttonContainerStyle,
-      imageOverlayContainer
+      buttonStyle,
+      imageOverlayContainer,
+      gradientStyle
     } = styles;
-    const { 
+    const {
+      _id,
       roomTypeName,
       roomTypeDescription,
       roomImage,
@@ -125,12 +131,22 @@ export default class RoomDetail extends Component {
       price,
       services
     } = this.props.room;
+    const { navigate } = this.props.navigation;
+    const { hotelName } = this.props;
     return(
       <View style={containerStyle}>
-        <CachedImage
-          uri={roomImage}
-          style={imageStyle} 
-        />
+        <View style={imageContainerStyle}>
+          <CachedImage
+            source={{ uri: roomImage }}
+            style={imageStyle} 
+          />
+          <LinearGradient
+            colors={[LIGHT_BLUE, 'transparent']}
+            start={[0.5, 1]}
+            end={[0.5, 0]}
+            style={gradientStyle}
+          />
+        </View>
         <View style={imageOverlayContainer}>
           <Text style={roomNameStyle}>{roomTypeName} </Text>
           <Text style={roomPriceStyle}>€{price} per night</Text>
@@ -160,13 +176,10 @@ export default class RoomDetail extends Component {
           </ViewMoreText>
         </View>
         <Button
-          backgroundColor='#1d7cf4'
-          title='BOOK NOW'
-          rounded
-          fontWeight='700'
-          // onPress={() => navigate('Booking', { id: { _id } })}
-          buttonStyle={{ width: SCREEN_WIDTH - 60 }}
-          containerViewStyle={buttonContainerStyle}
+          title='BOOK THIS ROOM'
+          onPress={() => navigate('Booking', { name: { hotelName }, id: { _id } })}
+          containerStyle={buttonContainerStyle}
+          buttonStyle={buttonStyle}
         />
       </View>
     );
@@ -175,24 +188,33 @@ export default class RoomDetail extends Component {
 
 RoomDetail.propTypes = {
   room: PropTypes.object.isRequired,
+  hotelName: PropTypes.string.isRequired,
   navigation: PropTypes.object.isRequired
 };
 
 const styles = StyleSheet.create({
   containerStyle: {
-    borderBottomWidth: 1,
-    borderColor: '#bbb',
-    backgroundColor: '#fff',
-    marginBottom: 10
+    backgroundColor: WHITE,
+    marginBottom: 10,
+    borderRadius: 5,
+    width: SCREEN_WIDTH - 20
+  },
+  imageContainerStyle: {
+    flex: 1,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    overflow: 'hidden'
   },
   imageStyle: {
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
     height: SCREEN_HEIGHT / 3,
     width: SCREEN_WIDTH
   },
   iconStyle: {
     height: 28,
     width: 28,
-    tintColor: '#555',
+    tintColor: DARK_GREY,
     marginRight: 5
   },
   headingContainerStyle: {
@@ -201,7 +223,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   headingStyle: {
-    color: '#1d7cf4',
+    color: MAIN_BLUE,
     fontWeight: '600',
     fontSize: 23,
     paddingLeft: 15
@@ -212,21 +234,27 @@ const styles = StyleSheet.create({
     paddingLeft: 15
   },
   roomNameStyle: {
-    fontSize: 24,
-    color: '#fff',
-    fontWeight: '600',
-    paddingTop: 5,
+    fontSize: 20,
+    color: WHITE,
+    fontWeight: '500'
   },
   roomPriceStyle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#fff',
-    paddingTop: 2.5
+    fontSize: 16,
+    fontWeight: '500',
+    color: WHITE
   },
   buttonContainerStyle: {
-    alignItems: 'center',
-    paddingBottom: 15,
-    paddingTop: 10
+    height: 45,
+    marginTop: 10,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  buttonStyle: {
+    fontWeight: '700',
+    color: WHITE
   },
   imageOverlayContainer: {
     position: 'absolute',
@@ -234,5 +262,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 15,
     right: 0
+  },
+  gradientStyle: {
+    position: 'absolute',
+    top: '30%',
+    height: '70%',
+    width: '100%'
   }
 });
