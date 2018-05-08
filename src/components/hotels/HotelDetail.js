@@ -5,24 +5,19 @@ import {
   StyleSheet, 
   TouchableWithoutFeedback, 
   Image, 
-  Dimensions, 
   Modal 
 } from 'react-native';
 import { Constants } from 'expo';
 import { Icon } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { CachedImage, Button } from '../index';
-import { GREY, LIGHT_GREY, WHITE, MAIN_BLUE, GOLD } from '../../assets/colors';
+import { SCREEN_WIDTH, SCREEN_HEIGHT, CachedImage, Button } from '../common';
+import { GREY, LIGHT_GREY, WHITE, GOLD } from '../../../assets/colors';
 
-import ResortIcon from '../../assets/resort.png';
-import HotelIcon from '../../assets/hotel.png';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+import ResortIcon from '../../../assets/images/resort.png';
+import HotelIcon from '../../../assets/images/hotel.png';
 
 export default class HotelDetail extends Component {
   state = {
@@ -30,51 +25,50 @@ export default class HotelDetail extends Component {
     currentImageIndex: 0
   }
 
+  openModal(index) {
+    this.setState({ isModalOpened: true, currentImageIndex: index });
+  }
+
+  closeModal() {
+    this.setState({ isModalOpened: false, currentImageIndex: 0 });
+  }
+
   renderIcon(type) {
     if (type === 'Beach Resort') {
       return (
         <Image
-          style={styles.accTypeIconStyle}
+          style={styles.typeIconStyle}
           source={ResortIcon}
         />
       );
     } else if (type === 'Hotel') {
       return (
         <Image
-          style={styles.accTypeIconStyle}
+          style={styles.typeIconStyle}
           source={HotelIcon}
         />
       );
     }
   }
 
-  openModal(index) {
-    this.setState({ isModalOpened: true, currentImageIndex: index })
-  }
-
-  closeModal() {
-    this.setState({ isModalOpened: false, currentImageIndex: 0 })
-  }
-
   render() {
     const {
-      containerStyle,
-      contentContainerStyle,
-      contactContainerStyle,
-      nameContainerStyle,
+      container,
+      contentContainer,
+      contactContainer,
+      nameContainer,
       nameStyle,
       addressStyle,
-      headingContainerStyle,
-      iconContainerStyle,
+      headingContainer,
+      iconContainer,
       iconStyle,
       contactDataStyle,
-      accTypeIconContainerStyle,
-      buttonContainerStyle,
-      buttonStyle,
-      imagesContainerStyle,
-      bigImageContainerStyle,
+      typeIconContainer,
+      button,
+      imagesContainer,
+      bigImagecontainer,
       imageStyle,
-      smallImageContainerStyle,
+      smallImageContainer,
       modalCloseIconStyle
     } = styles;
     const {
@@ -106,14 +100,14 @@ export default class HotelDetail extends Component {
     ];
 
     return (
-      <View style={containerStyle}>
+      <View style={container}>
         <Modal 
           visible={this.state.isModalOpened} 
-          transparent={true}
+          transparent
           onRequestClose={this.closeModal.bind(this)}
         >
           <TouchableWithoutFeedback onPress={this.closeModal.bind(this)}>
-            <Icon name='close' color='#fff' size={30} containerStyle={modalCloseIconStyle} />
+            <Icon name='close' color={WHITE} size={30} container={modalCloseIconStyle} />
           </TouchableWithoutFeedback>
           <ImageViewer 
             imageUrls={images} 
@@ -122,9 +116,9 @@ export default class HotelDetail extends Component {
             backgroundColor='rgba(0, 0, 0, 0.9)'
           />
         </Modal>
-        <View style={imagesContainerStyle}>
-          <TouchableWithoutFeedback onPress={() => {this.openModal(0)}}>
-            <View style={bigImageContainerStyle}>
+        <View style={imagesContainer}>
+          <TouchableWithoutFeedback onPress={() => { this.openModal(0); }}>
+            <View style={bigImagecontainer}>
                 <CachedImage
                   style={[imageStyle, { borderTopLeftRadius: 5 }]}
                   source={{ uri: firstImage }}
@@ -132,11 +126,9 @@ export default class HotelDetail extends Component {
             </View>
           </TouchableWithoutFeedback>
           <View style={{ flex: 2 }}>
-            <TouchableWithoutFeedback onPress={() => {this.openModal(1)}}>
-              <View style={[smallImageContainerStyle, { 
-                borderBottomWidth: 1,
-                borderColor: WHITE
-                }]}
+            <TouchableWithoutFeedback onPress={() => { this.openModal(1); }}>
+              <View 
+                style={[smallImageContainer, { borderBottomWidth: 1, borderColor: WHITE }]}
               >
                 <CachedImage
                   style={imageStyle}
@@ -144,8 +136,10 @@ export default class HotelDetail extends Component {
                 />
               </View>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => {this.openModal(2)}}>
-            <View style={[smallImageContainerStyle, { borderTopWidth: 1, borderColor: WHITE }]}>
+            <TouchableWithoutFeedback onPress={() => { this.openModal(2); }}>
+            <View 
+              style={[smallImageContainer, { borderTopWidth: 1, borderColor: WHITE }]}
+            >
                 <CachedImage
                   style={imageStyle}
                   source={{ uri: thirdImage }}
@@ -154,12 +148,12 @@ export default class HotelDetail extends Component {
             </TouchableWithoutFeedback>
           </View>
         </View>
-        <View style={contentContainerStyle}>
-          <View style={accTypeIconContainerStyle}>
+        <View style={contentContainer}>
+          <View style={typeIconContainer}>
             {this.renderIcon(type)}
           </View>
-          <View style={headingContainerStyle}>
-            <View style={nameContainerStyle}>
+          <View style={headingContainer}>
+            <View style={nameContainer}>
               <Text style={nameStyle}>{name}</Text>
               <StarRating
                 disabled
@@ -167,7 +161,7 @@ export default class HotelDetail extends Component {
                 rating={stars}
                 starSize={15}
                 fullStarColor={GOLD}
-                containerStyle={{ paddingLeft: 8, paddingTop: 2 }}
+                container={{ paddingLeft: 8, paddingTop: 2 }}
               />
             </View>
             <Text style={addressStyle}>
@@ -175,18 +169,18 @@ export default class HotelDetail extends Component {
             </Text>
           </View>
         </View>
-        <View style={contactContainerStyle}>
+        <View style={contactContainer}>
           <View style={{ flexDirection: 'row' }}>
-            <View style={iconContainerStyle}>
-              <Icon name='phone' color={GREY} style={iconStyle}/>
+            <View style={iconContainer}>
+              <Icon name='phone' color={GREY} style={iconStyle} />
             </View>
             <View style={{ flex: 4 }}>
               <Text style={contactDataStyle}>{telephone}</Text>
             </View>
           </View>
           <View style={{ flexDirection: 'row' }}>
-            <View style={iconContainerStyle}>
-              <Icon name='email' color={GREY} style={iconStyle}/>
+            <View style={iconContainer}>
+              <Icon name='email' color={GREY} style={iconStyle} />
             </View>
             <View style={{ flex: 4 }}>
               <Text style={contactDataStyle}>{email}</Text>
@@ -195,9 +189,10 @@ export default class HotelDetail extends Component {
         </View>
         <Button
           title='VIEW ROOMS'
+          gradient
+          textColor={WHITE}
           onPress={() => navigate('Rooms', { id: { _id } })}
-          containerStyle={buttonContainerStyle}
-          buttonStyle={buttonStyle}
+          buttonStyle={button}
         />
       </View>
     );
@@ -210,24 +205,24 @@ HotelDetail.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  containerStyle: {
+  container: {
     backgroundColor: WHITE,
     marginBottom: 10,
     borderRadius: 5,
     width: SCREEN_WIDTH - 20
   },
-  contentContainerStyle: {
+  contentContainer: {
     flexDirection: 'row',
     paddingBottom: 10,
     borderBottomWidth: 1,
     borderColor: LIGHT_GREY
   },
-  contactContainerStyle: {
+  contactContainer: {
     flex: 1,
     paddingBottom: 10,
     paddingTop: 10
   },
-  nameContainerStyle: {
+  nameContainer: {
     flexDirection: 'row',
     alignItems: 'center'
   },
@@ -240,11 +235,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: GREY
   },
-  headingContainerStyle: {
+  headingContainer: {
     flex: 4,
     paddingTop: 10
   },
-  iconContainerStyle: {
+  iconContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -254,12 +249,12 @@ const styles = StyleSheet.create({
     width: 10,
     tintColor: GREY
   },
-  accTypeIconContainerStyle: {
+  typeIconContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  accTypeIconStyle: {
+  typeIconStyle: {
     height: 45,
     width: 45,
     tintColor: GREY
@@ -268,7 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: GREY
   },
-  buttonContainerStyle: {
+  button: {
     height: 45,
     justifyContent: 'center',
     alignItems: 'center',
@@ -276,22 +271,18 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
     overflow: 'hidden'
   },
-  buttonStyle: {
-    fontWeight: '700',
-    color: WHITE
-  },
-  imagesContainerStyle: {
+  imagesContainer: {
     flexDirection: 'row',
     height: SCREEN_HEIGHT / 4,
   },
-  bigImageContainerStyle: {
+  bigImagecontainer: {
     flex: 3,
     borderRightWidth: 1,
     borderColor: WHITE,
     borderTopLeftRadius: 5,
     overflow: 'hidden'
   },
-  smallImageContainerStyle: {
+  smallImageContainer: {
     flex: 1,
     borderLeftWidth: 1,
     borderColor: WHITE,

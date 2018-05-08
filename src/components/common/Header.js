@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { LinearGradient } from 'expo';
 
 import { Arrow } from './Arrow';
-import { DARK_BLUE, LIGHT_BLUE, WHITE } from '../assets/colors';
+import { DARK_BLUE, LIGHT_BLUE, WHITE } from '../../../assets/colors';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -16,7 +16,7 @@ if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
   containerHeight = 95;
 }
 
-const Header = ({ headerText, backArrow, onBackPress }) => {
+const Header = ({ title, backArrow, onBackPress }) => {
   const { textStyle, gradientStyle, containerStyle, arrowContainerStyle } = styles;
   if (backArrow === true) {
     return (
@@ -24,36 +24,36 @@ const Header = ({ headerText, backArrow, onBackPress }) => {
         <LinearGradient
           colors={[DARK_BLUE, LIGHT_BLUE]}
           start={[1, 1]}
-          style={styles.gradientStyle}
+          style={gradientStyle}
         />
         <Arrow 
-          direction='back' 
+          direction='left'
           color={WHITE} 
           size={36} 
           iconContainerStyle={arrowContainerStyle} 
           iconStyle={{ paddingLeft: 10 }} 
           onPress={onBackPress}
         />
-        <Text style={textStyle}>{headerText}</Text>
+        <Text style={textStyle}>{title}</Text>
         <View style={{ flex: 1 }} />
       </View>
     );
-  } else {
-    return (
-      <View style={containerStyle}>
-        <LinearGradient
-          colors={[DARK_BLUE, LIGHT_BLUE]}
-          start={[1, 1]}
-          style={styles.gradientStyle}
-        />
-        <Text style={textStyle}>{headerText}</Text>
-      </View>
-    );
   }
+
+  return (
+    <View style={containerStyle}>
+      <LinearGradient
+        colors={[DARK_BLUE, LIGHT_BLUE]}
+        start={[1, 1]}
+        style={gradientStyle}
+      />
+      <Text style={textStyle}>{title}</Text>
+    </View>
+  );
 };
 
 Header.propTypes = {
-  headerText: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
   backArrow: PropTypes.bool,
   onBackPress: PropTypes.func
 };

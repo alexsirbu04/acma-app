@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
 
 import RoomList from '../components/rooms/RoomList';
-import { Header } from '../components';
-import { DARK_BLUE, LIGHT_BLUE } from '../assets/colors';
+import { Header } from '../components/common';
+import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 
 
 class Rooms extends Component {
@@ -21,21 +21,22 @@ class Rooms extends Component {
     this.selectedHotel = {};
 
     for (const hotel of this.props.hotels) {
-      if (hotel._id === hotelId)
+      if (hotel._id === hotelId) {
         this.selectedHotel = hotel;
+      }
     }
   }
 
   render() {
     const { name, rooms } = this.selectedHotel;
-    return(
+    return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={styles.containerStyle}>
         <LinearGradient
-            colors={[DARK_BLUE, LIGHT_BLUE]}
-            start={[1, 1]}
-            style={styles.gradientStyle}
-          />
-        <Header headerText={name} backArrow={true} onBackPress={() => this.props.navigation.goBack()} />
+          colors={[DARK_BLUE, LIGHT_BLUE]}
+          start={[1, 1]}
+          style={styles.gradientStyle}
+        />
+        <Header title={name} backArrow onBackPress={() => this.props.navigation.goBack()} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <RoomList rooms={rooms} hotelName={name} navigation={this.props.navigation} />
         </ScrollView>

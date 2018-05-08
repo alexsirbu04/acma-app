@@ -1,25 +1,21 @@
 import React, { Component } from 'react';
 import { 
   View, 
-  SafeAreaView, 
-  Text, 
   StyleSheet, 
   Image,
-  Dimensions,
   ActivityIndicator,
   StatusBar    
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { LinearGradient } from 'expo';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
+import { SCREEN_WIDTH, SCREEN_HEIGHT, TextBox, Button } from '../components/common';
 import { storeHotels } from '../actions';
 
-import Logo from '../assets/logoSecond.png';
-import Background from '../assets/background.jpg';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
+import Logo from '../../assets/images/logoSecond.png';
+import Background from '../../assets/images/background.jpg';
 
 class Welcome extends Component {
   static navigationOptions = {
@@ -42,58 +38,70 @@ class Welcome extends Component {
       });
   }
 
-  onPressLogin() {
+  onLoginPress() {
     this.props.navigation.navigate('SignIn');
   }
 
   render() {
-    return(
-      <SafeAreaView style={styles.container}>
+    const {
+      container,
+      logo,
+      logoContainer,
+      textContainer,
+      buttonsContainer,
+      loginButton,
+      signUpButton,
+      overlay,
+      overlayImage
+    } = styles;
+
+    return (
+      <View style={container}>
         <StatusBar
           barStyle='light-content'
         />
-        <View style={styles.overlay}>
-          <Image source={Background} style={styles.overlayImage} />
+        <LinearGradient
+          colors={[DARK_BLUE, LIGHT_BLUE]}
+          start={[1, 1]}
+          style={overlay}
+        />
+        <View style={overlay}>
+          <Image source={Background} style={overlayImage} />
         </View>
-        <View style={styles.logoContainer}>
-          <Image source={Logo} style={styles.logo} />
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>
+        <View style={logoContainer}>
+          <Image source={Logo} style={logo} />
+          <View style={textContainer}>
+            <TextBox type='regular' color={WHITE} size={24}>
               app
-            </Text>
-            <Text style={[styles.text, { fontWeight: 'bold'}]}>
+            </TextBox>
+            <TextBox type='bold' color={WHITE} size={24}>
               commodation
-            </Text>
+            </TextBox>
           </View>
         </View>
-        <ActivityIndicator size='large' color='#fff' animating={!this.state.loaded} />
-        <View style={styles.buttonsContainer}>
+        <ActivityIndicator size='large' color={WHITE} animating={!this.state.loaded} />
+        <View style={buttonsContainer}>
           <Button
-            backgroundColor='rgba(255, 255, 255, 0)'
             title='SIGN UP'
-            rounded
-            fontWeight='700'
-            containerViewStyle={styles.signUpButton}
+            textColor={WHITE}
+            buttonStyle={signUpButton}
+            onPress={() => console.log('SignUpButton')}
           />
           <Button
-            backgroundColor='#eee'
-            color='#1D7CF4'
             title='LOGIN'
-            rounded
-            fontWeight='700'
-            containerViewStyle={styles.loginButton}
-            onPress={this.onPressLogin.bind(this)}
+            textColor={MAIN_BLUE}
+            buttonStyle={loginButton}
+            onPress={this.onLoginPress.bind(this)}
           />
         </View>
-      </SafeAreaView>
-    )
+      </View>
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1D7CF4',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -111,35 +119,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20
   },
-  text: {
-    color: '#eee',
-    fontSize: 24
-  },
   buttonsContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
   loginButton: {
-    width: SCREEN_WIDTH - 70,
-    marginTop: 25,
-    marginBottom: 5
-  },
-  signUpButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: WHITE,
+    height: 45,
     width: SCREEN_WIDTH - 70,
     marginTop: 25,
     marginBottom: 5,
     borderWidth: 1,
     borderRadius: 50,
-    borderColor: '#eee'
+    borderColor: WHITE
+  },
+  signUpButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0)',
+    height: 50,
+    width: SCREEN_WIDTH - 70,
+    marginTop: 25,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderRadius: 50,
+    borderColor: WHITE
   },
   overlay: {
-    position: 'absolute'
+    position: 'absolute',
+    height: '100%',
+    width: '100%'
   },
   overlayImage: {
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
-    opacity: 0.1
+    opacity: 0.2
   }
 });
 

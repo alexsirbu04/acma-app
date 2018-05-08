@@ -3,13 +3,13 @@ import { StackNavigator } from 'react-navigation';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
-import reducers from './reducers';
+import reducers from './src/reducers';
 
-import Welcome from './screens/Welcome';
-import SignIn from './screens/SignIn';
-import Dashboard from './screens/Dashboard';
-import Rooms from './screens/Rooms';
-import Booking from './screens/Booking';
+import Welcome from './src/screens/Welcome';
+import SignIn from './src/screens/SignIn';
+import Dashboard from './src/screens/Dashboard';
+import Rooms from './src/screens/Rooms';
+import Booking from './src/screens/Booking';
 
 export default class App extends Component {
   render() {
