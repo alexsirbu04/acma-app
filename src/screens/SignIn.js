@@ -1,37 +1,41 @@
-import React, { Component } from 'react'; 
+import React, { Component } from 'react';
 import {
+  View,
   StyleSheet,
-  Text, 
-  View, 
   Image,
   TouchableWithoutFeedback,
-  Keyboard, 
+  Keyboard,
   Animated
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
-import Hr from 'react-native-hr-plus';
 
 import Logo from '../../assets/images/logo.png';
 import Background from '../../assets/images/background.jpg';
 
 import FacebookLogin from '../components/FacebookLogin';
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Button } from '../components/common';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr } from '../components/common';
 import { GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
 
 export default class SignIn extends Component {
   static navigationOptions = {
     header: null
-  }
+  };
 
   state = {
     scaleValue: 1,
     translateValue: 0
-  }
+  };
 
   componentWillMount() {
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow.bind(this));
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide.bind(this));
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this.keyboardDidShow.bind(this)
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this.keyboardDidHide.bind(this)
+    );
 
     this.position = new Animated.ValueXY(0, 0);
   }
@@ -50,12 +54,12 @@ export default class SignIn extends Component {
       toValue: { x: 0, y: -SCREEN_HEIGHT / 5 }
     }).start();
 
-    translate = this.position.y.interpolate({
+    const translate = this.position.y.interpolate({
       inputRange: [-SCREEN_HEIGHT / 5, 0, SCREEN_HEIGHT / 5],
       outputRange: [SCREEN_WIDTH / 3, 0, SCREEN_WIDTH / 3]
     });
 
-    scale = this.position.y.interpolate({
+    const scale = this.position.y.interpolate({
       inputRange: [-SCREEN_HEIGHT / 5, 0, SCREEN_HEIGHT / 5],
       outputRange: [0.5, 1, 0.5]
     });
@@ -76,7 +80,6 @@ export default class SignIn extends Component {
       logoContainer,
       dataContainer,
       socialContainer,
-      text,
       input,
       label,
       button,
@@ -91,13 +94,18 @@ export default class SignIn extends Component {
         </View>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
           <Animated.View style={this.position.getLayout()}>
-            <Animated.View 
-              style={[logoContainer, { 
-                transform: [{ 
-                  scale: this.state.scaleValue 
-                }, { 
-                  translateY: this.state.translateValue }
-                  ] 
+            <Animated.View
+              style={[
+                logoContainer,
+                {
+                  transform: [
+                    {
+                      scale: this.state.scaleValue
+                    },
+                    {
+                      translateY: this.state.translateValue
+                    }
+                  ]
                 }
               ]}
             >
@@ -105,36 +113,32 @@ export default class SignIn extends Component {
             </Animated.View>
             <View style={dataContainer}>
               <FormLabel labelStyle={label}>EMAIL</FormLabel>
-              <FormInput 
-                inputStyle={input} 
+              <FormInput
+                inputStyle={input}
                 underlineColorAndroid={GREY}
                 containerStyle={{ borderBottomColor: GREY }}
               />
               <FormLabel labelStyle={label}>PASSWORD</FormLabel>
-              <FormInput 
-                inputStyle={input} 
+              <FormInput
+                inputStyle={input}
                 underlineColorAndroid={GREY}
                 secureTextEntry
                 containerStyle={{ borderBottomColor: GREY }}
               />
               <Button
-                title='LOGIN'
+                title="LOGIN"
                 textColor={WHITE}
                 buttonStyle={button}
                 onPress={this.onLoginPress.bind(this)}
               />
-              <Hr color={GREY} style={{ width: SCREEN_WIDTH - 70 }}>
-                <Text style={text}>
-                  OR
-                </Text>
-              </Hr>
+              <Hr text="OR" containerStyle={{ width: SCREEN_WIDTH - 70 }} />
               <View style={socialContainer}>
                 <FacebookLogin />
                 <SocialIcon
-                  title='GOOGLE'
+                  title="GOOGLE"
                   button
                   raised={false}
-                  type='google-plus'
+                  type="google-plus"
                   style={{ width: SCREEN_WIDTH / 2 - 40, height: 45, backgroundColor: '#dd4b39' }}
                 />
               </View>

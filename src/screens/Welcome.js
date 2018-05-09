@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import { 
-  View, 
-  StyleSheet, 
-  Image,
-  ActivityIndicator,
-  StatusBar    
-} from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -20,22 +14,21 @@ import Background from '../../assets/images/background.jpg';
 class Welcome extends Component {
   static navigationOptions = {
     header: null
-  }
+  };
 
   state = {
     loaded: false
-  }
+  };
 
   componentWillMount() {
     const hotels = [];
-    axios.get('https://secure-stream-51486.herokuapp.com/hotels')
-      .then(response => {
-        for (const hotel of response.data.hotels) {
-          hotels.push(hotel);
-        }
-        this.props.storeHotels(hotels);
-        this.setState({ loaded: true });
-      });
+    axios.get('https://secure-stream-51486.herokuapp.com/hotels').then(response => {
+      for (const hotel of response.data.hotels) {
+        hotels.push(hotel);
+      }
+      this.props.storeHotels(hotels);
+      this.setState({ loaded: true });
+    });
   }
 
   onLoginPress() {
@@ -57,38 +50,32 @@ class Welcome extends Component {
 
     return (
       <View style={container}>
-        <StatusBar
-          barStyle='light-content'
-        />
-        <LinearGradient
-          colors={[DARK_BLUE, LIGHT_BLUE]}
-          start={[1, 1]}
-          style={overlay}
-        />
+        <StatusBar barStyle="light-content" />
+        <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={overlay} />
         <View style={overlay}>
           <Image source={Background} style={overlayImage} />
         </View>
         <View style={logoContainer}>
           <Image source={Logo} style={logo} />
           <View style={textContainer}>
-            <TextBox type='regular' color={WHITE} size={24}>
+            <TextBox type="regular" color={WHITE} size={24}>
               app
             </TextBox>
-            <TextBox type='bold' color={WHITE} size={24}>
+            <TextBox type="bold" color={WHITE} size={24}>
               commodation
             </TextBox>
           </View>
         </View>
-        <ActivityIndicator size='large' color={WHITE} animating={!this.state.loaded} />
+        <ActivityIndicator size="large" color={WHITE} animating={!this.state.loaded} />
         <View style={buttonsContainer}>
           <Button
-            title='SIGN UP'
+            title="SIGN UP"
             textColor={WHITE}
             buttonStyle={signUpButton}
             onPress={() => console.log('SignUpButton')}
           />
           <Button
-            title='LOGIN'
+            title="LOGIN"
             textColor={MAIN_BLUE}
             buttonStyle={loginButton}
             onPress={this.onLoginPress.bind(this)}
@@ -103,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   logo: {
     width: SCREEN_WIDTH / 4,

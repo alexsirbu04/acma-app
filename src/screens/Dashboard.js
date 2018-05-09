@@ -10,20 +10,16 @@ import HotelList from '../components/hotels/HotelList';
 export default class Dashboard extends Component {
   static navigationOptions = {
     header: null
-  }
+  };
 
   render() {
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={styles.container}>
-        <LinearGradient
-          colors={[DARK_BLUE, LIGHT_BLUE]}
-          start={[1, 1]}
-          style={styles.gradient}
-        />
-        <Header title='Dashboard' />
+        <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
+        <Header title="Dashboard" />
         <ScrollView showsVerticalScrollIndicator={false}>
           <HotelList navigation={this.props.navigation} />
-        </ScrollView> 
+        </ScrollView>
       </SafeAreaView>
     );
   }

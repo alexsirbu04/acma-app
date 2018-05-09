@@ -48,20 +48,11 @@ export default class RoomDetail extends Component {
   renderBedIcon(bedType) {
     const { icon } = styles;
     if (bedType === 'Single') {
-      return (
-        <Image
-          source={SingleBedIcon}
-          style={icon}
-        />
-      );
+      return <Image source={SingleBedIcon} style={icon} />;
     } else if (bedType === 'Double') {
-      return (
-        <Image
-          source={DoubleBedIcon}
-          style={icon}
-        />
-      );
+      return <Image source={DoubleBedIcon} style={icon} />;
     }
+    return null;
   }
 
   renderServices() {
@@ -69,39 +60,55 @@ export default class RoomDetail extends Component {
     return this.availableServices.map(service => {
       if (service === 'wifi') {
         return (
-          <Icon name='wifi' key={service} color='#555' type='feather' icon={{ paddingRight: 5 }} />
+          <Icon name="wifi" key={service} color="#555" type="feather" icon={{ paddingRight: 5 }} />
         );
       } else if (service === 'bathtub') {
         return (
-          <Icon name='bath' key={service} color='#555' type='font-awesome' icon={{ paddingRight: 5 }} />
+          <Icon
+            name="bath"
+            key={service}
+            color="#555"
+            type="font-awesome"
+            icon={{ paddingRight: 5 }}
+          />
         );
       } else if (service === 'ac') {
         return (
-          <Icon name='air-conditioner' key={service} color='#555' type='material-community' icon={{ paddingRight: 5 }} />
+          <Icon
+            name="air-conditioner"
+            key={service}
+            color="#555"
+            type="material-community"
+            icon={{ paddingRight: 5 }}
+          />
         );
       } else if (service === 'bar') {
         return (
-          <Icon name='fridge' key={service} color='#555' type='material-community' icon={{ paddingRight: 5 }} />
+          <Icon
+            name="fridge"
+            key={service}
+            color="#555"
+            type="material-community"
+            icon={{ paddingRight: 5 }}
+          />
         );
       } else if (service === 'tv') {
-        return (
-          <Icon name='tv' key={service} color='#555'icon={{ paddingRight: 5 }} />
-        );
+        return <Icon name="tv" key={service} color="#555" icon={{ paddingRight: 5 }} />;
       } else if (service === 'safe') {
-        return (
-          <Image source={Safe} key={service} style={icon} />
-        );
+        return <Image source={Safe} key={service} style={icon} />;
       }
+      return null;
     });
   }
 
   renderViewMore(onPress) {
     return (
       <TextBox
-        type='regular'
+        type="regular"
         color={MAIN_BLUE}
         size={14}
-        style={{ marginLeft: 15 }} onPress={onPress}
+        style={{ marginLeft: 15 }}
+        onPress={onPress}
       >
         View more
       </TextBox>
@@ -111,10 +118,11 @@ export default class RoomDetail extends Component {
   renderViewLess(onPress) {
     return (
       <TextBox
-        type='regular'
+        type="regular"
         color={MAIN_BLUE}
         size={14}
-        style={{ marginLeft: 15 }} onPress={onPress}
+        style={{ marginLeft: 15 }}
+        onPress={onPress}
       >
         View less
       </TextBox>
@@ -132,23 +140,13 @@ export default class RoomDetail extends Component {
       imageOverlayContainer,
       gradient
     } = styles;
-    const {
-      _id,
-      roomTypeName,
-      roomTypeDescription,
-      roomImage,
-      bedType,
-      price  
-    } = this.props.room;
+    const { _id, roomTypeName, roomTypeDescription, roomImage, bedType, price } = this.props.room;
     const { navigate } = this.props.navigation;
     const { hotelName } = this.props;
     return (
       <View style={container}>
         <View style={imageContainer}>
-          <CachedImage
-            source={{ uri: roomImage }}
-            style={image} 
-          />
+          <CachedImage source={{ uri: roomImage }} style={image} />
           <LinearGradient
             colors={[LIGHT_BLUE, 'transparent']}
             start={[0.5, 1]}
@@ -157,35 +155,43 @@ export default class RoomDetail extends Component {
           />
         </View>
         <View style={imageOverlayContainer}>
-          <TextBox type='semi-bold' size={20} color={WHITE}>{roomTypeName}</TextBox>
-          <TextBox type='semi-bold' size={18} color={WHITE}>€{price} per night</TextBox>
+          <TextBox type="semi-bold" size={20} color={WHITE}>
+            {roomTypeName}
+          </TextBox>
+          <TextBox type="semi-bold" size={18} color={WHITE}>
+            €{price} per night
+          </TextBox>
         </View>
         <View style={headingContainer}>
-          <TextBox type='semi-bold' size={22} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>Services included</TextBox>
+          <TextBox type="semi-bold" size={22} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
+            Services included
+          </TextBox>
           <View style={servicesContainer}>
             {this.renderBedIcon(bedType)}
             {this.renderServices()}
           </View>
         </View>
         <View>
-        <TextBox type='semi-bold' size={22} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>Description</TextBox>
+          <TextBox type="semi-bold" size={22} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
+            Description
+          </TextBox>
           <ViewMoreText
             numberOfLines={3}
             renderViewMore={this.renderViewMore}
             renderViewLess={this.renderViewLess}
-            textStyle={{ 
+            textStyle={{
               padding: 10,
               paddingLeft: 15,
-              color: GREY 
+              color: GREY
             }}
           >
-            <TextBox type='regular' size={14} color={GREY}>
+            <TextBox type="regular" size={14} color={GREY}>
               {roomTypeDescription}
             </TextBox>
           </ViewMoreText>
         </View>
         <Button
-          title='BOOK THIS ROOM'
+          title="BOOK THIS ROOM"
           textColor={WHITE}
           gradient
           onPress={() => navigate('Booking', { name: { hotelName }, id: { _id } })}

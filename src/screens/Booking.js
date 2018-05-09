@@ -1,29 +1,32 @@
 import React, { Component } from 'react';
-import { 
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  ScrollView
-} from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { LinearGradient } from 'expo';
-import Carousel from 'react-native-snap-carousel';
 
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Header, CachedImage, Button, TextBox } from '../components/common';
+import {
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+  Header,
+  CachedImage,
+  Button,
+  TextBox,
+  Hr
+} from '../components/common';
 import { LIGHT_BLUE, LIGHT_GREY, GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
-import { CAROUSEL_PERSONS, CAROUSEL_ROOMS } from '../components/rooms/CarouselArrays';
+import { CAROUSEL_PERSONS, CAROUSEL_ROOMS, getDates } from '../components/booking/CarouselService';
+import BookingCarousel from '../components/booking/BookingCarousel';
 
 class Booking extends Component {
   static navigationOptions = {
     header: null
-  }
+  };
 
   constructor(props) {
     super(props);
     const roomId = this.props.navigation.state.params.id._id;
-    const hotelName = this.props.navigation.state.params.name.hotelName;
+    const { hotelName } = this.props.navigation.state.params.name;
     this.selectedRoom = {};
     this.selectedHotel = {};
 
@@ -38,19 +41,13 @@ class Booking extends Component {
         this.selectedRoom = room;
       }
     }
-
-    this.renderDaysItem = this.renderDaysItem.bind(this);
-    this.renderMonthsItem = this.renderMonthsItem.bind(this);
-    this.renderPersonsItem = this.renderPersonsItem.bind(this);
-    this.renderRoomsItem = this.renderRoomsItem.bind(this);
   }
 
   state = {
     dates: [],
     months: [],
     displayDates: [],
-    currentDate: {},
-    activeDay: '',
+    currentDateObject: {},
     activeDayIndex: 0,
     activeMonthIndex: 0,
     checkIn: {},
@@ -60,17 +57,20 @@ class Booking extends Component {
     persons: [],
     activePersonsIndex: 1,
     rooms: [],
-    activeRoomsIndex: 1
-  }
+    activeRoomsIndex: 1,
+    nightsBooked: 1,
+    totalPrice: 0
+  };
 
   componentWillMount() {
     // Get an array of all dates of the year
     const startDate = moment().startOf('year');
     const stopDate = moment().endOf('year');
-    const dates = this.getDates(startDate, stopDate);
+    const dates = getDates(startDate, stopDate);
 
     // Get an array of all months
     const months = moment.monthsShort();
+
     // Get the current date and create an object with it's day of the month, week day and month
     const currentDate = moment();
     const currentDateObject = {
@@ -78,6 +78,15 @@ class Booking extends Component {
       dayOfMonth: moment(currentDate).format('D'),
       month: moment(currentDate).format('MMM')
     };
+
+    // Get the next day and create an object with it's day of the month, week day and month
+    const nextDate = moment(currentDate).add(1, 'days');
+    const nextDateObject = {
+      dayOfWeek: moment(nextDate).format('ddd'),
+      dayOfMonth: moment(nextDate).format('D'),
+      month: moment(nextDate).format('MMM')
+    };
+
     // Get the previous, current and next month
     const currentMonth = currentDateObject.month;
     const currentMonthIndex = months.indexOf(currentMonth);
@@ -100,25 +109,25 @@ class Booking extends Component {
       }
     }
 
-    this.setState({ 
+    this.setState({
       dates,
       months,
-      currentDate: currentDateObject,
-      checkIn: currentDateObject, 
-      checkOut: currentDateObject,
+      checkIn: currentDateObject,
+      checkOut: nextDateObject,
       activeMonthIndex: currentMonthIndex,
       activeDayIndex,
+      currentDateObject,
       displayDates,
       persons: CAROUSEL_PERSONS,
-      rooms: CAROUSEL_ROOMS
+      rooms: CAROUSEL_ROOMS,
+      totalPrice: this.selectedRoom.price
     });
   }
 
   onChangeDays(index) {
     // Get the day (number) that is active
-    const activeDate = this.state.displayDates[index];
-    const activeDay = activeDate.dayOfMonth;
-    this.setState({ activeDayIndex: index, activeDay });
+    const activeDay = this.state.displayDates[index];
+    this.setState({ activeDayIndex: index, currentDateObject: activeDay });
   }
 
   onChangeMonths(index) {
@@ -138,51 +147,55 @@ class Booking extends Component {
     // Get the index of today to display as the active date
     let activeDayIndex = 0;
     for (const date of displayDates) {
-      if (date.dayOfMonth === this.state.activeDay && date.month === currentMonth) {
+      if (
+        date.dayOfMonth === this.state.currentDateObject.dayOfMonth &&
+        date.month === currentMonth
+      ) {
         activeDayIndex = displayDates.indexOf(date);
       }
     }
     this.carousel.snapToItem(activeDayIndex);
 
-    this.setState({ 
+    this.setState({
       displayDates,
       activeDayIndex,
-      activeMonthIndex: index 
+      activeMonthIndex: index
     });
   }
 
-  getDates(start, stop) {
-    // Method to get an array of dates between 2 dates
-    const dateArray = [];
-    let currentDate = moment(start);
-    const stopDate = moment(stop);
-    while (currentDate <= stopDate) {
-        const dateObj = { 
-          dayOfWeek: moment(currentDate).format('ddd'),
-          dayOfMonth: moment(currentDate).format('D'),
-          month: moment(currentDate).format('MMM')
-        };
-
-        dateArray.push(dateObj);
-        currentDate = moment(currentDate).add(1, 'days');
-    }
-    return dateArray;
-  }
-
-  setDate() {
+  setDate(price) {
     if (this.state.editCheckIn) {
       const checkInObject = this.state.displayDates[this.state.activeDayIndex];
       checkInObject.month = this.state.months[this.state.activeMonthIndex];
-      this.setState({ 
-        checkIn: checkInObject, 
-        editCheckIn: false
+      const checkOutObject = this.state.displayDates[this.state.activeDayIndex + 1];
+      checkOutObject.month = this.state.months[this.state.activeMonthIndex];
+
+      const checkInDateIndex = this.state.displayDates.indexOf(checkInObject);
+      const checkOutDateIndex = this.state.displayDates.indexOf(checkOutObject);
+      const nightsBooked = checkOutDateIndex - checkInDateIndex;
+      const totalPrice = nightsBooked * price;
+
+      this.setState({
+        checkIn: checkInObject,
+        checkOut: checkOutObject,
+        editCheckIn: false,
+        nightsBooked,
+        totalPrice
       });
     } else if (this.state.editCheckOut) {
       const checkOutObject = this.state.displayDates[this.state.activeDayIndex];
       checkOutObject.month = this.state.months[this.state.activeMonthIndex];
-      this.setState({ 
+
+      const checkInDateIndex = this.state.displayDates.indexOf(this.state.checkIn);
+      const checkOutDateIndex = this.state.displayDates.indexOf(checkOutObject);
+      const nightsBooked = checkOutDateIndex - checkInDateIndex;
+      const totalPrice = nightsBooked * price;
+
+      this.setState({
         checkOut: checkOutObject,
-        editCheckOut: false
+        editCheckOut: false,
+        nightsBooked,
+        totalPrice
       });
     }
   }
@@ -194,6 +207,7 @@ class Booking extends Component {
         this.setState({ editCheckOut: false });
       }
     } else if (check === 'out') {
+      this.carousel.snapToItem(this.state.activeDayIndex + 1);
       this.setState({ editCheckOut: !this.state.editCheckOut });
       if (this.state.editCheckIn) {
         this.setState({ editCheckIn: false });
@@ -201,124 +215,27 @@ class Booking extends Component {
     }
   }
 
-  renderDaysItem({ item, index }) {
-    const { 
-      datesCarouselItemContainer
-    } = styles;
-
-    if (index === this.state.activeDayIndex) {
-      return (
-        <View style={datesCarouselItemContainer}>
-          <TextBox type='regular' color={MAIN_BLUE} size={16} style={{ borderColor: MAIN_BLUE, paddingBottom: 2 }}>
-            {item.dayOfWeek}
-          </TextBox>
-          <TextBox type='regular' color={MAIN_BLUE} size={16} style={{ borderColor: MAIN_BLUE }}>
-            {item.dayOfMonth}
-          </TextBox>
-        </View>
-      );
-    }
-
-    return (
-      <View style={datesCarouselItemContainer}>
-        <TextBox type='regular' color={GREY} size={14} style={{ paddingBottom: 2 }}>
-          {item.dayOfWeek}
-        </TextBox>
-        <TextBox type='regular' color={GREY} size={14}>
-          {item.dayOfMonth}
-        </TextBox>
-      </View>
-    );
-  }
-
-  renderMonthsItem({ item, index }) {
-    const { 
-      datesCarouselItemContainer
-    } = styles;
-
-    if (index === this.state.activeMonthIndex) {
-      return (
-        <View style={datesCarouselItemContainer}>
-          <TextBox type='regular' color={MAIN_BLUE} size={16}>{item.toUpperCase()}</TextBox>
-        </View>
-      );
-    }
-
-    return (
-      <View style={datesCarouselItemContainer}>
-        <TextBox type='regular' color={GREY} size={14}>{item.toUpperCase()}</TextBox>
-      </View>
-    );
-  }
-
-  renderPersonsItem({ item, index }) {
-    const { 
-      occupancyCarouselItemContainer
-    } = styles;
-
-    if (index === this.state.activePersonsIndex) {
-      return (
-        <View style={[occupancyCarouselItemContainer, { borderColor: MAIN_BLUE }]}>
-          <TextBox type='regular' color={MAIN_BLUE} size={16}>{item}</TextBox>
-        </View>
-      );
-    }
-
-    return (
-      <View style={occupancyCarouselItemContainer}>
-        <TextBox type='regular' color={GREY} size={14}>{item}</TextBox>
-      </View>
-    );
-  }
-
-  renderRoomsItem({ item, index }) {
-    const { 
-      occupancyCarouselItemContainer
-    } = styles;
-
-    if (index === this.state.activeRoomsIndex) {
-      return (
-        <View style={[occupancyCarouselItemContainer, { borderColor: MAIN_BLUE }]}>
-          <TextBox type='regular' color={MAIN_BLUE} size={16}>{item}</TextBox>
-        </View>
-      );
-    }
-
-    return (
-      <View style={occupancyCarouselItemContainer}>
-        <TextBox type='regular' color={GREY} size={14}>{item}</TextBox>
-      </View>
-    );
-  }
-
   render() {
     const {
       container,
       imageContainer,
       image,
+      rowContainer,
       checksContainer,
-      checkInOutContainer,
       checkTextContainer,
       dates,
       setButton,
-      carouselContainer,
       editChecks,
       button
     } = styles;
-    const { 
-      roomTypeName,
-      roomImage 
-    } = this.selectedRoom;
+    const { roomTypeName, roomImage, price } = this.selectedRoom;
 
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={container}>
         <Header title={roomTypeName} backArrow onBackPress={() => this.props.navigation.goBack()} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={imageContainer}>
-            <CachedImage
-              source={{ uri: roomImage }}
-              style={image} 
-            />
+            <CachedImage source={{ uri: roomImage }} style={image} />
             <LinearGradient
               colors={[LIGHT_BLUE, 'transparent']}
               start={[0.5, 1]}
@@ -326,124 +243,121 @@ class Booking extends Component {
               style={styles.gradient}
             />
           </View>
-          <View style={checksContainer}>
+          <View style={rowContainer}>
             <TouchableWithoutFeedback onPress={() => this.editChecks('in')}>
-              <View style={[checkInOutContainer, this.state.editCheckIn ? editChecks : null]}>
+              <View style={[checksContainer, this.state.editCheckIn ? editChecks : null]}>
                 <View style={checkTextContainer}>
-                <TextBox type='regular' color={GREY} size={10}>CHECK IN</TextBox>
+                  <TextBox type="regular" color={GREY} size={12}>
+                    CHECK IN
+                  </TextBox>
                 </View>
                 <View style={dates}>
-                  <TextBox type='semi-bold' color={MAIN_BLUE} size={20}>
-                    {
-                      this.state.editCheckIn 
-                        ? 
-                      this.state.displayDates[this.state.activeDayIndex].dayOfMonth 
-                        : 
-                      this.state.checkIn.dayOfMonth
-                    }
+                  <TextBox type="semi-bold" color={MAIN_BLUE} size={20}>
+                    {this.state.editCheckIn
+                      ? this.state.displayDates[this.state.activeDayIndex].dayOfMonth
+                      : this.state.checkIn.dayOfMonth}
                   </TextBox>
-                  <TextBox type='semi-bold' color={MAIN_BLUE} size={10}>
-                    {
-                      this.state.editCheckIn
-                        ?
-                      this.state.months[this.state.activeMonthIndex].toUpperCase()
-                        :
-                      this.state.checkIn.month.toUpperCase()
-                    }
+                  <TextBox type="semi-bold" color={MAIN_BLUE} size={12}>
+                    {this.state.editCheckIn
+                      ? this.state.months[this.state.activeMonthIndex].toUpperCase()
+                      : this.state.checkIn.month.toUpperCase()}
                   </TextBox>
                 </View>
               </View>
             </TouchableWithoutFeedback>
             <Button
-              title='SET'
+              title="SET"
               textColor={WHITE}
               gradient
-              onPress={() => this.setDate()}
+              onPress={() => this.setDate(price)}
               buttonStyle={setButton}
             />
             <TouchableWithoutFeedback onPress={() => this.editChecks('out')}>
-              <View style={[checkInOutContainer, this.state.editCheckOut ? editChecks : null]}>
+              <View style={[checksContainer, this.state.editCheckOut ? editChecks : null]}>
                 <View style={checkTextContainer}>
-                  <TextBox type='regular' color={GREY} size={10}>CHECK OUT</TextBox>
+                  <TextBox type="regular" color={GREY} size={12}>
+                    CHECK OUT
+                  </TextBox>
                 </View>
                 <View style={dates}>
-                  <TextBox type='semi-bold' color={MAIN_BLUE} size={20}>
-                    {
-                      this.state.editCheckOut 
-                        ? 
-                      this.state.displayDates[this.state.activeDayIndex].dayOfMonth 
-                        : 
-                      this.state.checkOut.dayOfMonth
-                    }
+                  <TextBox type="semi-bold" color={MAIN_BLUE} size={20}>
+                    {this.state.editCheckOut
+                      ? this.state.displayDates[this.state.activeDayIndex].dayOfMonth
+                      : this.state.checkOut.dayOfMonth}
                   </TextBox>
-                  <TextBox type='semi-bold' color={MAIN_BLUE} size={10}>
-                    {
-                      this.state.editCheckOut 
-                        ? 
-                      this.state.months[this.state.activeMonthIndex].toUpperCase()
-                        : 
-                      this.state.checkOut.month.toUpperCase()
-                    }
+                  <TextBox type="semi-bold" color={MAIN_BLUE} size={12}>
+                    {this.state.editCheckOut
+                      ? this.state.months[this.state.activeMonthIndex].toUpperCase()
+                      : this.state.checkOut.month.toUpperCase()}
                   </TextBox>
                 </View>
               </View>
             </TouchableWithoutFeedback>
           </View>
-          <View style={carouselContainer}>
-            <Carousel
-              ref={(c) => { this.carousel = c; }}
-              data={this.state.displayDates}
-              renderItem={this.renderDaysItem}
-              sliderWidth={SCREEN_WIDTH}
-              itemWidth={60}
-              firstItem={this.state.activeDayIndex}
-              inactiveSlideOpacity={0.6}
-              inactiveSlideScale={1}
-              onSnapToItem={(slideIndex) => { this.onChangeDays(slideIndex); }}
-              contentContainerCustomStyle={{ justifyContent: 'center', alignItems: 'center' }}
-            />
+          <BookingCarousel
+            reference={c => {
+              this.carousel = c;
+            }}
+            type="days"
+            data={this.state.displayDates}
+            active={this.state.activeDayIndex}
+            onSnapToItem={slideIndex => {
+              this.onChangeDays(slideIndex);
+            }}
+          />
+          <BookingCarousel
+            type="months"
+            data={this.state.months}
+            active={this.state.activeMonthIndex}
+            onSnapToItem={slideIndex => {
+              this.onChangeMonths(slideIndex);
+            }}
+          />
+          <BookingCarousel
+            type="occupancy"
+            data={this.state.persons}
+            active={this.state.activePersonsIndex}
+            onSnapToItem={slideIndex => {
+              this.setState({ activePersonsIndex: slideIndex });
+            }}
+          />
+          <BookingCarousel
+            type="occupancy"
+            data={this.state.rooms}
+            active={this.state.activeRoomsIndex}
+            onSnapToItem={slideIndex => {
+              this.setState({ activeRoomsIndex: slideIndex });
+            }}
+          />
+          {/* <View style={rowContainer}>
+            <View style={leftColumnContainer}>
+              <TextBox type="regular" size={16} color={MAIN_BLUE}>
+                PRICE PER NIGHT
+              </TextBox>
+            </View>
+            <View style={rightColumnContainer}>
+              <TextBox type="regular" size={16} color={GREY}>
+                €{price}
+              </TextBox>
+            </View>
+          </View> */}
+          <View style={rowContainer}>
+            <TextBox type="regular" size={20} color={MAIN_BLUE} style={{ paddingTop: 10 }}>
+              {this.state.nightsBooked === 1
+                ? `PRICE FOR ${this.state.nightsBooked} NIGHT`
+                : `PRICE FOR ${this.state.nightsBooked} NIGHTS`}
+            </TextBox>
           </View>
-          <View style={carouselContainer}>
-            <Carousel
-              data={this.state.months}
-              renderItem={this.renderMonthsItem}
-              sliderWidth={SCREEN_WIDTH}
-              itemWidth={60}
-              firstItem={this.state.activeMonthIndex}
-              inactiveSlideOpacity={0.6}
-              inactiveSlideScale={1}
-              onSnapToItem={(slideIndex) => { this.onChangeMonths(slideIndex); }}
-              contentContainerCustomStyle={{ justifyContent: 'center', alignItems: 'center' }}
-            />
+          <View style={rowContainer}>
+            <Hr containerStyle={{ width: 60, margin: 5 }} />
           </View>
-          <View style={carouselContainer}>
-            <Carousel
-              data={this.state.persons}
-              renderItem={this.renderPersonsItem}
-              sliderWidth={SCREEN_WIDTH}
-              itemWidth={120}
-              firstItem={this.state.activePersonsIndex}
-              inactiveSlideOpacity={0.6}
-              inactiveSlideScale={1}
-              onSnapToItem={(slideIndex) => { this.setState({ activePersonsIndex: slideIndex }); }}
-              contentContainerCustomStyle={{ justifyContent: 'center', alignItems: 'center' }}
-            />
-          </View>
-          <View style={carouselContainer}>
-            <Carousel
-              data={this.state.rooms}
-              renderItem={this.renderRoomsItem}
-              sliderWidth={SCREEN_WIDTH}
-              itemWidth={120}
-              firstItem={this.state.activeRoomsIndex}
-              inactiveSlideOpacity={0.6}
-              inactiveSlideScale={1}
-              onSnapToItem={(slideIndex) => { this.setState({ activeRoomsIndex: slideIndex }); }}
-              contentContainerCustomStyle={{ justifyContent: 'center', alignItems: 'center' }}
-            />
+          <View style={rowContainer}>
+            <TextBox type="regular" size={24} color={GREY} style={{ marginBottom: 10 }}>
+              €{this.state.totalPrice}
+            </TextBox>
           </View>
           <Button
-            title='BOOK NOW'
+            title="BOOK NOW"
             textColor={WHITE}
             gradient
             onPress={() => console.log('Pressed!')}
@@ -475,12 +389,12 @@ const styles = StyleSheet.create({
     height: '70%',
     width: '100%'
   },
-  checksContainer: {
+  rowContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
   },
-  checkInOutContainer: {
+  checksContainer: {
     flex: 1,
     height: 90,
     borderWidth: 2,
@@ -490,7 +404,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     backgroundColor: WHITE,
     bottom: 36,
-    elevation: 5,
+    elevation: 15,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

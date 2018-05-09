@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import { 
-  Text, 
-  View, 
-  StyleSheet, 
-  TouchableWithoutFeedback, 
-  Image, 
-  Modal 
-} from 'react-native';
+import { Text, View, StyleSheet, TouchableWithoutFeedback, Image, Modal } from 'react-native';
 import { Constants } from 'expo';
 import { Icon } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
@@ -23,7 +16,7 @@ export default class HotelDetail extends Component {
   state = {
     isModalOpened: false,
     currentImageIndex: 0
-  }
+  };
 
   openModal(index) {
     this.setState({ isModalOpened: true, currentImageIndex: index });
@@ -35,20 +28,11 @@ export default class HotelDetail extends Component {
 
   renderIcon(type) {
     if (type === 'Beach Resort') {
-      return (
-        <Image
-          style={styles.typeIconStyle}
-          source={ResortIcon}
-        />
-      );
+      return <Image style={styles.typeIconStyle} source={ResortIcon} />;
     } else if (type === 'Hotel') {
-      return (
-        <Image
-          style={styles.typeIconStyle}
-          source={HotelIcon}
-        />
-      );
+      return <Image style={styles.typeIconStyle} source={HotelIcon} />;
     }
+    return null;
   }
 
   render() {
@@ -101,57 +85,60 @@ export default class HotelDetail extends Component {
 
     return (
       <View style={container}>
-        <Modal 
-          visible={this.state.isModalOpened} 
+        <Modal
+          visible={this.state.isModalOpened}
           transparent
           onRequestClose={this.closeModal.bind(this)}
         >
-          <TouchableWithoutFeedback onPress={this.closeModal.bind(this)}>
-            <Icon name='close' color={WHITE} size={30} container={modalCloseIconStyle} />
-          </TouchableWithoutFeedback>
-          <ImageViewer 
-            imageUrls={images} 
+          <View style={modalCloseIconStyle}>
+            <TouchableWithoutFeedback onPress={this.closeModal.bind(this)}>
+              <Icon name="close" color={WHITE} size={30} />
+            </TouchableWithoutFeedback>
+          </View>
+          <ImageViewer
+            imageUrls={images}
             index={this.state.currentImageIndex}
             onSwipeDown={this.closeModal.bind(this)}
-            backgroundColor='rgba(0, 0, 0, 0.9)'
+            backgroundColor="rgba(0, 0, 0, 0.9)"
+            style={{ height: 50 }}
           />
         </Modal>
         <View style={imagesContainer}>
-          <TouchableWithoutFeedback onPress={() => { this.openModal(0); }}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              this.openModal(0);
+            }}
+          >
             <View style={bigImagecontainer}>
-                <CachedImage
-                  style={[imageStyle, { borderTopLeftRadius: 5 }]}
-                  source={{ uri: firstImage }}
-                />
+              <CachedImage
+                style={[imageStyle, { borderTopLeftRadius: 5 }]}
+                source={{ uri: firstImage }}
+              />
             </View>
           </TouchableWithoutFeedback>
           <View style={{ flex: 2 }}>
-            <TouchableWithoutFeedback onPress={() => { this.openModal(1); }}>
-              <View 
-                style={[smallImageContainer, { borderBottomWidth: 1, borderColor: WHITE }]}
-              >
-                <CachedImage
-                  style={imageStyle}
-                  source={{ uri: secondImage }}
-                />
+            <TouchableWithoutFeedback
+              onPress={() => {
+                this.openModal(1);
+              }}
+            >
+              <View style={[smallImageContainer, { borderBottomWidth: 1, borderColor: WHITE }]}>
+                <CachedImage style={imageStyle} source={{ uri: secondImage }} />
               </View>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => { this.openModal(2); }}>
-            <View 
-              style={[smallImageContainer, { borderTopWidth: 1, borderColor: WHITE }]}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                this.openModal(2);
+              }}
             >
-                <CachedImage
-                  style={imageStyle}
-                  source={{ uri: thirdImage }}
-                />
+              <View style={[smallImageContainer, { borderTopWidth: 1, borderColor: WHITE }]}>
+                <CachedImage style={imageStyle} source={{ uri: thirdImage }} />
               </View>
             </TouchableWithoutFeedback>
           </View>
         </View>
         <View style={contentContainer}>
-          <View style={typeIconContainer}>
-            {this.renderIcon(type)}
-          </View>
+          <View style={typeIconContainer}>{this.renderIcon(type)}</View>
           <View style={headingContainer}>
             <View style={nameContainer}>
               <Text style={nameStyle}>{name}</Text>
@@ -172,7 +159,7 @@ export default class HotelDetail extends Component {
         <View style={contactContainer}>
           <View style={{ flexDirection: 'row' }}>
             <View style={iconContainer}>
-              <Icon name='phone' color={GREY} style={iconStyle} />
+              <Icon name="phone" color={GREY} style={iconStyle} />
             </View>
             <View style={{ flex: 4 }}>
               <Text style={contactDataStyle}>{telephone}</Text>
@@ -180,7 +167,7 @@ export default class HotelDetail extends Component {
           </View>
           <View style={{ flexDirection: 'row' }}>
             <View style={iconContainer}>
-              <Icon name='email' color={GREY} style={iconStyle} />
+              <Icon name="email" color={GREY} style={iconStyle} />
             </View>
             <View style={{ flex: 4 }}>
               <Text style={contactDataStyle}>{email}</Text>
@@ -188,7 +175,7 @@ export default class HotelDetail extends Component {
           </View>
         </View>
         <Button
-          title='VIEW ROOMS'
+          title="VIEW ROOMS"
           gradient
           textColor={WHITE}
           onPress={() => navigate('Rooms', { id: { _id } })}
@@ -242,7 +229,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   iconStyle: {
     height: 10,
@@ -252,7 +239,7 @@ const styles = StyleSheet.create({
   typeIconContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   typeIconStyle: {
     height: 45,
@@ -273,7 +260,7 @@ const styles = StyleSheet.create({
   },
   imagesContainer: {
     flexDirection: 'row',
-    height: SCREEN_HEIGHT / 4,
+    height: SCREEN_HEIGHT / 4
   },
   bigImagecontainer: {
     flex: 3,
@@ -294,7 +281,7 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   modalCloseIconStyle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.9)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     alignItems: 'flex-start',
     paddingTop: Constants.statusBarHeight,
     paddingLeft: 15

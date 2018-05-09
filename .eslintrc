@@ -1,12 +1,31 @@
 {
-  "extends": "eslint-config-rallycoding",
+  "env": {
+    "node": true,
+    "browser": true,
+    "es6": true
+  },
+  "parser": "babel-eslint",
+  "extends": "airbnb",
   "rules": {
-      "no-undef": 0,
-      "react/require-render-return": 0,
-      "no-mixed-operators": 0,
-      "no-underscore-dangle": 0,
-      "arrow-body-style": 0,
-      "max-len": 0,
-      "array-callback-return": 0
-    }
+    "comma-dangle": 0,
+    "linebreak-style": 0,
+    "no-underscore-dangle": 0,
+    "react/prop-types": 0,
+    "react/require-default-props": 0,
+    "react/forbid-prop-types": 0,
+    "react/jsx-filename-extension": 0,
+    "react/jsx-no-bind": 0,
+    "react/no-did-mount-set-state": 0,
+    "react/no-unused-prop-types": 0,
+    "no-restricted-syntax": 0,
+    "no-use-before-define": 0,
+    "arrow-parens": 0,
+    "arrow-body-style": 0,
+    "jsx-quotes": 0,
+    "object-curly-newline": 0,
+    "import/prefer-default-export": 0,
+    "class-methods-use-this": 0,
+    "no-mixed-operators": 0,
+    "array-callback-return": 0
+  }
 }

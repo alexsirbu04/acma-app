@@ -21,17 +21,13 @@ const Header = ({ title, backArrow, onBackPress }) => {
   if (backArrow === true) {
     return (
       <View style={containerStyle}>
-        <LinearGradient
-          colors={[DARK_BLUE, LIGHT_BLUE]}
-          start={[1, 1]}
-          style={gradientStyle}
-        />
-        <Arrow 
-          direction='left'
-          color={WHITE} 
-          size={36} 
-          iconContainerStyle={arrowContainerStyle} 
-          iconStyle={{ paddingLeft: 10 }} 
+        <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={gradientStyle} />
+        <Arrow
+          direction="left"
+          color={WHITE}
+          size={36}
+          iconContainerStyle={arrowContainerStyle}
+          iconStyle={{ paddingLeft: 10 }}
           onPress={onBackPress}
         />
         <Text style={textStyle}>{title}</Text>
@@ -42,11 +38,7 @@ const Header = ({ title, backArrow, onBackPress }) => {
 
   return (
     <View style={containerStyle}>
-      <LinearGradient
-        colors={[DARK_BLUE, LIGHT_BLUE]}
-        start={[1, 1]}
-        style={gradientStyle}
-      />
+      <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={gradientStyle} />
       <Text style={textStyle}>{title}</Text>
     </View>
   );
@@ -65,8 +57,8 @@ const styles = StyleSheet.create({
     fontWeight: '400'
   },
   gradientStyle: {
-    position: 'absolute', 
-    height: containerHeight, 
+    position: 'absolute',
+    height: containerHeight,
     width: SCREEN_WIDTH
   },
   containerStyle: {
@@ -81,7 +73,7 @@ const styles = StyleSheet.create({
   },
   arrowContainerStyle: {
     flex: 1,
-    alignItems: 'flex-start',
+    alignItems: 'flex-start'
   }
 });
 

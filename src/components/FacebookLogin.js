@@ -9,9 +9,9 @@ export default class FacebookLogin extends Component {
   render() {
     return (
       <SocialIcon
-        title='FACEBOOK'
+        title="FACEBOOK"
         button
-        type='facebook'
+        type="facebook"
         raised={false}
         style={{ width: SCREEN_WIDTH / 2 - 40, height: 45 }}
       />

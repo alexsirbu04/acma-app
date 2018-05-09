@@ -6,14 +6,8 @@ import { LinearGradient } from 'expo';
 import { DARK_GOLD, LIGHT_GOLD } from '../../../assets/colors';
 import { TextBox } from './TextBox';
 
-const Button = (props) => {
-  const {
-    title, 
-    onPress, 
-    gradient,
-    textColor,
-    buttonStyle
-  } = props;
+const Button = props => {
+  const { title, onPress, gradient, textColor, buttonStyle } = props;
 
   if (gradient === true) {
     return (
@@ -24,22 +18,26 @@ const Button = (props) => {
           end={[0.5, 0.5]}
           style={styles.gradientStyle}
         />
-        <TextBox type='semi-bold' size={16} color={textColor}>{title}</TextBox>
+        <TextBox type="semi-bold" size={16} color={textColor}>
+          {title}
+        </TextBox>
       </TouchableOpacity>
     );
   }
 
   return (
     <TouchableOpacity onPress={onPress} style={buttonStyle}>
-      <TextBox type='semi-bold' size={16} color={textColor}>{title}</TextBox>
+      <TextBox type="semi-bold" size={16} color={textColor}>
+        {title}
+      </TextBox>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   gradientStyle: {
-    position: 'absolute', 
-    height: '100%', 
+    position: 'absolute',
+    height: '100%',
     width: '100%'
   }
 });

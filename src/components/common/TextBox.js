@@ -15,7 +15,7 @@ class TextBox extends Component {
 
   state = {
     fontLoaded: false
-  }
+  };
 
   async componentDidMount() {
     await Font.loadAsync({
@@ -28,21 +28,14 @@ class TextBox extends Component {
   }
 
   renderTextboxWithFont() {
-    const {
-      children,
-      color,
-      size,
-      type,
-      onPress,
-      style
-    } = this.props;
+    const { children, color, size, type, onPress, style } = this.props;
 
     if (this.state.fontLoaded) {
       return (
         <Text
           fontfamily={type}
           onPress={onPress}
-          style={[style, { fontFamily: type, color, fontSize: size }]} 
+          style={[style, { fontFamily: type, color, fontSize: size }]}
         >
           {children}
         </Text>
@@ -53,9 +46,7 @@ class TextBox extends Component {
   }
 
   render() {
-    return (
-      this.renderTextboxWithFont()
-    );
+    return this.renderTextboxWithFont();
   }
 }
 

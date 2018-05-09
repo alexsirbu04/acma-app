@@ -10,7 +10,7 @@ const Arrow = ({ onPress, direction, color, size, iconContainerStyle, iconStyle 
   } else if (direction === 'right') {
     iconName = 'chevron-right';
   }
-  
+
   return (
     <View style={iconContainerStyle}>
       <Icon name={iconName} size={size} iconStyle={iconStyle} color={color} onPress={onPress} />

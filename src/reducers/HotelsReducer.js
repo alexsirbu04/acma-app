@@ -3,11 +3,10 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case 'store_hotels':
       return { ...state, hotels: action.payload };
     default:
       return state;
-
   }
 };

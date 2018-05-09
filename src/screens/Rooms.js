@@ -9,11 +9,10 @@ import RoomList from '../components/rooms/RoomList';
 import { Header } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 
-
 class Rooms extends Component {
   static navigationOptions = {
     header: null
-  }
+  };
 
   constructor(props) {
     super(props);
