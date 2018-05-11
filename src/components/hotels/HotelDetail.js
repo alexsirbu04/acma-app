@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableWithoutFeedback, Image, Modal } from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback, Image, Modal } from 'react-native';
 import { Constants } from 'expo';
 import { Icon } from 'react-native-elements';
 import StarRating from 'react-native-star-rating';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 
-import { SCREEN_WIDTH, SCREEN_HEIGHT, CachedImage, Button } from '../common';
+import { SCREEN_WIDTH, SCREEN_HEIGHT, CachedImage, Button, TextBox } from '../common';
 import { GREY, LIGHT_GREY, WHITE, GOLD } from '../../../assets/colors';
 
 import ResortIcon from '../../../assets/images/resort.png';
@@ -41,12 +41,9 @@ export default class HotelDetail extends Component {
       contentContainer,
       contactContainer,
       nameContainer,
-      nameStyle,
-      addressStyle,
       headingContainer,
       iconContainer,
       iconStyle,
-      contactDataStyle,
       typeIconContainer,
       button,
       imagesContainer,
@@ -141,19 +138,21 @@ export default class HotelDetail extends Component {
           <View style={typeIconContainer}>{this.renderIcon(type)}</View>
           <View style={headingContainer}>
             <View style={nameContainer}>
-              <Text style={nameStyle}>{name}</Text>
+              <TextBox type="semi-bold" size={18} color={GREY}>
+                {name.toUpperCase()}
+              </TextBox>
               <StarRating
                 disabled
                 maxStars={stars}
                 rating={stars}
                 starSize={15}
                 fullStarColor={GOLD}
-                container={{ paddingLeft: 8, paddingTop: 2 }}
+                containerStyle={{ paddingLeft: 10, paddingTop: 2 }}
               />
             </View>
-            <Text style={addressStyle}>
+            <TextBox type="regular" size={12} color={GREY}>
               {street.streetNumber} {street.streetName}, {street.postalCode}, {city}, {country}
-            </Text>
+            </TextBox>
           </View>
         </View>
         <View style={contactContainer}>
@@ -162,7 +161,9 @@ export default class HotelDetail extends Component {
               <Icon name="phone" color={GREY} style={iconStyle} />
             </View>
             <View style={{ flex: 4 }}>
-              <Text style={contactDataStyle}>{telephone}</Text>
+              <TextBox type="regular" size={16} color={GREY}>
+                {telephone}
+              </TextBox>
             </View>
           </View>
           <View style={{ flexDirection: 'row' }}>
@@ -170,7 +171,9 @@ export default class HotelDetail extends Component {
               <Icon name="email" color={GREY} style={iconStyle} />
             </View>
             <View style={{ flex: 4 }}>
-              <Text style={contactDataStyle}>{email}</Text>
+              <TextBox type="regular" size={16} color={GREY}>
+                {email}
+              </TextBox>
             </View>
           </View>
         </View>
@@ -213,15 +216,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
-  nameStyle: {
-    fontSize: 22,
-    color: GREY,
-    fontWeight: '400'
-  },
-  addressStyle: {
-    fontSize: 12,
-    color: GREY
-  },
   headingContainer: {
     flex: 4,
     paddingTop: 10
@@ -244,11 +238,8 @@ const styles = StyleSheet.create({
   typeIconStyle: {
     height: 45,
     width: 45,
+    marginTop: 10,
     tintColor: GREY
-  },
-  contactDataStyle: {
-    fontSize: 16,
-    color: GREY
   },
   button: {
     height: 45,

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { TextBox } from './TextBox';
 import { GREY } from '../../../assets/colors';
 
-const Hr = ({ text, textSize, textColor, lineStyle, containerStyle }) => {
+export const Hr = ({ text, textSize, textColor, lineStyle, containerStyle }) => {
   const { container, textStyle, line } = styles;
   if (text) {
     return (
@@ -49,5 +49,3 @@ const styles = StyleSheet.create({
     backgroundColor: GREY
   }
 });
-
-export { Hr };

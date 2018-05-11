@@ -10,10 +10,6 @@ import { Header } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 
 class Rooms extends Component {
-  static navigationOptions = {
-    header: null
-  };
-
   constructor(props) {
     super(props);
     const hotelId = this.props.navigation.state.params.id._id;

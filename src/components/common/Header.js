@@ -16,30 +16,30 @@ if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
   containerHeight = 95;
 }
 
-const Header = ({ title, backArrow, onBackPress }) => {
-  const { textStyle, gradientStyle, containerStyle, arrowContainerStyle } = styles;
+export const Header = ({ title, backArrow, onBackPress }) => {
+  const { text, gradient, container, arrowContainer } = styles;
   if (backArrow === true) {
     return (
-      <View style={containerStyle}>
-        <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={gradientStyle} />
+      <View style={container}>
+        <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={gradient} />
         <Arrow
           direction="left"
           color={WHITE}
           size={36}
-          iconContainerStyle={arrowContainerStyle}
+          iconContainerStyle={arrowContainer}
           iconStyle={{ paddingLeft: 10 }}
           onPress={onBackPress}
         />
-        <Text style={textStyle}>{title}</Text>
+        <Text style={text}>{title}</Text>
         <View style={{ flex: 1 }} />
       </View>
     );
   }
 
   return (
-    <View style={containerStyle}>
-      <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={gradientStyle} />
-      <Text style={textStyle}>{title}</Text>
+    <View style={container}>
+      <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={gradient} />
+      <Text style={text}>{title}</Text>
     </View>
   );
 };
@@ -51,17 +51,17 @@ Header.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  textStyle: {
+  text: {
     fontSize: 18,
     color: WHITE,
     fontWeight: '400'
   },
-  gradientStyle: {
+  gradient: {
     position: 'absolute',
     height: containerHeight,
     width: SCREEN_WIDTH
   },
-  containerStyle: {
+  container: {
     paddingTop: 30,
     paddingBottom: containerPaddingBottom,
     height: containerHeight,
@@ -71,10 +71,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  arrowContainerStyle: {
+  arrowContainer: {
     flex: 1,
     alignItems: 'flex-start'
   }
 });
-
-export { Header };

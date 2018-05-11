@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, ActivityIndicator, StatusBar } from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator, AsyncStorage, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import { SCREEN_WIDTH, SCREEN_HEIGHT, TextBox, Button } from '../components/common';
 import { storeHotels } from '../actions';
@@ -12,23 +13,27 @@ import Logo from '../../assets/images/logoSecond.png';
 import Background from '../../assets/images/background.jpg';
 
 class Welcome extends Component {
-  static navigationOptions = {
-    header: null
-  };
-
   state = {
-    loaded: false
+    loaded: false,
+    token: null
   };
 
-  componentWillMount() {
+  async componentDidMount() {
     const hotels = [];
-    axios.get('https://secure-stream-51486.herokuapp.com/hotels').then(response => {
-      for (const hotel of response.data.hotels) {
-        hotels.push(hotel);
-      }
-      this.props.storeHotels(hotels);
-      this.setState({ loaded: true });
-    });
+    const response = await axios.get('https://secure-stream-51486.herokuapp.com/hotels');
+    for (const hotel of response.data.hotels) {
+      hotels.push(hotel);
+    }
+    this.props.storeHotels(hotels);
+    this.setState({ loaded: true });
+
+    const facebookToken = await AsyncStorage.getItem('facebook_token');
+    if (facebookToken && this.state.loaded) {
+      this.props.navigation.navigate('Home');
+      this.setState({ token: facebookToken });
+    } else if (!facebookToken && this.state.loaded) {
+      this.setState({ token: false });
+    }
   }
 
   onLoginPress() {
@@ -47,6 +52,31 @@ class Welcome extends Component {
       overlay,
       overlayImage
     } = styles;
+
+    if (_.isNull(this.state.token)) {
+      return (
+        <View style={container}>
+          <StatusBar barStyle="light-content" />
+          <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={overlay} />
+          <View style={overlay}>
+            <Image source={Background} style={overlayImage} />
+          </View>
+          <View style={logoContainer}>
+            <Image source={Logo} style={logo} />
+            <View style={textContainer}>
+              <TextBox type="regular" color={WHITE} size={24}>
+                app
+              </TextBox>
+              <TextBox type="bold" color={WHITE} size={24}>
+                commodation
+              </TextBox>
+            </View>
+          </View>
+          <ActivityIndicator size="large" color={WHITE} animating={!this.state.loaded} />
+          <View style={{ flex: 1 }} />
+        </View>
+      );
+    }
 
     return (
       <View style={container}>

@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo';
 import { DARK_GOLD, LIGHT_GOLD } from '../../../assets/colors';
 import { TextBox } from './TextBox';
 
-const Button = props => {
+export const Button = props => {
   const { title, onPress, gradient, textColor, buttonStyle } = props;
 
   if (gradient === true) {
@@ -48,5 +48,3 @@ Button.propTypes = {
   gradient: PropTypes.bool,
   textColor: PropTypes.string
 };
-
-export { Button };

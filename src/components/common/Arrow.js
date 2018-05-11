@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import { Icon } from 'react-native-elements';
 
-const Arrow = ({ onPress, direction, color, size, iconContainerStyle, iconStyle }) => {
+export const Arrow = ({ onPress, direction, color, size, iconContainerStyle, iconStyle }) => {
   let iconName;
   if (direction === 'left') {
     iconName = 'chevron-left';
@@ -24,5 +24,3 @@ Arrow.propTypes = {
   color: PropTypes.string,
   size: PropTypes.number
 };
-
-export { Arrow };

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 
@@ -7,18 +7,16 @@ import { Header } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 import HotelList from '../components/hotels/HotelList';
 
-export default class Dashboard extends Component {
-  static navigationOptions = {
-    header: null
-  };
-
+class Dashboard extends Component {
   render() {
+    const { navigation } = this.props;
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={styles.container}>
+        <StatusBar barStyle="light-content" />
         <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
-        <Header title="Dashboard" />
+        <Header title="Home" />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <HotelList navigation={this.props.navigation} />
+          <HotelList navigation={navigation} />
         </ScrollView>
       </SafeAreaView>
     );
@@ -36,3 +34,5 @@ const styles = StyleSheet.create({
     width: '100%'
   }
 });
+
+export default Dashboard;

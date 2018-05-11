@@ -9,25 +9,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
+import { connect, bindActionCreators } from 'react-redux';
 
 import Logo from '../../assets/images/logo.png';
 import Background from '../../assets/images/background.jpg';
 
-import FacebookLogin from '../components/FacebookLogin';
+import { facebookLogin } from '../actions/auth';
 import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr } from '../components/common';
 import { GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
 
-export default class SignIn extends Component {
-  static navigationOptions = {
-    header: null
-  };
+class SignIn extends Component {
+  constructor(props) {
+    super(props);
 
-  state = {
-    scaleValue: 1,
-    translateValue: 0
-  };
-
-  componentWillMount() {
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       this.keyboardDidShow.bind(this)
@@ -39,6 +33,11 @@ export default class SignIn extends Component {
 
     this.position = new Animated.ValueXY(0, 0);
   }
+
+  state = {
+    scaleValue: 1,
+    translateValue: 0
+  };
 
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
@@ -109,7 +108,7 @@ export default class SignIn extends Component {
                 }
               ]}
             >
-              <Animated.Image source={Logo} style={logo} />
+              <Image source={Logo} style={logo} />
             </Animated.View>
             <View style={dataContainer}>
               <FormLabel labelStyle={label}>EMAIL</FormLabel>
@@ -133,13 +132,20 @@ export default class SignIn extends Component {
               />
               <Hr text="OR" containerStyle={{ width: SCREEN_WIDTH - 70 }} />
               <View style={socialContainer}>
-                <FacebookLogin />
+                <SocialIcon
+                  title="FACEBOOK"
+                  button
+                  type="facebook"
+                  raised={false}
+                  style={{ width: SCREEN_WIDTH / 2 - 40 }}
+                  onPress={() => this.props.facebookLogin()}
+                />
                 <SocialIcon
                   title="GOOGLE"
                   button
                   raised={false}
                   type="google-plus"
-                  style={{ width: SCREEN_WIDTH / 2 - 40, height: 45, backgroundColor: '#dd4b39' }}
+                  style={{ width: SCREEN_WIDTH / 2 - 40, backgroundColor: '#dd4b39' }}
                 />
               </View>
             </View>
@@ -163,12 +169,12 @@ const styles = StyleSheet.create({
   logoContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginBottom: 15
+    alignItems: 'center'
   },
   dataContainer: {
     flex: 2,
-    alignItems: 'center'
+    alignItems: 'center',
+    top: 15
   },
   socialContainer: {
     flexDirection: 'row'
@@ -210,3 +216,17 @@ const styles = StyleSheet.create({
     opacity: 0.2
   }
 });
+
+const mapStateToProps = state => {
+  return {
+    token: state.social.token
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  facebookLogin: () => {
+    dispatch(facebookLogin());
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

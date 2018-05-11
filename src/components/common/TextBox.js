@@ -7,7 +7,7 @@ import OpenSansBold from '../../../assets/fonts/OpenSans-Bold.ttf';
 import OpenSansRegular from '../../../assets/fonts/OpenSans-Regular.ttf';
 import OpenSansSemiBold from '../../../assets/fonts/OpenSans-SemiBold.ttf';
 
-class TextBox extends Component {
+export class TextBox extends Component {
   constructor(props) {
     super(props);
     this.renderTextboxWithFont = this.renderTextboxWithFont.bind(this);
@@ -28,12 +28,23 @@ class TextBox extends Component {
   }
 
   renderTextboxWithFont() {
-    const { children, color, size, type, onPress, style } = this.props;
+    const {
+      children,
+      color,
+      size,
+      type,
+      ellipsizeMode,
+      numberOfLines,
+      onPress,
+      style
+    } = this.props;
 
     if (this.state.fontLoaded) {
       return (
         <Text
           fontfamily={type}
+          ellipsizeMode={ellipsizeMode}
+          numberOfLines={numberOfLines}
           onPress={onPress}
           style={[style, { fontFamily: type, color, fontSize: size }]}
         >
@@ -53,7 +64,7 @@ class TextBox extends Component {
 TextBox.propTypes = {
   type: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired
+  color: PropTypes.string.isRequired,
+  ellipsizeMode: PropTypes.string,
+  numberOfLines: PropTypes.number
 };
-
-export { TextBox };

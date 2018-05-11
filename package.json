@@ -3,29 +3,30 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
-    "expo": "^25.0.0",
+    "expo": "^27.0.1",
+    "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "prop-types": "^15.6.1",
-    "react": "16.2.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-25.0.0.tar.gz",
+    "react": "16.3.1",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-27.0.0.tar.gz",
     "react-native-elements": "^0.19.0",
     "react-native-expo-image-cache": "^3.0.3",
     "react-native-image-zoom-viewer": "^2.2.1",
     "react-native-snap-carousel": "^3.7.0",
     "react-native-star-rating": "^1.0.9",
-    "react-native-view-more-text": "^1.4.4",
-    "react-navigation": "^1.5.7",
+    "react-navigation": "^2.0.1",
     "react-redux": "^5.0.7",
-    "redux": "^4.0.0"
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
-    "eslint": "^4.9.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-config-rallycoding": "^3.2.0",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.4.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
     "prettier-eslint": "^8.8.1"
   }
 }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { Icon } from 'react-native-elements';
-import ViewMoreText from 'react-native-view-more-text';
 import PropTypes from 'prop-types';
 import { LinearGradient } from 'expo';
 
@@ -45,6 +44,8 @@ export default class RoomDetail extends Component {
     }
   }
 
+  state = { expanded: false };
+
   renderBedIcon(bedType) {
     const { icon } = styles;
     if (bedType === 'Single') {
@@ -60,16 +61,22 @@ export default class RoomDetail extends Component {
     return this.availableServices.map(service => {
       if (service === 'wifi') {
         return (
-          <Icon name="wifi" key={service} color="#555" type="feather" icon={{ paddingRight: 5 }} />
+          <Icon
+            name="wifi"
+            key={service}
+            color={GREY}
+            type="feather"
+            iconStyle={{ paddingRight: 5 }}
+          />
         );
       } else if (service === 'bathtub') {
         return (
           <Icon
             name="bath"
             key={service}
-            color="#555"
+            color={GREY}
             type="font-awesome"
-            icon={{ paddingRight: 5 }}
+            iconStyle={{ paddingRight: 5 }}
           />
         );
       } else if (service === 'ac') {
@@ -77,9 +84,9 @@ export default class RoomDetail extends Component {
           <Icon
             name="air-conditioner"
             key={service}
-            color="#555"
+            color={GREY}
             type="material-community"
-            icon={{ paddingRight: 5 }}
+            iconStyle={{ paddingRight: 5 }}
           />
         );
       } else if (service === 'bar') {
@@ -87,13 +94,13 @@ export default class RoomDetail extends Component {
           <Icon
             name="fridge"
             key={service}
-            color="#555"
+            color={GREY}
             type="material-community"
-            icon={{ paddingRight: 5 }}
+            iconStyle={{ paddingRight: 5 }}
           />
         );
       } else if (service === 'tv') {
-        return <Icon name="tv" key={service} color="#555" icon={{ paddingRight: 5 }} />;
+        return <Icon name="tv" key={service} color={GREY} iconStyle={{ paddingRight: 5 }} />;
       } else if (service === 'safe') {
         return <Image source={Safe} key={service} style={icon} />;
       }
@@ -101,31 +108,58 @@ export default class RoomDetail extends Component {
     });
   }
 
-  renderViewMore(onPress) {
-    return (
-      <TextBox
-        type="regular"
-        color={MAIN_BLUE}
-        size={14}
-        style={{ marginLeft: 15 }}
-        onPress={onPress}
-      >
-        View more
-      </TextBox>
-    );
-  }
+  renderDescription(description) {
+    if (!this.state.expanded) {
+      return (
+        <View>
+          <TextBox
+            type="regular"
+            size={14}
+            color={GREY}
+            numberOfLines={3}
+            style={{
+              padding: 10,
+              paddingLeft: 15
+            }}
+          >
+            {description}
+          </TextBox>
+          <TextBox
+            type="regular"
+            size={14}
+            color={MAIN_BLUE}
+            onPress={() => this.setState({ expanded: true })}
+            style={{ marginLeft: 15 }}
+          >
+            Read more
+          </TextBox>
+        </View>
+      );
+    }
 
-  renderViewLess(onPress) {
     return (
-      <TextBox
-        type="regular"
-        color={MAIN_BLUE}
-        size={14}
-        style={{ marginLeft: 15 }}
-        onPress={onPress}
-      >
-        View less
-      </TextBox>
+      <View>
+        <TextBox
+          type="regular"
+          size={14}
+          color={GREY}
+          style={{
+            padding: 10,
+            paddingLeft: 15
+          }}
+        >
+          {description}
+        </TextBox>
+        <TextBox
+          type="regular"
+          size={14}
+          color={MAIN_BLUE}
+          onPress={() => this.setState({ expanded: false })}
+          style={{ marginLeft: 15 }}
+        >
+          Read less
+        </TextBox>
+      </View>
     );
   }
 
@@ -156,15 +190,15 @@ export default class RoomDetail extends Component {
         </View>
         <View style={imageOverlayContainer}>
           <TextBox type="semi-bold" size={20} color={WHITE}>
-            {roomTypeName}
+            {roomTypeName.toUpperCase()}
           </TextBox>
-          <TextBox type="semi-bold" size={18} color={WHITE}>
+          <TextBox type="regular" size={18} color={WHITE}>
             €{price} per night
           </TextBox>
         </View>
         <View style={headingContainer}>
-          <TextBox type="semi-bold" size={22} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
-            Services included
+          <TextBox type="semi-bold" size={20} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
+            SERVICES INCLUDED
           </TextBox>
           <View style={servicesContainer}>
             {this.renderBedIcon(bedType)}
@@ -172,23 +206,10 @@ export default class RoomDetail extends Component {
           </View>
         </View>
         <View>
-          <TextBox type="semi-bold" size={22} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
-            Description
+          <TextBox type="semi-bold" size={20} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
+            DESCRIPTION
           </TextBox>
-          <ViewMoreText
-            numberOfLines={3}
-            renderViewMore={this.renderViewMore}
-            renderViewLess={this.renderViewLess}
-            textStyle={{
-              padding: 10,
-              paddingLeft: 15,
-              color: GREY
-            }}
-          >
-            <TextBox type="regular" size={14} color={GREY}>
-              {roomTypeDescription}
-            </TextBox>
-          </ViewMoreText>
+          {this.renderDescription(roomTypeDescription)}
         </View>
         <Button
           title="BOOK THIS ROOM"

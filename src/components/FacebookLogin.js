@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
-
+import { connect } from 'react-redux';
 import { SocialIcon } from 'react-native-elements';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+import { SCREEN_WIDTH } from './common';
+import facebookLogin from '../actions/auth';
 
-export default class FacebookLogin extends Component {
+// eslint-disable-next-line
+class FacebookLogin extends Component {
+  componentDidMount() {
+    this.props.facebookLogin();
+  }
+
   render() {
     return (
       <SocialIcon
@@ -13,8 +18,10 @@ export default class FacebookLogin extends Component {
         button
         type="facebook"
         raised={false}
-        style={{ width: SCREEN_WIDTH / 2 - 40, height: 45 }}
+        style={{ width: SCREEN_WIDTH / 2 - 40 }}
       />
     );
   }
 }
+
+export default connect(null, facebookLogin)(FacebookLogin);

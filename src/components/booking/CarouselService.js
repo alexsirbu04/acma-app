@@ -63,3 +63,16 @@ export const getDates = (start, stop) => {
   }
   return dateArray;
 };
+
+export const myIndexOf = (array, object) => {
+  for (let i = 0; i < array.length; i++) {
+    if (
+      array[i].dayOfMonth == object.dayOfMonth &&
+      array[i].dayOfWeek == object.dayOfWeek &&
+      array[i].month == object.month
+    ) {
+      return i;
+    }
+  }
+  return -1;
+};

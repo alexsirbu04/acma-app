@@ -102,6 +102,8 @@ export default class BookingCarousel extends Component {
           firstItem={active}
           inactiveSlideOpacity={0.6}
           inactiveSlideScale={1}
+          enableMomentum
+          decelerationRate={0.9}
           onSnapToItem={onSnapToItem}
           contentContainerCustomStyle={{
             justifyContent: 'center',

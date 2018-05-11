@@ -15,16 +15,18 @@ import {
   Hr
 } from '../components/common';
 import { LIGHT_BLUE, LIGHT_GREY, GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
-import { CAROUSEL_PERSONS, CAROUSEL_ROOMS, getDates } from '../components/booking/CarouselService';
+import {
+  CAROUSEL_PERSONS,
+  CAROUSEL_ROOMS,
+  getDates,
+  myIndexOf
+} from '../components/booking/CarouselService';
 import BookingCarousel from '../components/booking/BookingCarousel';
 
 class Booking extends Component {
-  static navigationOptions = {
-    header: null
-  };
-
   constructor(props) {
     super(props);
+
     const roomId = this.props.navigation.state.params.id._id;
     const { hotelName } = this.props.navigation.state.params.name;
     this.selectedRoom = {};
@@ -41,28 +43,7 @@ class Booking extends Component {
         this.selectedRoom = room;
       }
     }
-  }
 
-  state = {
-    dates: [],
-    months: [],
-    displayDates: [],
-    currentDateObject: {},
-    activeDayIndex: 0,
-    activeMonthIndex: 0,
-    checkIn: {},
-    checkOut: {},
-    editCheckIn: false,
-    editCheckOut: false,
-    persons: [],
-    activePersonsIndex: 1,
-    rooms: [],
-    activeRoomsIndex: 1,
-    nightsBooked: 1,
-    totalPrice: 0
-  };
-
-  componentWillMount() {
     // Get an array of all dates of the year
     const startDate = moment().startOf('year');
     const stopDate = moment().endOf('year');
@@ -87,16 +68,14 @@ class Booking extends Component {
       month: moment(nextDate).format('MMM')
     };
 
-    // Get the previous, current and next month
+    // Get the current month
     const currentMonth = currentDateObject.month;
     const currentMonthIndex = months.indexOf(currentMonth);
-    const previousMonth = months[currentMonthIndex - 1];
-    const nextMonth = months[currentMonthIndex + 1];
 
-    // Get the dates of the previous, current and next month to display on the carousel
+    // Get the dates of the current month to display on the carousel
     const displayDates = [];
     for (const date of dates) {
-      if (date.month === currentMonth || date.month === previousMonth || date.month === nextMonth) {
+      if (date.month === currentMonth) {
         displayDates.push(date);
       }
     }
@@ -109,19 +88,45 @@ class Booking extends Component {
       }
     }
 
-    this.setState({
+    // Get the index of the dates in the dates array
+    const checkInDateIndex = myIndexOf(dates, currentDateObject);
+    const checkOutDateIndex = myIndexOf(dates, nextDateObject);
+
+    this.state = {
       dates,
       months,
+      displayDates,
+      currentDateObject,
+      activeDayIndex,
+      activeMonthIndex: currentMonthIndex,
       checkIn: currentDateObject,
       checkOut: nextDateObject,
-      activeMonthIndex: currentMonthIndex,
-      activeDayIndex,
-      currentDateObject,
-      displayDates,
+      editCheckIn: false,
+      editCheckOut: false,
       persons: CAROUSEL_PERSONS,
+      activePersonsIndex: 1,
       rooms: CAROUSEL_ROOMS,
-      totalPrice: this.selectedRoom.price
-    });
+      activeRoomsIndex: 1,
+      checkInDateIndex,
+      checkOutDateIndex,
+      checkInSelected: false,
+      checkOutSelected: false,
+      nightsBooked: 1,
+      pricePerRoom: this.selectedRoom.price,
+      priceMultiplier: 2
+    };
+  }
+
+  componentDidUpdate() {
+    if (this.state.checkInSelected) {
+      const nightsBooked = this.state.checkOutDateIndex - this.state.checkInDateIndex;
+      this.setState({ nightsBooked, checkInSelected: false });
+    }
+
+    if (this.state.checkOutSelected) {
+      const nightsBooked = this.state.checkOutDateIndex - this.state.checkInDateIndex;
+      this.setState({ nightsBooked, checkOutSelected: false });
+    }
   }
 
   onChangeDays(index) {
@@ -131,15 +136,13 @@ class Booking extends Component {
   }
 
   onChangeMonths(index) {
-    // Get the previous, current and next month
+    // Get the current month
     const currentMonth = this.state.months[index];
-    const previousMonth = this.state.months[index - 1];
-    const nextMonth = this.state.months[index + 1];
 
-    // Get the dates of the previous, current and next month to display on the carousel
+    // Get the dates of the current month to display on the carousel
     const displayDates = [];
     for (const date of this.state.dates) {
-      if (date.month === currentMonth || date.month === previousMonth || date.month === nextMonth) {
+      if (date.month === currentMonth) {
         displayDates.push(date);
       }
     }
@@ -163,39 +166,87 @@ class Booking extends Component {
     });
   }
 
-  setDate(price) {
-    if (this.state.editCheckIn) {
-      const checkInObject = this.state.displayDates[this.state.activeDayIndex];
-      checkInObject.month = this.state.months[this.state.activeMonthIndex];
-      const checkOutObject = this.state.displayDates[this.state.activeDayIndex + 1];
-      checkOutObject.month = this.state.months[this.state.activeMonthIndex];
+  onChangeRooms(index) {
+    const priceMultiplier = index + 1;
+    this.setState({ activeRoomsIndex: index, priceMultiplier });
+  }
 
-      const checkInDateIndex = this.state.displayDates.indexOf(checkInObject);
-      const checkOutDateIndex = this.state.displayDates.indexOf(checkOutObject);
-      const nightsBooked = checkOutDateIndex - checkInDateIndex;
-      const totalPrice = nightsBooked * price;
+  setDate() {
+    const {
+      editCheckIn,
+      editCheckOut,
+      displayDates,
+      dates,
+      months,
+      activeDayIndex,
+      activeMonthIndex,
+      checkIn,
+      checkOut
+    } = this.state;
+
+    if (editCheckIn) {
+      const checkInObject = displayDates[activeDayIndex];
+      checkInObject.month = months[activeMonthIndex];
+      const checkInDateIndex = dates.indexOf(checkInObject);
+      const checkInObjectIndex = displayDates.indexOf(checkInObject);
+
+      if (months.indexOf(checkInObject.month) > months.indexOf(checkOut.month)) {
+        if (checkInObject.dayOfMonth - checkOut.dayOfMonth >= 0) {
+          const checkOutObject = displayDates[checkInObjectIndex + 1];
+          checkOutObject.month = checkInObject.month;
+          const checkOutDateIndex = dates.indexOf(checkOutObject);
+          this.setState({ checkOut: checkOutObject, checkOutDateIndex });
+        }
+
+        const checkOutObject = dates[checkInDateIndex + 1];
+        checkOutObject.month = checkInObject.month;
+        const checkOutDateIndex = dates.indexOf(checkOutObject);
+        this.setState({ checkOut: checkOutObject, checkOutDateIndex });
+      } else {
+        if (checkInObject.dayOfMonth - checkOut.dayOfMonth >= 0) {
+          const checkOutObject = displayDates[checkInObjectIndex + 1];
+          checkOutObject.month = checkOut.month;
+          const checkOutDateIndex = dates.indexOf(checkOutObject);
+          this.setState({ checkOut: checkOutObject, checkOutDateIndex });
+        }
+      }
 
       this.setState({
         checkIn: checkInObject,
-        checkOut: checkOutObject,
-        editCheckIn: false,
-        nightsBooked,
-        totalPrice
+        checkInDateIndex,
+        checkInSelected: true,
+        editCheckIn: false
       });
-    } else if (this.state.editCheckOut) {
-      const checkOutObject = this.state.displayDates[this.state.activeDayIndex];
-      checkOutObject.month = this.state.months[this.state.activeMonthIndex];
+    } else if (editCheckOut) {
+      const checkOutObject = displayDates[activeDayIndex];
+      checkOutObject.month = months[activeMonthIndex];
+      const checkOutDateIndex = dates.indexOf(checkOutObject);
+      const checkOutObjectIndex = displayDates.indexOf(checkOutObject);
 
-      const checkInDateIndex = this.state.displayDates.indexOf(this.state.checkIn);
-      const checkOutDateIndex = this.state.displayDates.indexOf(checkOutObject);
-      const nightsBooked = checkOutDateIndex - checkInDateIndex;
-      const totalPrice = nightsBooked * price;
+      if (months.indexOf(checkIn.month) < months.indexOf(checkOutObject.month)) {
+        if (Number(checkOutObject.dayOfMonth) - Number(checkIn.dayOfMonth) < 0) {
+          const checkInObject = displayDates[checkOutObjectIndex - 1];
+          checkInObject.month = checkIn.month;
+          const checkInDateIndex = dates.indexOf(checkInObject);
+          this.setState({ checkIn: checkInObject, checkInDateIndex });
+        }
+
+        const checkInDateIndex = dates.indexOf(checkIn);
+        this.setState({ checkInDateIndex });
+      } else {
+        if (Number(checkOutObject.dayOfMonth) - Number(checkIn.dayOfMonth) <= 0) {
+          const checkInObject = displayDates[checkOutObjectIndex - 1];
+          checkInObject.month = checkOutObject.month;
+          const checkInDateIndex = dates.indexOf(checkInObject);
+          this.setState({ checkIn: checkInObject, checkInDateIndex });
+        }
+      }
 
       this.setState({
         checkOut: checkOutObject,
-        editCheckOut: false,
-        nightsBooked,
-        totalPrice
+        checkOutDateIndex,
+        checkOutSelected: true,
+        editCheckOut: false
       });
     }
   }
@@ -207,7 +258,6 @@ class Booking extends Component {
         this.setState({ editCheckOut: false });
       }
     } else if (check === 'out') {
-      this.carousel.snapToItem(this.state.activeDayIndex + 1);
       this.setState({ editCheckOut: !this.state.editCheckOut });
       if (this.state.editCheckIn) {
         this.setState({ editCheckIn: false });
@@ -228,7 +278,7 @@ class Booking extends Component {
       editChecks,
       button
     } = styles;
-    const { roomTypeName, roomImage, price } = this.selectedRoom;
+    const { roomTypeName, roomImage } = this.selectedRoom;
 
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={container}>
@@ -269,7 +319,7 @@ class Booking extends Component {
               title="SET"
               textColor={WHITE}
               gradient
-              onPress={() => this.setDate(price)}
+              onPress={() => this.setDate()}
               buttonStyle={setButton}
             />
             <TouchableWithoutFeedback onPress={() => this.editChecks('out')}>
@@ -326,21 +376,9 @@ class Booking extends Component {
             data={this.state.rooms}
             active={this.state.activeRoomsIndex}
             onSnapToItem={slideIndex => {
-              this.setState({ activeRoomsIndex: slideIndex });
+              this.onChangeRooms(slideIndex);
             }}
           />
-          {/* <View style={rowContainer}>
-            <View style={leftColumnContainer}>
-              <TextBox type="regular" size={16} color={MAIN_BLUE}>
-                PRICE PER NIGHT
-              </TextBox>
-            </View>
-            <View style={rightColumnContainer}>
-              <TextBox type="regular" size={16} color={GREY}>
-                €{price}
-              </TextBox>
-            </View>
-          </View> */}
           <View style={rowContainer}>
             <TextBox type="regular" size={20} color={MAIN_BLUE} style={{ paddingTop: 10 }}>
               {this.state.nightsBooked === 1
@@ -353,7 +391,7 @@ class Booking extends Component {
           </View>
           <View style={rowContainer}>
             <TextBox type="regular" size={24} color={GREY} style={{ marginBottom: 10 }}>
-              €{this.state.totalPrice}
+              €{this.state.nightsBooked * this.state.pricePerRoom * this.state.priceMultiplier}
             </TextBox>
           </View>
           <Button
@@ -475,7 +513,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    hotels: state.hotelsReducer.hotels
+    hotels: state.hotelsArray.hotels
   };
 };
 
