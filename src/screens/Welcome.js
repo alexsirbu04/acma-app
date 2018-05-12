@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, AsyncStorage, StatusBar } from 'react-native';
+import { StackActions, NavigationAction } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -15,7 +16,8 @@ import Background from '../../assets/images/background.jpg';
 class Welcome extends Component {
   state = {
     loaded: false,
-    token: null
+    token: null,
+    ready: false
   };
 
   async componentDidMount() {
@@ -40,6 +42,12 @@ class Welcome extends Component {
     this.props.navigation.navigate('SignIn');
   }
 
+  setStateAsync(state) {
+    return new Promise(resolve => {
+      this.setState(state, resolve);
+    });
+  }
+
   render() {
     const {
       container,
@@ -53,28 +61,29 @@ class Welcome extends Component {
       overlayImage
     } = styles;
 
-    if (_.isNull(this.state.token)) {
+    // if (_.isNull(this.state.token)) {
+      if (!this.state.ready) {
       return (
-        <View style={container}>
-          <StatusBar barStyle="light-content" />
-          <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={overlay} />
-          <View style={overlay}>
-            <Image source={Background} style={overlayImage} />
-          </View>
-          <View style={logoContainer}>
-            <Image source={Logo} style={logo} />
-            <View style={textContainer}>
-              <TextBox type="regular" color={WHITE} size={24}>
-                app
-              </TextBox>
-              <TextBox type="bold" color={WHITE} size={24}>
-                commodation
-              </TextBox>
-            </View>
-          </View>
-          <ActivityIndicator size="large" color={WHITE} animating={!this.state.loaded} />
-          <View style={{ flex: 1 }} />
-        </View>
+        // <View style={container}>
+        //   <StatusBar barStyle="light-content" />
+        //   <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={overlay} />
+        //   <View style={overlay}>
+        //     <Image source={Background} style={overlayImage} />
+        //   </View>
+        //   <View style={logoContainer}>
+        //     <Image source={Logo} style={logo} />
+        //     <View style={textContainer}>
+        //       <TextBox type="regular" color={WHITE} size={24}>
+        //         app
+        //       </TextBox>
+        //       <TextBox type="bold" color={WHITE} size={24}>
+        //         commodation
+        //       </TextBox>
+        //     </View>
+        //   </View>
+        //   <ActivityIndicator size="large" color={WHITE} animating={!this.state.loaded} />
+        //   <View style={{ flex: 1 }} />
+        // </View>
       );
     }
 
@@ -96,7 +105,6 @@ class Welcome extends Component {
             </TextBox>
           </View>
         </View>
-        <ActivityIndicator size="large" color={WHITE} animating={!this.state.loaded} />
         <View style={buttonsContainer}>
           <Button
             title="SIGN UP"

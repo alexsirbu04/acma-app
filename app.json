@@ -10,9 +10,9 @@
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/acma-splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "hideExponentText": false
     },
     "ios": {
       "supportsTablet": true
