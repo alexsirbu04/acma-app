@@ -1,6 +1,6 @@
-import { AsyncStorage, Alert } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import { Facebook } from 'expo';
-import { FACEBOOK_LOGIN_SUCCESS, FACEBOOK_LOGIN_FAIL } from './types';
+import { FACEBOOK_LOGIN_SUCCESS, FACEBOOK_LOGIN_FAIL, STORE_USER } from './types';
 
 export const facebookLogin = () => async dispatch => {
   const facebookToken = await AsyncStorage.getItem('facebook_token');
@@ -24,9 +24,13 @@ const doFacebookLogin = async dispatch => {
     );
     const profile = await response.json();
 
-    Alert.alert('Logged in!', 'Hi ' + profile.first_name + '! \nYour email is: ' + profile.email, [
-      { text: 'Ok', onPress: () => {} }
-    ]);
+    const user = {
+      email: profile.email,
+      password: '',
+      first_name: profile.first_name,
+      last_name: profile.last_name
+    };
+    dispatch({ type: STORE_USER, payload: user });
   } else if (type === 'cancel') {
     return dispatch({ type: FACEBOOK_LOGIN_FAIL });
   }

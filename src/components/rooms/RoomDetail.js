@@ -170,7 +170,7 @@ export default class RoomDetail extends Component {
       image,
       headingContainer,
       servicesContainer,
-      buttonStyle,
+      button,
       imageOverlayContainer,
       gradient
     } = styles;
@@ -216,7 +216,7 @@ export default class RoomDetail extends Component {
           textColor={WHITE}
           gradient
           onPress={() => navigate('Booking', { name: { hotelName }, id: { _id } })}
-          buttonStyle={buttonStyle}
+          buttonStyle={button}
         />
       </View>
     );
@@ -264,8 +264,8 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingLeft: 15
   },
-  buttonStyle: {
-    height: 45,
+  button: {
+    height: 50,
     marginTop: 10,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,

@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     tintColor: GREY
   },
   button: {
-    height: 45,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomLeftRadius: 5,

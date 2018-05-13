@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    hotels: state.hotelsReducer.hotels
+    hotels: state.hotelsArray.hotels
   };
 };
 

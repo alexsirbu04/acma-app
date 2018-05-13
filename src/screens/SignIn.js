@@ -5,11 +5,12 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
-  Animated
+  Animated,
+  BackHandler
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
-import { connect, bindActionCreators } from 'react-redux';
+import { connect } from 'react-redux';
 
 import Logo from '../../assets/images/logo.png';
 import Background from '../../assets/images/background.jpg';
@@ -39,13 +40,33 @@ class SignIn extends Component {
     translateValue: 0
   };
 
+  componentDidMount() {
+    this.onSocialAuthComplete(this.props);
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.onSocialAuthComplete(nextProps);
+  }
+
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  onSocialAuthComplete(props) {
+    if (props.token) {
+      this.props.navigation.navigate('Dashboard');
+    }
   }
 
   onLoginPress() {
     this.props.navigation.navigate('Dashboard');
+  }
+
+  handleBackButton() {
+    return true;
   }
 
   keyboardDidShow() {
@@ -138,7 +159,9 @@ class SignIn extends Component {
                   type="facebook"
                   raised={false}
                   style={{ width: SCREEN_WIDTH / 2 - 40 }}
-                  onPress={() => this.props.facebookLogin()}
+                  onPress={() => {
+                    this.props.facebookLogin();
+                  }}
                 />
                 <SocialIcon
                   title="GOOGLE"
@@ -196,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: MAIN_BLUE,
-    height: 45,
+    height: 50,
     width: SCREEN_WIDTH - 70,
     marginTop: 25,
     marginBottom: 5,

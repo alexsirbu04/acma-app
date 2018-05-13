@@ -394,13 +394,15 @@ class Booking extends Component {
               €{this.state.nightsBooked * this.state.pricePerRoom * this.state.priceMultiplier}
             </TextBox>
           </View>
-          <Button
-            title="BOOK NOW"
-            textColor={WHITE}
-            gradient
-            onPress={() => console.log('Pressed!')}
-            buttonStyle={button}
-          />
+          <View style={rowContainer}>
+            <Button
+              title="BOOK NOW"
+              textColor={WHITE}
+              gradient
+              onPress={() => console.log('Pressed!')}
+              buttonStyle={button}
+            />
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -505,7 +507,12 @@ const styles = StyleSheet.create({
     height: 35
   },
   button: {
-    height: 45,
+    height: 50,
+    width: SCREEN_WIDTH - 70,
+    borderWidth: 1,
+    borderColor: WHITE,
+    overflow: 'hidden',
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center'
   }

@@ -1,11 +1,18 @@
+import { STORE_USER, CLEAR_USER } from '../actions/types';
+
 const INITIAL_STATE = {
-  user: ''
+  email: '',
+  password: '',
+  first_name: '',
+  last_name: ''
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'store_user':
-      return { ...state, user: action.user };
+    case STORE_USER:
+      return Object.assign({}, state, action.payload);
+    case CLEAR_USER:
+      return INITIAL_STATE;
     default:
       return state;
   }

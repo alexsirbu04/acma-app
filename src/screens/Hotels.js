@@ -7,6 +7,7 @@ import { Header } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 import HotelList from '../components/hotels/HotelList';
 
+// eslint-disable-next-line
 class Dashboard extends Component {
   render() {
     const { navigation } = this.props;
