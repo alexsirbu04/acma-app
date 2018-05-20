@@ -1,20 +1,20 @@
 import React from 'react';
-import { View, ViewPropTypes, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 
 import { TextBox } from './TextBox';
 import { GREY } from '../../../assets/colors';
 
-export const Hr = ({ text, textSize, textColor, lineStyle, containerStyle }) => {
+export const Hr = ({ text, textSize, color, lineStyle, containerStyle }) => {
   const { container, textStyle, line } = styles;
   if (text) {
     return (
       <View style={[container, containerStyle]}>
-        <View style={[line, lineStyle]} />
-        <TextBox type="regular" size={textSize || 16} color={textColor || GREY} style={textStyle}>
+        <View style={[line, lineStyle, { backgroundColor: color }]} />
+        <TextBox type="semi-bold" size={textSize || 13} color={color || GREY} style={textStyle}>
           {text}
         </TextBox>
-        <View style={[line, lineStyle]} />
+        <View style={[line, lineStyle, { backgroundColor: color }]} />
       </View>
     );
   }
@@ -29,9 +29,7 @@ export const Hr = ({ text, textSize, textColor, lineStyle, containerStyle }) => 
 Hr.propTypes = {
   text: PropTypes.string,
   textSize: PropTypes.number,
-  textColor: PropTypes.string,
-  lineStyle: ViewPropTypes.style,
-  containerStyle: ViewPropTypes.style
+  textColor: PropTypes.string
 };
 
 const styles = StyleSheet.create({

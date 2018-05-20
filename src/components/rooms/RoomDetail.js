@@ -11,7 +11,7 @@ import SingleBedIcon from '../../../assets/images/single-bed.png';
 import DoubleBedIcon from '../../../assets/images/double-bed.png';
 import Safe from '../../../assets/images/safe.png';
 
-let top = SCREEN_WIDTH / 3 + 10;
+let top = SCREEN_WIDTH / 2.5 + 10;
 if (SCREEN_HEIGHT >= 750 || SCREEN_WIDTH >= 750) {
   top = SCREEN_WIDTH / 2 + 10;
 }

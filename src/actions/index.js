@@ -2,9 +2,14 @@ import {
   STORE_HOTELS,
   STORE_USER,
   CLEAR_TOKENS,
-  FACEBOOK_LOGIN_SUCCESS,
-  CLEAR_USER
+  CLEAR_USER,
+  ADD_ERROR,
+  CLEAR_ERROR
 } from './types';
+
+// //////////////////////////////////////
+// USER ACTIONS
+// //////////////////////////////////////
 
 export const storeUser = user => {
   return {
@@ -19,6 +24,10 @@ export const clearUser = () => {
   };
 };
 
+// //////////////////////////////////////
+// HOTELS ACTIONS
+// //////////////////////////////////////
+
 export const storeHotels = hotels => {
   return {
     type: STORE_HOTELS,
@@ -26,15 +35,29 @@ export const storeHotels = hotels => {
   };
 };
 
+// //////////////////////////////////////
+// SOCIAL ACTIONS
+// //////////////////////////////////////
+
 export const clearTokens = () => {
   return {
     type: CLEAR_TOKENS
   };
 };
 
-export const facebookLoginSuccess = token => {
+// //////////////////////////////////////
+// ERROR ACTIONS
+// //////////////////////////////////////
+
+export const addError = text => {
   return {
-    type: FACEBOOK_LOGIN_SUCCESS,
-    payload: token
+    type: ADD_ERROR,
+    payload: text
+  };
+};
+
+export const clearError = () => {
+  return {
+    type: CLEAR_ERROR
   };
 };

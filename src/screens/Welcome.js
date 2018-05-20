@@ -13,15 +13,17 @@ import Background from '../../assets/images/background.jpg';
 class Welcome extends Component {
   constructor(props) {
     super(props);
-    AsyncStorage.getItem('facebook_token').then(token => {
-      if (token) {
-        this.props.navigation.navigate('Dashboard');
-      }
-    });
+    this.checkForTokens();
   }
 
-  onLoginPress() {
-    this.props.navigation.navigate('SignIn');
+  async checkForTokens() {
+    const facebookToken = await AsyncStorage.getItem('facebook_token');
+    const googleToken = await AsyncStorage.getItem('google_token');
+    const token = await AsyncStorage.getItem('token');
+
+    if (facebookToken || googleToken || token) {
+      this.props.navigation.navigate('Dashboard');
+    }
   }
 
   render() {
@@ -60,13 +62,13 @@ class Welcome extends Component {
             title="SIGN UP"
             textColor={WHITE}
             buttonStyle={signUpButton}
-            onPress={() => console.log('SignUpButton')}
+            onPress={() => this.props.navigation.navigate('SignUp')}
           />
           <Button
             title="LOGIN"
             textColor={MAIN_BLUE}
             buttonStyle={loginButton}
-            onPress={this.onLoginPress.bind(this)}
+            onPress={() => this.props.navigation.navigate('SignIn')}
           />
         </View>
       </View>
@@ -81,11 +83,11 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   logo: {
-    width: SCREEN_WIDTH / 4,
-    height: SCREEN_WIDTH / 4
+    width: SCREEN_WIDTH / 3,
+    height: SCREEN_WIDTH / 3
   },
   logoContainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 15
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   buttonsContainer: {
-    flex: 1,
+    flex: 3,
     justifyContent: 'center',
     alignItems: 'center'
   },

@@ -4,6 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 import DashboardTabBar from '../components/DashboardTabBar';
 import Welcome from '../screens/Welcome';
 import SignIn from '../screens/SignIn';
+import SignUp from '../screens/SignUp';
 import Hotels from '../screens/Hotels';
 import Account from '../screens/Account';
 import Rooms from '../screens/Rooms';
@@ -33,6 +34,9 @@ const AppStack = createStackNavigator(
     },
     SignIn: {
       screen: SignIn
+    },
+    SignUp: {
+      screen: SignUp
     },
     Dashboard: {
       screen: TabStack,

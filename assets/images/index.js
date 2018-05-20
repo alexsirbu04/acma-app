@@ -1,6 +1,6 @@
 export const images = [
   require('./logo.png'),
-  require('.//logoSecond.png'),
+  require('./logoSecond.png'),
   require('./background.jpg'),
   require('./hotel.png'),
   require('./resort.png'),

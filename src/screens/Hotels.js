@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, StatusBar } from 'react-native';
+import { StyleSheet, ScrollView, StatusBar, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 
@@ -8,9 +8,32 @@ import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 import HotelList from '../components/hotels/HotelList';
 
 // eslint-disable-next-line
-class Dashboard extends Component {
+export default class Dashboard extends Component {
+  constructor(props) {
+    super(props);
+    this.didFocusSubscription = props.navigation.addListener('didFocus', () =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+  }
+
+  componentDidMount() {
+    this.willBlurSubscription = this.props.navigation.addListener('willBlur', () =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+  }
+
+  componentWillUnmount() {
+    this.didFocusSubscription.remove();
+    this.willBlurSubscription.remove();
+  }
+
+  onBackButtonPressAndroid = () => {
+    return true;
+  };
+
   render() {
     const { navigation } = this.props;
+
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -35,5 +58,3 @@ const styles = StyleSheet.create({
     width: '100%'
   }
 });
-
-export default Dashboard;

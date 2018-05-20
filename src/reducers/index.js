@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux';
 
 import UserReducer from './UserReducer';
-import SocialReducer from './SocialReducer';
+import TokenReducer from './TokenReducer';
 import HotelsReducer from './HotelsReducer';
+import ErrorsReducer from './ErrorsReducer';
 
 export default combineReducers({
   user: UserReducer,
-  social: SocialReducer,
-  hotelsArray: HotelsReducer
+  token: TokenReducer,
+  hotelsArray: HotelsReducer,
+  errors: ErrorsReducer
 });

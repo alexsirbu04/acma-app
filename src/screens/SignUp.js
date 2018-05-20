@@ -8,19 +8,19 @@ import {
   Animated
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
+import { FormLabel, FormInput } from 'react-native-elements';
 import { connect } from 'react-redux';
 
 import Logo from '../../assets/images/logo.png';
 import Background from '../../assets/images/background.jpg';
 
-import { signInSocial, login } from '../actions/auth';
-import { addError } from '../actions';
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr } from '../components/common';
+import { storeUser, addError } from '../actions';
+import { registerAccount } from '../actions/auth';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Button } from '../components/common';
 import Error from '../components/Error';
 import { GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
 
-class SignIn extends Component {
+class SignUp extends Component {
   constructor(props) {
     super(props);
 
@@ -39,39 +39,41 @@ class SignIn extends Component {
   state = {
     scaleValue: 1,
     translateValue: 0,
+    firstName: '',
+    lastName: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   };
-
-  componentDidMount() {
-    this.onAuthComplete(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.onAuthComplete(nextProps);
-  }
 
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
   }
 
-  onAuthComplete(props) {
-    if (props.token) {
-      this.props.navigation.navigate('Dashboard');
-    }
-  }
-
-  onPressLogin() {
-    const { email, password } = this.state;
-    if (email.length == 0 || password.length == 0) {
+  onPressButton() {
+    const { firstName, lastName, email, password, confirmPassword } = this.state;
+    if (
+      firstName.length == 0 ||
+      lastName.length == 0 ||
+      email.length == 0 ||
+      password.length == 0 ||
+      confirmPassword.length == 0
+    ) {
       this.props.addError('Fields cannot be empty');
     } else {
-      const credentials = {
-        email,
-        password
-      };
-      this.props.login(credentials);
+      if (password !== confirmPassword) {
+        this.props.addError("Passwords don't match");
+      } else {
+        const user = {
+          email,
+          password,
+          firstName,
+          lastName
+        };
+        this.props.storeUser(user);
+        this.props.registerAccount(user);
+      }
     }
   }
 
@@ -82,7 +84,7 @@ class SignIn extends Component {
 
     const translate = this.position.y.interpolate({
       inputRange: [-SCREEN_HEIGHT / 5, 0, SCREEN_HEIGHT / 5],
-      outputRange: [SCREEN_WIDTH / 4, 0, SCREEN_WIDTH / 4]
+      outputRange: [SCREEN_WIDTH / 5, 0, SCREEN_WIDTH / 5]
     });
 
     const scale = this.position.y.interpolate({
@@ -105,8 +107,9 @@ class SignIn extends Component {
       logo,
       logoContainer,
       dataContainer,
-      socialContainer,
+      nameInputsContainer,
       input,
+      nameInput,
       label,
       button,
       overlay,
@@ -114,7 +117,7 @@ class SignIn extends Component {
     } = styles;
 
     return (
-      <SafeAreaView forceInset={{ bottom: 'always', top: 'always' }} style={container}>
+      <SafeAreaView forceInset={{ bottom: 'never', top: 'always' }} style={container}>
         <Error />
         <View style={overlay}>
           <Image source={Background} style={overlayImage} />
@@ -140,6 +143,43 @@ class SignIn extends Component {
               />
             </View>
             <View style={dataContainer}>
+              <View style={nameInputsContainer}>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    width: '50%'
+                  }}
+                >
+                  <FormLabel labelStyle={[label, { left: 15 }]}>FIRST NAME</FormLabel>
+                  <FormInput
+                    value={this.state.firstName}
+                    onChangeText={firstName => this.setState({ firstName })}
+                    placeholder="John"
+                    inputStyle={[nameInput, { textAlign: 'right' }]}
+                    underlineColorAndroid={GREY}
+                    containerStyle={{
+                      borderBottomColor: GREY,
+                      width: (SCREEN_WIDTH - 80) / 2,
+                      left: 15
+                    }}
+                  />
+                </View>
+                <View style={{ width: '50%' }}>
+                  <FormLabel labelStyle={[label, { right: 15 }]}>LAST NAME</FormLabel>
+                  <FormInput
+                    value={this.state.lastName}
+                    onChangeText={lastName => this.setState({ lastName })}
+                    placeholder="Doe"
+                    inputStyle={nameInput}
+                    underlineColorAndroid={GREY}
+                    containerStyle={{
+                      borderBottomColor: GREY,
+                      width: (SCREEN_WIDTH - 80) / 2,
+                      right: 15
+                    }}
+                  />
+                </View>
+              </View>
               <FormLabel labelStyle={label}>EMAIL</FormLabel>
               <FormInput
                 value={this.state.email}
@@ -160,39 +200,22 @@ class SignIn extends Component {
                 secureTextEntry
                 containerStyle={{ borderBottomColor: GREY }}
               />
+              <FormLabel labelStyle={label}>CONFIRM PASSWORD</FormLabel>
+              <FormInput
+                value={this.state.confirmPassword}
+                onChangeText={confirmPassword => this.setState({ confirmPassword })}
+                placeholder="********"
+                inputStyle={input}
+                underlineColorAndroid={GREY}
+                secureTextEntry
+                containerStyle={{ borderBottomColor: GREY }}
+              />
               <Button
-                title="LOGIN"
+                title="CREATE ACCOUNT"
                 textColor={WHITE}
                 buttonStyle={button}
-                onPress={() => this.onPressLogin()}
+                onPress={() => this.onPressButton()}
               />
-              <Hr
-                text="OR CONNECT WITH"
-                color="#aaa"
-                containerStyle={{ width: SCREEN_WIDTH - 70 }}
-              />
-              <View style={socialContainer}>
-                <SocialIcon
-                  title="FACEBOOK"
-                  button
-                  type="facebook"
-                  raised={false}
-                  style={{ width: SCREEN_WIDTH / 2 - 40 }}
-                  onPress={() => {
-                    this.props.signInSocial('facebook');
-                  }}
-                />
-                <SocialIcon
-                  title="GOOGLE"
-                  button
-                  raised={false}
-                  type="google-plus"
-                  style={{ width: SCREEN_WIDTH / 2 - 40, backgroundColor: '#dd4b39' }}
-                  onPress={() => {
-                    this.props.signInSocial('google');
-                  }}
-                />
-              </View>
             </View>
           </Animated.View>
         </TouchableWithoutFeedback>
@@ -212,23 +235,31 @@ const styles = StyleSheet.create({
     height: SCREEN_WIDTH / 3
   },
   logoContainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
+    bottom: 10
   },
   dataContainer: {
-    flex: 2,
-    alignItems: 'center',
-    top: 15
+    flex: 4,
+    alignItems: 'center'
   },
-  socialContainer: {
-    flexDirection: 'row'
+  nameInputsContainer: {
+    flexDirection: 'row',
+    width: SCREEN_WIDTH - 70,
+    marginLeft: 35,
+    marginRight: 35
   },
   input: {
     width: SCREEN_WIDTH - 70,
     color: GREY,
     fontFamily: 'regular',
     textAlign: 'center'
+  },
+  nameInput: {
+    width: (SCREEN_WIDTH - 80) / 2,
+    color: GREY,
+    fontFamily: 'regular'
   },
   label: {
     color: MAIN_BLUE,
@@ -259,10 +290,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => {
-  return {
-    token: state.token.token
-  };
-};
-
-export default connect(mapStateToProps, { signInSocial, login, addError })(SignIn);
+export default connect(null, { storeUser, registerAccount, addError })(SignUp);

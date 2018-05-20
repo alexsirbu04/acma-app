@@ -3,11 +3,10 @@ import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 
 export const TextBox = props => {
-  const { children, color, size, type, ellipsizeMode, numberOfLines, onPress, style } = props;
+  const { children, color, size, type, numberOfLines, onPress, style } = props;
   return (
     <Text
       fontfamily={type}
-      ellipsizeMode={ellipsizeMode}
       numberOfLines={numberOfLines}
       onPress={onPress}
       style={[style, { fontFamily: type, color, fontSize: size }]}

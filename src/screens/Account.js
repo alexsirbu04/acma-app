@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, AsyncStorage } from 'react-native';
+import { View, StyleSheet, AsyncStorage, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
+import { Avatar } from 'react-native-elements';
 
 import { persistor } from '../store';
 import { clearTokens, clearUser } from '../actions';
@@ -10,11 +11,32 @@ import { SCREEN_WIDTH, Header, TextBox, Button } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
 
 class Account extends Component {
+  constructor(props) {
+    super(props);
+    this.didFocusSubscription = props.navigation.addListener('didFocus', () =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+  }
+
+  componentDidMount() {
+    this.willBlurSubscription = this.props.navigation.addListener('willBlur', () =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+  }
+
+  componentWillUnmount() {
+    this.didFocusSubscription.remove();
+    this.willBlurSubscription.remove();
+  }
+
+  onBackButtonPressAndroid = () => {
+    return true;
+  };
+
   onLogoutPress() {
     this.props.clearTokens();
     this.props.clearUser();
-    persistor.purge();
-    const keys = ['facebook_token', 'persist:root'];
+    const keys = ['token', 'facebook_token', 'google_token', 'persist:root'];
     // eslint-disable-next-line
     AsyncStorage.multiRemove(keys, error => {
       if (error) {
@@ -24,16 +46,30 @@ class Account extends Component {
           </TextBox>
         );
       }
+      persistor.purge();
       this.props.navigation.navigate('Welcome');
     });
   }
 
+  renderAvatar(picture, firstName, lastName) {
+    if (picture !== '') {
+      return <Avatar xlarge rounded source={{ uri: picture }} activeOpacity={0.7} />;
+    }
+
+    const initials = String(firstName).charAt(0) + String(lastName).charAt(0);
+    return <Avatar title={initials} xlarge rounded activeOpacity={0.7} />;
+  }
+
   renderAccountData() {
-    if (this.props.user) {
+    const { firstName, lastName, picture } = this.props.user;
+    if (String(firstName).length > 0 && String(lastName).length > 0) {
       return (
-        <TextBox type="regular" color={WHITE} size={20}>
-          Hello {this.props.user.first_name} {this.props.user.last_name}!
-        </TextBox>
+        <View>
+          {this.renderAvatar(picture, firstName, lastName)}
+          <TextBox type="regular" color={WHITE} size={20}>
+            Hello {firstName} {lastName}!
+          </TextBox>
+        </View>
       );
     }
 

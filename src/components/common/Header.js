@@ -1,13 +1,11 @@
 import React from 'react';
-import { Text, View, Dimensions, Platform, StyleSheet } from 'react-native';
+import { Text, View, Platform, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { LinearGradient } from 'expo';
 
 import { Arrow } from './Arrow';
+import { SCREEN_WIDTH, SCREEN_HEIGHT } from './Dimensions';
 import { DARK_BLUE, LIGHT_BLUE, WHITE } from '../../../assets/colors';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 let containerPaddingBottom = 10;
 let containerHeight = 65;

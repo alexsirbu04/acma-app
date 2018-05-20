@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import { Icon } from 'react-native-elements';
 
@@ -13,7 +13,9 @@ export const Arrow = ({ onPress, direction, color, size, iconContainerStyle, ico
 
   return (
     <View style={iconContainerStyle}>
-      <Icon name={iconName} size={size} iconStyle={iconStyle} color={color} onPress={onPress} />
+      <TouchableOpacity onPress={onPress}>
+        <Icon name={iconName} size={size} iconStyle={iconStyle} color={color} />
+      </TouchableOpacity>
     </View>
   );
 };

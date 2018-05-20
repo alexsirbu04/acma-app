@@ -3,8 +3,9 @@ import { STORE_USER, CLEAR_USER } from '../actions/types';
 const INITIAL_STATE = {
   email: '',
   password: '',
-  first_name: '',
-  last_name: ''
+  firstName: '',
+  lastName: '',
+  picture: ''
 };
 
 export default (state = INITIAL_STATE, action) => {

@@ -1,4 +1,3 @@
-node_modules
-.expo
-.vscode
-npm-debug
+node_modules/**/*
+.expo/*
+npm-debug.*

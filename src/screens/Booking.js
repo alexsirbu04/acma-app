@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: WHITE,
     overflow: 'hidden',
-    borderRadius: 30,
+    borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center'
   }
