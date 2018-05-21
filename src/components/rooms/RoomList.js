@@ -1,24 +1,26 @@
-import React, { Component } from 'react';
-import { View } from 'react-native';
+import React from 'react';
+import { FlatList } from 'react-native';
 import PropTypes from 'prop-types';
 
 import RoomDetail from './RoomDetail';
 
-export default class RoomList extends Component {
-  renderRooms() {
-    const { rooms, navigation, hotelName } = this.props;
-    return rooms.roomTypes.map(room => (
-      <RoomDetail navigation={navigation} key={room._id} hotelName={hotelName} room={room} />
-    ));
-  }
-
-  render() {
-    return <View>{this.renderRooms()}</View>;
-  }
-}
+const RoomList = ({ rooms, navigation, hotelName }) => {
+  return (
+    <FlatList
+      data={rooms.roomTypes}
+      keyExtractor={item => item._id}
+      renderItem={({ item }) => (
+        <RoomDetail navigation={navigation} hotelName={hotelName} room={item} />
+      )}
+      showsVerticalScrollIndicator={false}
+    />
+  );
+};
 
 RoomList.propTypes = {
   rooms: PropTypes.object.isRequired,
   hotelName: PropTypes.string.isRequired,
   navigation: PropTypes.object.isRequired
 };
+
+export default RoomList;

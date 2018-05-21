@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 
 import { LinearGradient } from 'expo';
@@ -32,9 +32,7 @@ class Rooms extends Component {
           style={styles.gradientStyle}
         />
         <Header title={name} backArrow onBackPress={() => this.props.navigation.goBack()} />
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <RoomList rooms={rooms} hotelName={name} navigation={this.props.navigation} />
-        </ScrollView>
+        <RoomList rooms={rooms} hotelName={name} navigation={this.props.navigation} />
       </SafeAreaView>
     );
   }
