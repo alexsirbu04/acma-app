@@ -10,16 +10,26 @@ import AppStack from './src/navigation';
 
 ScreenOrientation.allow(ScreenOrientation.Orientation.PORTRAIT_UP);
 
-// eslint-disable-next-line
 export default class App extends Component {
+  state = {
+    ready: false
+  };
+
   render() {
+    if (!this.state.ready) {
+      return (
+        <Provider store={store}>
+          <AppLoading
+            startAsync={() => StoreProvider.loadAssets()}
+            onFinish={() => this.setState({ ready: true })}
+          />
+        </Provider>
+      );
+    }
+
     return (
       <Provider store={store}>
-        <PersistGate
-          loading={<AppLoading />}
-          persistor={persistor}
-          onBeforeLift={() => StoreProvider.loadAssetsAsync(store)}
-        >
+        <PersistGate loading={null} persistor={persistor}>
           <AppStack />
         </PersistGate>
       </Provider>

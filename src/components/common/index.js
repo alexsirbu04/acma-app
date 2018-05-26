@@ -5,3 +5,4 @@ export * from './Button';
 export * from './Dimensions';
 export * from './TextBox';
 export * from './Hr';
+export * from './Loading';

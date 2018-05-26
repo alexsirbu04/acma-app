@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, AsyncStorage, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo';
-import { connect } from 'react-redux';
+
+// import { persistor, store } from '../store';
 
 import { SCREEN_WIDTH, SCREEN_HEIGHT, TextBox, Button } from '../components/common';
-import { storeHotels } from '../actions';
 
 import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
 import Logo from '../../assets/images/logoSecond.png';
 import Background from '../../assets/images/background.jpg';
 
-class Welcome extends Component {
+export default class Welcome extends Component {
   constructor(props) {
     super(props);
     this.checkForTokens();
   }
+
+  // componentDidMount() {
+  //   AsyncStorage.clear();
+  //   persistor.purge();
+  //   store.dispatch({ type: 'clear_hotels' });
+  // }
 
   async checkForTokens() {
     const facebookToken = await AsyncStorage.getItem('facebook_token');
@@ -136,5 +142,3 @@ const styles = StyleSheet.create({
     opacity: 0.2
   }
 });
-
-export default connect(null, { storeHotels })(Welcome);

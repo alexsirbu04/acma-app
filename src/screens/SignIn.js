@@ -5,7 +5,8 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
-  Animated
+  Animated,
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
@@ -16,11 +17,11 @@ import Background from '../../assets/images/background.jpg';
 
 import { signInSocial, login } from '../actions/auth';
 import { addError } from '../actions';
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr } from '../components/common';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr, Loading } from '../components/common';
 import Error from '../components/Error';
 import { GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
 
-class SignIn extends Component {
+export class SignIn extends Component {
   constructor(props) {
     super(props);
 
@@ -40,7 +41,8 @@ class SignIn extends Component {
     scaleValue: 1,
     translateValue: 0,
     email: '',
-    password: ''
+    password: '',
+    loading: false
   };
 
   componentDidMount() {
@@ -48,7 +50,12 @@ class SignIn extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.onAuthComplete(nextProps);
+    if ((nextProps.token || nextProps.user.token) && nextProps.account) {
+      this.onAuthComplete(nextProps);
+    }
+    if (nextProps.error !== '') {
+      this.setState({ loading: false });
+    }
   }
 
   componentWillUnmount() {
@@ -57,7 +64,8 @@ class SignIn extends Component {
   }
 
   onAuthComplete(props) {
-    if (props.token) {
+    if ((props.token || props.user.token) && props.account) {
+      this.setState({ loading: false });
       this.props.navigation.navigate('Dashboard');
     }
   }
@@ -72,6 +80,7 @@ class SignIn extends Component {
         password
       };
       this.props.login(credentials);
+      this.setState({ loading: true });
     }
   }
 
@@ -115,6 +124,7 @@ class SignIn extends Component {
 
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'always' }} style={container}>
+        {this.state.loading ? <Loading /> : null}
         <Error />
         <View style={overlay}>
           <Image source={Background} style={overlayImage} />
@@ -180,6 +190,7 @@ class SignIn extends Component {
                   style={{ width: SCREEN_WIDTH / 2 - 40 }}
                   onPress={() => {
                     this.props.signInSocial('facebook');
+                    this.setState({ loading: true });
                   }}
                 />
                 <SocialIcon
@@ -190,6 +201,7 @@ class SignIn extends Component {
                   style={{ width: SCREEN_WIDTH / 2 - 40, backgroundColor: '#dd4b39' }}
                   onPress={() => {
                     this.props.signInSocial('google');
+                    this.setState({ loading: true });
                   }}
                 />
               </View>
@@ -261,7 +273,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    token: state.token.token
+    token: state.social.token,
+    account: state.social.account,
+    user: state.user
   };
 };
 

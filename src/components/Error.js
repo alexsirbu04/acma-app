@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback, Platform } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -11,28 +11,36 @@ if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
   paddingBottom = 15;
 }
 
-const Error = props => {
-  if (props.error) {
-    return (
-      <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={() => props.clearError()}>
-          <View style={styles.errorContainer}>
-            <TextBox
-              type="regular"
-              color={WHITE}
-              size={18}
-              style={{ textAlign: 'center', paddingBottom }}
-            >
-              {props.error}
-            </TextBox>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-    );
+class Error extends Component {
+  componentDidUpdate() {
+    if (this.props.error != '') {
+      setTimeout(() => this.props.clearError(), 3000);
+    }
   }
 
-  return null;
-};
+  render() {
+    if (this.props.error) {
+      return (
+        <View style={styles.container}>
+          <TouchableWithoutFeedback onPress={() => this.props.clearError()}>
+            <View style={styles.errorContainer}>
+              <TextBox
+                type="regular"
+                color={WHITE}
+                size={18}
+                style={{ textAlign: 'center', paddingBottom }}
+              >
+                {this.props.error}
+              </TextBox>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      );
+    }
+
+    return null;
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

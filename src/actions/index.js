@@ -1,5 +1,6 @@
 import {
   STORE_HOTELS,
+  STORE_RESERVATIONS,
   STORE_USER,
   CLEAR_TOKENS,
   CLEAR_USER,
@@ -21,17 +22,6 @@ export const storeUser = user => {
 export const clearUser = () => {
   return {
     type: CLEAR_USER
-  };
-};
-
-// //////////////////////////////////////
-// HOTELS ACTIONS
-// //////////////////////////////////////
-
-export const storeHotels = hotels => {
-  return {
-    type: STORE_HOTELS,
-    payload: hotels
   };
 };
 

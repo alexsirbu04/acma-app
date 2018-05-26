@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, StatusBar, BackHandler } from 'react-native';
+import { StyleSheet, StatusBar, BackHandler, Platform } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 
-import { Header } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
 import HotelList from '../components/hotels/HotelList';
 
@@ -34,10 +33,9 @@ export default class Dashboard extends Component {
     const { navigation } = this.props;
 
     return (
-      <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={styles.container}>
+      <SafeAreaView forceInset={{ bottom: 'always' }} style={styles.container}>
         <StatusBar barStyle="light-content" />
         <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
-        <Header title="Home" />
         <HotelList navigation={navigation} />
       </SafeAreaView>
     );
@@ -47,6 +45,7 @@ export default class Dashboard extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'ios' ? 50 : 35,
     alignItems: 'center'
   },
   gradient: {

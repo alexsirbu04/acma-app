@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage, BackHandler } from 'react-native';
+import { View, StyleSheet, AsyncStorage, BackHandler, Platform } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import { Avatar } from 'react-native-elements';
 
 import { persistor } from '../store';
 import { clearTokens, clearUser } from '../actions';
-import { SCREEN_WIDTH, Header, TextBox, Button } from '../components/common';
+import { SCREEN_WIDTH, TextBox, Button } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
 
 class Account extends Component {
@@ -53,21 +53,23 @@ class Account extends Component {
 
   renderAvatar(picture, firstName, lastName) {
     if (picture !== '') {
-      return <Avatar xlarge rounded source={{ uri: picture }} activeOpacity={0.7} />;
+      return (
+        <Avatar width={125} height={125} rounded source={{ uri: picture }} activeOpacity={0.7} />
+      );
     }
 
     const initials = String(firstName).charAt(0) + String(lastName).charAt(0);
-    return <Avatar title={initials} xlarge rounded activeOpacity={0.7} />;
+    return <Avatar width={125} height={125} title={initials} rounded activeOpacity={0.7} />;
   }
 
   renderAccountData() {
     const { firstName, lastName, picture } = this.props.user;
     if (String(firstName).length > 0 && String(lastName).length > 0) {
       return (
-        <View>
+        <View style={styles.accountDataContainer}>
           {this.renderAvatar(picture, firstName, lastName)}
-          <TextBox type="regular" color={WHITE} size={20}>
-            Hello {firstName} {lastName}!
+          <TextBox type="semi-bold" color={WHITE} size={22} style={{ marginTop: 15 }}>
+            {firstName} {lastName}
           </TextBox>
         </View>
       );
@@ -82,9 +84,8 @@ class Account extends Component {
 
   render() {
     return (
-      <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={styles.container}>
+      <SafeAreaView forceInset={{ bottom: 'always' }} style={styles.container}>
         <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
-        <Header title="Account" />
         {this.renderAccountData()}
         <Button
           title="LOGOUT"
@@ -111,13 +112,17 @@ const styles = StyleSheet.create({
     backgroundColor: WHITE,
     marginTop: 20,
     height: 50,
-    width: SCREEN_WIDTH - 70,
+    width: SCREEN_WIDTH - 100,
     borderWidth: 1,
     borderColor: WHITE,
     overflow: 'hidden',
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  accountDataContainer: {
+    alignItems: 'center',
+    marginTop: Platform.OS === 'ios' ? 25 : 50
   }
 });
 

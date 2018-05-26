@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  ScrollView,
+  Alert,
+  ActivityIndicator
+} from 'react-native';
+import { LinearGradient } from 'expo';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import moment from 'moment';
-import { LinearGradient } from 'expo';
+import uuid from 'uuid';
 
 import {
   SCREEN_HEIGHT,
@@ -12,9 +21,10 @@ import {
   CachedImage,
   Button,
   TextBox,
-  Hr
+  Hr,
+  Loading
 } from '../components/common';
-import { LIGHT_BLUE, LIGHT_GREY, GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
+import { LIGHT_GREY, GREY, WHITE, MAIN_BLUE, GOLD } from '../../assets/colors';
 import {
   CAROUSEL_PERSONS,
   CAROUSEL_ROOMS,
@@ -22,10 +32,18 @@ import {
   myIndexOf
 } from '../components/booking/CarouselService';
 import BookingCarousel from '../components/booking/BookingCarousel';
+import { BOOK } from '../endpoints';
+
+let overlayTop = 20;
+if (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812) {
+  overlayTop = 50;
+}
 
 class Booking extends Component {
   constructor(props) {
     super(props);
+
+    this.onPressBook = this.onPressBook.bind(this);
 
     const roomId = this.props.navigation.state.params.id._id;
     const { hotelName } = this.props.navigation.state.params.name;
@@ -58,6 +76,12 @@ class Booking extends Component {
       dayOfWeek: moment(currentDate).format('ddd'),
       dayOfMonth: moment(currentDate).format('D'),
       month: moment(currentDate).format('MMM')
+    };
+
+    const today = {
+      dayOfMonth: moment(currentDate).format('D'),
+      month: moment(currentDate).format('MMM'),
+      year: moment(currentDate).format('YYYY')
     };
 
     // Get the next day and create an object with it's day of the month, week day and month
@@ -96,6 +120,7 @@ class Booking extends Component {
       dates,
       months,
       displayDates,
+      today,
       currentDateObject,
       activeDayIndex,
       activeMonthIndex: currentMonthIndex,
@@ -113,7 +138,8 @@ class Booking extends Component {
       checkOutSelected: false,
       nightsBooked: 1,
       pricePerRoom: this.selectedRoom.price,
-      priceMultiplier: 2
+      priceMultiplier: 2,
+      loading: false
     };
   }
 
@@ -171,6 +197,111 @@ class Booking extends Component {
     this.setState({ activeRoomsIndex: index, priceMultiplier });
   }
 
+  onPressBook() {
+    const { firstName, lastName, email, id } = this.props.user;
+    const {
+      nightsBooked,
+      pricePerRoom,
+      priceMultiplier,
+      months,
+      today,
+      activePersonsIndex,
+      activeRoomsIndex,
+      checkIn,
+      checkOut
+    } = this.state;
+    const rooms = activeRoomsIndex + 1;
+    const persons = activePersonsIndex + 1;
+    const price = nightsBooked * pricePerRoom * priceMultiplier;
+    const { dayOfMonth, month } = checkIn;
+    const { name, street, city, country } = this.selectedHotel;
+    const { roomTypeName } = this.selectedRoom;
+
+    let { year } = today;
+    if (month < months.indexOf(today.month) || dayOfMonth < today.dayOfMonth) {
+      year++;
+    }
+    checkIn.year = year;
+    checkIn.dayOfWeek = moment()
+      .date(checkIn.dayOfMonth)
+      .format('dddd');
+
+    checkOut.year = year;
+    checkOut.dayOfWeek = moment()
+      .date(checkOut.dayOfMonth)
+      .format('dddd');
+
+    const reservation = {
+      id: uuid.v4(),
+      userId: id,
+      firstName,
+      lastName,
+      email,
+      hotel: name,
+      street,
+      city,
+      country,
+      room: roomTypeName,
+      price,
+      nightsBooked,
+      persons,
+      roomsBooked: rooms,
+      checkIn,
+      checkOut,
+      cancelled: false
+    };
+
+    Alert.alert(
+      'Confirmation',
+      'Are you sure you want to book this room?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: () => this.onPressOk(reservation)
+        }
+      ],
+      { cancelable: false }
+    );
+  }
+
+  onPressOk(reservation) {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.props.user.token
+      }
+    };
+
+    this.setState({ loading: true });
+
+    axios
+      .post(BOOK, reservation, config)
+      .then(response => {
+        if (response.status === 200) {
+          this.setState({ loading: false });
+          Alert.alert('Success', 'Your request has been registered!', [{ text: 'OK' }], {
+            cancelable: false
+          });
+        }
+      })
+      .catch(err => {
+        if (err) {
+          this.setState({ loading: false });
+          Alert.alert(
+            'Error',
+            'Could not register your request. Please try again!',
+            [
+              {
+                text: 'OK'
+              }
+            ],
+            { cancelable: false }
+          );
+        }
+      });
+  }
+
   setDate() {
     const {
       editCheckIn,
@@ -202,7 +333,7 @@ class Booking extends Component {
         checkOutObject.month = checkInObject.month;
         const checkOutDateIndex = dates.indexOf(checkOutObject);
         this.setState({ checkOut: checkOutObject, checkOutDateIndex });
-      } else {
+      } else if (months.indexOf(checkInObject.month) === months.indexOf(checkOut.month)) {
         if (checkInObject.dayOfMonth - checkOut.dayOfMonth >= 0) {
           const checkOutObject = displayDates[checkInObjectIndex + 1];
           checkOutObject.month = checkOut.month;
@@ -223,23 +354,18 @@ class Booking extends Component {
       const checkOutDateIndex = dates.indexOf(checkOutObject);
       const checkOutObjectIndex = displayDates.indexOf(checkOutObject);
 
-      if (months.indexOf(checkIn.month) < months.indexOf(checkOutObject.month)) {
-        if (Number(checkOutObject.dayOfMonth) - Number(checkIn.dayOfMonth) < 0) {
-          const checkInObject = displayDates[checkOutObjectIndex - 1];
-          checkInObject.month = checkIn.month;
-          const checkInDateIndex = dates.indexOf(checkInObject);
-          this.setState({ checkIn: checkInObject, checkInDateIndex });
-        }
-
-        const checkInDateIndex = dates.indexOf(checkIn);
-        this.setState({ checkInDateIndex });
-      } else {
-        if (Number(checkOutObject.dayOfMonth) - Number(checkIn.dayOfMonth) <= 0) {
-          const checkInObject = displayDates[checkOutObjectIndex - 1];
-          checkInObject.month = checkOutObject.month;
-          const checkInDateIndex = dates.indexOf(checkInObject);
-          this.setState({ checkIn: checkInObject, checkInDateIndex });
-        }
+      if (months.indexOf(checkIn.month) > months.indexOf(checkOutObject.month)) {
+        const checkInObject = displayDates[checkOutObjectIndex - 1];
+        checkInObject.month = checkOutObject.month;
+        const checkInDateIndex = dates.indexOf(checkInObject);
+        this.setState({ checkIn: checkInObject, checkInDateIndex });
+      } else if (
+        months.indexOf(checkIn.month) === months.indexOf(checkOutObject.month) &&
+        checkOutObject.dayOfMonth - checkIn.dayOfMonth < 0
+      ) {
+        const checkInObject = displayDates[checkOutObjectIndex - 1];
+        const checkInDateIndex = dates.indexOf(checkInObject);
+        this.setState({ checkIn: checkInObject, checkInDateIndex });
       }
 
       this.setState({
@@ -276,22 +402,43 @@ class Booking extends Component {
       dates,
       setButton,
       editChecks,
-      button
+      button,
+      buttonContainer,
+      imageOverlayContainer
     } = styles;
     const { roomTypeName, roomImage } = this.selectedRoom;
 
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={container}>
-        <Header title={roomTypeName} backArrow onBackPress={() => this.props.navigation.goBack()} />
-        <ScrollView showsVerticalScrollIndicator={false}>
+        {this.state.loading ? <Loading /> : null}
+        <Header
+          title={roomTypeName}
+          backArrow
+          home
+          onBackPress={() => this.props.navigation.goBack()}
+          onHomePress={() => this.props.navigation.navigate('Dashboard')}
+        />
+        <ScrollView>
           <View style={imageContainer}>
             <CachedImage source={{ uri: roomImage }} style={image} />
             <LinearGradient
-              colors={[LIGHT_BLUE, 'transparent']}
+              colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
               start={[0.5, 1]}
               end={[0.5, 0]}
+              locations={[0.4, 1]}
               style={styles.gradient}
             />
+          </View>
+          <View style={imageOverlayContainer}>
+            <TextBox type="regular" size={22} color={WHITE}>
+              {this.state.nightsBooked === 1
+                ? `PRICE FOR ${this.state.nightsBooked} NIGHT`
+                : `PRICE FOR ${this.state.nightsBooked} NIGHTS`}
+            </TextBox>
+            <Hr containerStyle={{ width: 70, margin: 5 }} lineStyle={{ backgroundColor: GOLD }} />
+            <TextBox type="regular" size={26} color={WHITE}>
+              €{this.state.nightsBooked * this.state.pricePerRoom * this.state.priceMultiplier}
+            </TextBox>
           </View>
           <View style={rowContainer}>
             <TouchableWithoutFeedback onPress={() => this.editChecks('in')}>
@@ -379,27 +526,12 @@ class Booking extends Component {
               this.onChangeRooms(slideIndex);
             }}
           />
-          <View style={rowContainer}>
-            <TextBox type="regular" size={20} color={MAIN_BLUE} style={{ paddingTop: 10 }}>
-              {this.state.nightsBooked === 1
-                ? `PRICE FOR ${this.state.nightsBooked} NIGHT`
-                : `PRICE FOR ${this.state.nightsBooked} NIGHTS`}
-            </TextBox>
-          </View>
-          <View style={rowContainer}>
-            <Hr containerStyle={{ width: 60, margin: 5 }} />
-          </View>
-          <View style={rowContainer}>
-            <TextBox type="regular" size={24} color={GREY} style={{ marginBottom: 10 }}>
-              €{this.state.nightsBooked * this.state.pricePerRoom * this.state.priceMultiplier}
-            </TextBox>
-          </View>
-          <View style={rowContainer}>
+          <View style={buttonContainer}>
             <Button
               title="BOOK NOW"
               textColor={WHITE}
               gradient
-              onPress={() => console.log('Pressed!')}
+              onPress={this.onPressBook}
               buttonStyle={button}
             />
           </View>
@@ -425,9 +557,9 @@ const styles = StyleSheet.create({
   },
   gradient: {
     position: 'absolute',
-    top: '30%',
-    height: '70%',
-    width: '100%'
+    height: '100%',
+    width: '100%',
+    bottom: 0
   },
   rowContainer: {
     flexDirection: 'row',
@@ -508,19 +640,46 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    width: SCREEN_WIDTH - 70,
+    width: SCREEN_WIDTH - 50,
     borderWidth: 1,
     borderColor: WHITE,
     overflow: 'hidden',
     borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  buttonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20
+  },
+  imageOverlayContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: SCREEN_HEIGHT / 3,
+    top: overlayTop
+  },
+  screenOverlay: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: '#000',
+    opacity: 0.3,
+    zIndex: 3
   }
 });
 
 const mapStateToProps = state => {
   return {
-    hotels: state.hotelsArray.hotels
+    hotels: state.hotelsArray.hotels,
+    user: state.user
   };
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
-import DashboardTabBar from '../components/DashboardTabBar';
+import DashboardTabBar from './DashboardTabBar';
 import Welcome from '../screens/Welcome';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';

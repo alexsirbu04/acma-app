@@ -4,17 +4,12 @@ import { Icon } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import { LinearGradient } from 'expo';
 
-import { SCREEN_HEIGHT, SCREEN_WIDTH, CachedImage, Button, TextBox } from '../common';
-import { LIGHT_BLUE, WHITE, GREY, MAIN_BLUE } from '../../../assets/colors';
+import { SCREEN_WIDTH, CachedImage, Button, TextBox } from '../common';
+import { WHITE, GREY, MAIN_BLUE } from '../../../assets/colors';
 
 import SingleBedIcon from '../../../assets/images/single-bed.png';
 import DoubleBedIcon from '../../../assets/images/double-bed.png';
 import Safe from '../../../assets/images/safe.png';
-
-let top = SCREEN_WIDTH / 2.5 + 10;
-if (SCREEN_HEIGHT >= 750 || SCREEN_WIDTH >= 750) {
-  top = SCREEN_WIDTH / 2 + 10;
-}
 
 export default class RoomDetail extends Component {
   constructor(props) {
@@ -182,19 +177,19 @@ export default class RoomDetail extends Component {
         <View style={imageContainer}>
           <CachedImage source={{ uri: roomImage }} style={image} />
           <LinearGradient
-            colors={[LIGHT_BLUE, 'transparent']}
+            colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
             start={[0.5, 1]}
             end={[0.5, 0]}
             style={gradient}
           />
-        </View>
-        <View style={imageOverlayContainer}>
-          <TextBox type="semi-bold" size={20} color={WHITE}>
-            {roomTypeName.toUpperCase()}
-          </TextBox>
-          <TextBox type="regular" size={18} color={WHITE}>
-            €{price} per night
-          </TextBox>
+          <View style={imageOverlayContainer}>
+            <TextBox type="semi-bold" size={20} color={WHITE}>
+              {roomTypeName.toUpperCase()}
+            </TextBox>
+            <TextBox type="regular" size={18} color={WHITE}>
+              €{price} per night
+            </TextBox>
+          </View>
         </View>
         <View style={headingContainer}>
           <TextBox type="semi-bold" size={20} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
@@ -245,7 +240,7 @@ const styles = StyleSheet.create({
   image: {
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
-    height: SCREEN_HEIGHT / 3,
+    height: 300,
     width: SCREEN_WIDTH
   },
   icon: {
@@ -275,15 +270,13 @@ const styles = StyleSheet.create({
   },
   imageOverlayContainer: {
     position: 'absolute',
-    top,
-    bottom: 0,
-    left: 15,
-    right: 0
+    bottom: 20,
+    left: 25
   },
   gradient: {
     position: 'absolute',
-    top: '30%',
-    height: '70%',
-    width: '100%'
+    height: '60%',
+    width: '100%',
+    bottom: 0
   }
 });

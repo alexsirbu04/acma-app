@@ -5,7 +5,8 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
-  Animated
+  Animated,
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { FormLabel, FormInput } from 'react-native-elements';
@@ -16,7 +17,7 @@ import Background from '../../assets/images/background.jpg';
 
 import { storeUser, addError } from '../actions';
 import { registerAccount } from '../actions/auth';
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Button } from '../components/common';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Loading } from '../components/common';
 import Error from '../components/Error';
 import { GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
 
@@ -43,12 +44,33 @@ class SignUp extends Component {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    loading: false
   };
+
+  componentDidMount() {
+    this.onAuthComplete(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.token != '') {
+      this.onAuthComplete(nextProps);
+    }
+    if (nextProps.error !== '') {
+      this.setState({ loading: false });
+    }
+  }
 
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
+  }
+
+  onAuthComplete(props) {
+    if (props.token) {
+      this.setState({ loading: false });
+      this.props.navigation.navigate('Dashboard');
+    }
   }
 
   onPressButton() {
@@ -65,14 +87,17 @@ class SignUp extends Component {
       if (password !== confirmPassword) {
         this.props.addError("Passwords don't match");
       } else {
+        this.setState({ loading: true });
         const user = {
           email,
           password,
           firstName,
-          lastName
+          lastName,
+          picture: ''
         };
         this.props.storeUser(user);
         this.props.registerAccount(user);
+        this.setState({ loading: true });
       }
     }
   }
@@ -118,6 +143,7 @@ class SignUp extends Component {
 
     return (
       <SafeAreaView forceInset={{ bottom: 'never', top: 'always' }} style={container}>
+        {this.state.loading ? <Loading /> : null}
         <Error />
         <View style={overlay}>
           <Image source={Background} style={overlayImage} />
@@ -287,7 +313,25 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     opacity: 0.2
+  },
+  screenOverlay: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: '#000',
+    opacity: 0.3,
+    zIndex: 3
   }
 });
 
-export default connect(null, { storeUser, registerAccount, addError })(SignUp);
+const mapStateToProps = state => {
+  return {
+    token: state.user.token
+  };
+};
+
+export default connect(mapStateToProps, { storeUser, registerAccount, addError })(SignUp);

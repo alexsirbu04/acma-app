@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo';
 import { Icon } from 'react-native-elements';
 
 import { DARK_BLUE, LIGHT_BLUE, WHITE } from '../../assets/colors';
-import { SCREEN_WIDTH, SCREEN_HEIGHT } from './common';
+import { SCREEN_WIDTH, SCREEN_HEIGHT } from '../components/common';
 
 let iPhoneX = false;
 if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
