@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  ScrollView,
-  Alert,
-  ActivityIndicator
-} from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } from 'react-native';
 import { LinearGradient } from 'expo';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -33,6 +26,7 @@ import {
 } from '../components/booking/CarouselService';
 import BookingCarousel from '../components/booking/BookingCarousel';
 import { BOOK } from '../endpoints';
+import { addReservation } from '../actions';
 
 let overlayTop = 20;
 if (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812) {
@@ -214,7 +208,7 @@ class Booking extends Component {
     const persons = activePersonsIndex + 1;
     const price = nightsBooked * pricePerRoom * priceMultiplier;
     const { dayOfMonth, month } = checkIn;
-    const { name, street, city, country } = this.selectedHotel;
+    const { name, street, city, country, firstImage } = this.selectedHotel;
     const { roomTypeName } = this.selectedRoom;
 
     let { year } = today;
@@ -238,6 +232,7 @@ class Booking extends Component {
       lastName,
       email,
       hotel: name,
+      hotelImage: firstImage,
       street,
       city,
       country,
@@ -280,6 +275,7 @@ class Booking extends Component {
       .then(response => {
         if (response.status === 200) {
           this.setState({ loading: false });
+          this.props.addReservation(reservation);
           Alert.alert('Success', 'Your request has been registered!', [{ text: 'OK' }], {
             cancelable: false
           });
@@ -683,4 +679,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Booking);
+export default connect(mapStateToProps, { addReservation })(Booking);

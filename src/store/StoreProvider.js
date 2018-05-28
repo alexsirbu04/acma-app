@@ -3,8 +3,8 @@ import axios from 'axios';
 
 import images from '../../assets/images';
 import { store } from './';
-import { STORE_HOTELS, STORE_RESERVATIONS } from '../actions/types';
-import { HOTELS, RESERVATIONS } from '../endpoints';
+import { STORE_HOTELS, STORE_RESERVATIONS, CANCEL_RESERVATION, ADD_ERROR } from '../actions/types';
+import { HOTELS, RESERVATIONS, DELETE_RESERVATION } from '../endpoints';
 
 export default class StoreProvider {
   static async loadAssets() {
@@ -29,6 +29,11 @@ export default class StoreProvider {
       });
     }
 
+    return Promise.all([fontAssets, imageAssets]);
+  }
+
+  static async loadReservations() {
+    const state = store.getState();
     if (state.user.role === 'user') {
       if (state.user.userId !== '') {
         const config = {
@@ -46,7 +51,34 @@ export default class StoreProvider {
         }
       }
     }
+  }
 
-    return Promise.all([fontAssets, imageAssets]);
+  static async cancelReservation(index) {
+    const state = store.getState();
+    if (state.user.role === 'user') {
+      if (state.user.userId !== '') {
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: state.user.token
+          }
+        };
+        const response = await axios.delete(
+          `${DELETE_RESERVATION}/${state.reservationsArray.reservations[index].id}`,
+          config
+        );
+        if (response.data.deleted) {
+          store.dispatch({
+            type: CANCEL_RESERVATION,
+            payload: index
+          });
+        } else {
+          store.dispatch({
+            type: ADD_ERROR,
+            payload: 'Could not cancel your reservation'
+          });
+        }
+      }
+    }
   }
 }

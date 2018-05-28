@@ -5,8 +5,8 @@ import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
 import { Avatar } from 'react-native-elements';
 
-import { persistor } from '../store';
-import { clearTokens, clearUser } from '../actions';
+import ReservationsList from '../components/reservations/ReservationsList';
+import { clearUser, clearTokens, clearReservations } from '../actions';
 import { SCREEN_WIDTH, TextBox, Button } from '../components/common';
 import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
 
@@ -36,8 +36,8 @@ class Account extends Component {
   onLogoutPress() {
     this.props.clearTokens();
     this.props.clearUser();
+    this.props.clearReservations();
     const keys = ['token', 'facebook_token', 'google_token', 'persist:root'];
-    // eslint-disable-next-line
     AsyncStorage.multiRemove(keys, error => {
       if (error) {
         return (
@@ -46,20 +46,17 @@ class Account extends Component {
           </TextBox>
         );
       }
-      persistor.purge();
       this.props.navigation.navigate('Welcome');
     });
   }
 
   renderAvatar(picture, firstName, lastName) {
     if (picture !== '') {
-      return (
-        <Avatar width={125} height={125} rounded source={{ uri: picture }} activeOpacity={0.7} />
-      );
+      return <Avatar width={125} height={125} rounded source={{ uri: picture }} />;
     }
 
     const initials = String(firstName).charAt(0) + String(lastName).charAt(0);
-    return <Avatar width={125} height={125} title={initials} rounded activeOpacity={0.7} />;
+    return <Avatar width={125} height={125} title={initials} rounded />;
   }
 
   renderAccountData() {
@@ -87,6 +84,7 @@ class Account extends Component {
       <SafeAreaView forceInset={{ bottom: 'always' }} style={styles.container}>
         <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
         {this.renderAccountData()}
+        <ReservationsList />
         <Button
           title="LOGOUT"
           textColor={MAIN_BLUE}
@@ -111,6 +109,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: WHITE,
     marginTop: 20,
+    marginBottom: 10,
     height: 50,
     width: SCREEN_WIDTH - 100,
     borderWidth: 1,
@@ -128,8 +127,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    user: state.user
+    user: state.user,
+    cancelled: state.reservationsArray.cancelled
   };
 };
 
-export default connect(mapStateToProps, { clearTokens, clearUser })(Account);
+export default connect(mapStateToProps, { clearUser, clearTokens, clearReservations })(Account);

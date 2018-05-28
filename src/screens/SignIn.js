@@ -5,8 +5,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
-  Animated,
-  ActivityIndicator
+  Animated
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
@@ -15,6 +14,7 @@ import { connect } from 'react-redux';
 import Logo from '../../assets/images/logo.png';
 import Background from '../../assets/images/background.jpg';
 
+import StoreProvider from '../store/StoreProvider';
 import { signInSocial, login } from '../actions/auth';
 import { addError } from '../actions';
 import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr, Loading } from '../components/common';
@@ -63,8 +63,9 @@ export class SignIn extends Component {
     this.keyboardDidHideListener.remove();
   }
 
-  onAuthComplete(props) {
+  async onAuthComplete(props) {
     if ((props.token || props.user.token) && props.account) {
+      await StoreProvider.loadReservations();
       this.setState({ loading: false });
       this.props.navigation.navigate('Dashboard');
     }

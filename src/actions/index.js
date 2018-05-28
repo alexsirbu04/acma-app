@@ -1,11 +1,13 @@
 import {
-  STORE_HOTELS,
-  STORE_RESERVATIONS,
   STORE_USER,
   CLEAR_TOKENS,
   CLEAR_USER,
   ADD_ERROR,
-  CLEAR_ERROR
+  CLEAR_ERROR,
+  STORE_RESERVATIONS,
+  ADD_RESERVATION,
+  CANCEL_RESERVATION,
+  CLEAR_RESERVATIONS
 } from './types';
 
 // //////////////////////////////////////
@@ -32,6 +34,30 @@ export const clearUser = () => {
 export const clearTokens = () => {
   return {
     type: CLEAR_TOKENS
+  };
+};
+
+// //////////////////////////////////////
+// RESERVATION ACTIONS
+// //////////////////////////////////////
+
+export const storeReservations = reservations => {
+  return {
+    type: STORE_RESERVATIONS,
+    payload: reservations
+  };
+};
+
+export const addReservation = reservation => {
+  return {
+    type: ADD_RESERVATION,
+    payload: reservation
+  };
+};
+
+export const clearReservations = () => {
+  return {
+    type: CLEAR_RESERVATIONS
   };
 };
 
