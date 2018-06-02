@@ -19,19 +19,24 @@ export class Swipeable extends Component {
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (event, gesture) => {
-        if (gesture.dx < 0 && !this.state.swipedOpen) {
-          position.setValue(gesture.dx);
+        if (props.swipe) {
+          if (gesture.dx < 0 && !this.state.swipedOpen) {
+            position.setValue(gesture.dx);
+          }
         }
       },
       onPanResponderRelease: (event, gesture) => {
-        if (gesture.dx < 0 && !this.state.swipedOpen) {
-          if (gesture.dx < -SWIPE_THRESHOLD) {
-            this.slide();
-          } else {
-            this.recenter();
+        if (props.swipe) {
+          if (gesture.dx < 0 && !this.state.swipedOpen) {
+            if (gesture.dx < -SWIPE_THRESHOLD) {
+              this.slide();
+            } else {
+              this.recenter();
+            }
           }
         }
-      }
+      },
+      onPanResponderTerminationRequest: () => true
     });
 
     this.position = position;

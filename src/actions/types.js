@@ -1,8 +1,8 @@
 export const STORE_HOTELS = 'store_hotels';
 export const STORE_RESERVATIONS = 'store_reservations';
 export const ADD_RESERVATION = 'add_reservation';
+export const UPDATE_RESERVATION_STATUS = 'update_reservation_status';
 export const CANCEL_RESERVATION = 'cancel_reservation';
-export const RESERVATION_CANCELLED = 'reservation_cancelled';
 export const CLEAR_RESERVATIONS = 'clear_reservations';
 
 export const STORE_USER = 'store_user';

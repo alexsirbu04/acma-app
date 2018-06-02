@@ -7,3 +7,5 @@ export * from './TextBox';
 export * from './Hr';
 export * from './Loading';
 export * from './Swipeable';
+export * from './TouchableIcon';
+export * from './Input';

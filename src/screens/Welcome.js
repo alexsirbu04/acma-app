@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Image, AsyncStorage, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo';
+import { connect } from 'react-redux';
 
 // import { persistor, store } from '../store';
 
@@ -10,10 +11,10 @@ import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
 import Logo from '../../assets/images/logoSecond.png';
 import Background from '../../assets/images/background.jpg';
 
-export default class Welcome extends Component {
+class Welcome extends Component {
   constructor(props) {
     super(props);
-    this.checkForTokens();
+    this.checkForPreviousLogin();
   }
 
   // componentDidMount() {
@@ -22,13 +23,18 @@ export default class Welcome extends Component {
   //   store.dispatch({ type: 'clear_hotels' });
   // }
 
-  async checkForTokens() {
+  async checkForPreviousLogin() {
+    const { user, navigation } = this.props;
     const facebookToken = await AsyncStorage.getItem('facebook_token');
     const googleToken = await AsyncStorage.getItem('google_token');
     const token = await AsyncStorage.getItem('token');
 
-    if (facebookToken || googleToken || token) {
-      this.props.navigation.navigate('Dashboard');
+    if (user.role === 'user' && (facebookToken || googleToken || token)) {
+      navigation.navigate('User');
+    }
+
+    if (user.role === 'receptionist' && token) {
+      navigation.navigate('Reception');
     }
   }
 
@@ -142,3 +148,11 @@ const styles = StyleSheet.create({
     opacity: 0.2
   }
 });
+
+const mapStateToProps = state => {
+  return {
+    user: state.user
+  };
+};
+
+export default connect(mapStateToProps)(Welcome);

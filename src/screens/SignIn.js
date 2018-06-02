@@ -8,7 +8,7 @@ import {
   Animated
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import { FormLabel, FormInput, SocialIcon } from 'react-native-elements';
+import { SocialIcon } from 'react-native-elements';
 import { connect } from 'react-redux';
 
 import Logo from '../../assets/images/logo.png';
@@ -17,9 +17,9 @@ import Background from '../../assets/images/background.jpg';
 import StoreProvider from '../store/StoreProvider';
 import { signInSocial, login } from '../actions/auth';
 import { addError } from '../actions';
-import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr, Loading } from '../components/common';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr, Loading, Input } from '../components/common';
 import Error from '../components/Error';
-import { GREY, WHITE, MAIN_BLUE } from '../../assets/colors';
+import { GREY, WHITE, MAIN_BLUE, TRANSPARENT } from '../../assets/colors';
 
 export class SignIn extends Component {
   constructor(props) {
@@ -34,7 +34,7 @@ export class SignIn extends Component {
       this.keyboardDidHide.bind(this)
     );
 
-    this.position = new Animated.ValueXY(0, 0);
+    this.position = new Animated.Value(0);
   }
 
   state = {
@@ -45,30 +45,34 @@ export class SignIn extends Component {
     loading: false
   };
 
-  componentDidMount() {
-    this.onAuthComplete(this.props);
-  }
+  static getDerivedStateFromProps(props) {
+    if ((props.token || props.user.token) && props.account && props.user.role === 'user') {
+      StoreProvider.loadUserReservations();
+      props.navigation.navigate('User');
+      return {
+        loading: false
+      };
+    }
 
-  componentWillReceiveProps(nextProps) {
-    if ((nextProps.token || nextProps.user.token) && nextProps.account) {
-      this.onAuthComplete(nextProps);
+    if ((props.token || props.user.token) && props.user.role === 'receptionist') {
+      StoreProvider.loadReceptionReservations();
+      props.navigation.navigate('Reception');
+      return {
+        loading: false
+      };
     }
-    if (nextProps.error !== '') {
-      this.setState({ loading: false });
+
+    if (props.error != '') {
+      return {
+        loading: false
+      };
     }
+    return null;
   }
 
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
-  }
-
-  async onAuthComplete(props) {
-    if ((props.token || props.user.token) && props.account) {
-      await StoreProvider.loadReservations();
-      this.setState({ loading: false });
-      this.props.navigation.navigate('Dashboard');
-    }
   }
 
   onPressLogin() {
@@ -87,16 +91,16 @@ export class SignIn extends Component {
 
   keyboardDidShow() {
     Animated.timing(this.position, {
-      toValue: { x: 0, y: -SCREEN_HEIGHT / 5 }
+      toValue: -SCREEN_HEIGHT / 7
     }).start();
 
-    const translate = this.position.y.interpolate({
-      inputRange: [-SCREEN_HEIGHT / 5, 0, SCREEN_HEIGHT / 5],
-      outputRange: [SCREEN_WIDTH / 4, 0, SCREEN_WIDTH / 4]
+    const translate = this.position.interpolate({
+      inputRange: [-SCREEN_HEIGHT / 7, 0, SCREEN_HEIGHT / 7],
+      outputRange: [100, 0, 100]
     });
 
-    const scale = this.position.y.interpolate({
-      inputRange: [-SCREEN_HEIGHT / 5, 0, SCREEN_HEIGHT / 5],
+    const scale = this.position.interpolate({
+      inputRange: [-SCREEN_HEIGHT / 7, 0, SCREEN_HEIGHT / 7],
       outputRange: [0.5, 1, 0.5]
     });
 
@@ -105,7 +109,7 @@ export class SignIn extends Component {
 
   keyboardDidHide() {
     Animated.timing(this.position, {
-      toValue: { x: 0, y: 0 }
+      toValue: 0
     }).start();
   }
 
@@ -116,8 +120,6 @@ export class SignIn extends Component {
       logoContainer,
       dataContainer,
       socialContainer,
-      input,
-      label,
       button,
       overlay,
       overlayImage
@@ -131,7 +133,7 @@ export class SignIn extends Component {
           <Image source={Background} style={overlayImage} />
         </View>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
-          <Animated.View style={this.position.getLayout()}>
+          <Animated.View style={{ transform: [{ translateY: this.position }] }}>
             <View style={logoContainer}>
               <Animated.Image
                 source={Logo}
@@ -151,25 +153,24 @@ export class SignIn extends Component {
               />
             </View>
             <View style={dataContainer}>
-              <FormLabel labelStyle={label}>EMAIL</FormLabel>
-              <FormInput
+              <Input
                 value={this.state.email}
                 onChangeText={email => this.setState({ email })}
                 placeholder="example@domain.com"
                 keyboardType="email-address"
-                inputStyle={input}
-                underlineColorAndroid={GREY}
-                containerStyle={{ borderBottomColor: GREY }}
+                underlineColorAndroid={TRANSPARENT}
+                width={SCREEN_WIDTH - 60}
+                icon="email"
               />
-              <FormLabel labelStyle={label}>PASSWORD</FormLabel>
-              <FormInput
+              <Input
                 value={this.state.password}
                 onChangeText={password => this.setState({ password })}
                 placeholder="********"
-                inputStyle={input}
-                underlineColorAndroid={GREY}
+                underlineColorAndroid={TRANSPARENT}
                 secureTextEntry
-                containerStyle={{ borderBottomColor: GREY }}
+                width={SCREEN_WIDTH - 60}
+                icon="lock"
+                iconType="font-awesome"
               />
               <Button
                 title="LOGIN"
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center'
   },
   dataContainer: {
@@ -236,16 +237,6 @@ const styles = StyleSheet.create({
   },
   socialContainer: {
     flexDirection: 'row'
-  },
-  input: {
-    width: SCREEN_WIDTH - 70,
-    color: GREY,
-    fontFamily: 'regular',
-    textAlign: 'center'
-  },
-  label: {
-    color: MAIN_BLUE,
-    fontFamily: 'semi-bold'
   },
   button: {
     justifyContent: 'center',
@@ -276,7 +267,8 @@ const mapStateToProps = state => {
   return {
     token: state.social.token,
     account: state.social.account,
-    user: state.user
+    user: state.user,
+    error: state.errors.error
   };
 };
 

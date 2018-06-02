@@ -11,7 +11,7 @@ if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
   iPhoneX = true;
 }
 
-export default class DashboardTabBar extends Component {
+export default class UserTabBar extends Component {
   renderIcons() {
     const { navigate, state } = this.props.navigation;
     const { routes } = state;
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH
   },
   container: {
-    height: iPhoneX ? 40 : 50,
+    height: iPhoneX ? 70 : 50,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center'
@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: iPhoneX ? 25 : 0
+    bottom: iPhoneX ? 5 : 0
   }
 });

@@ -193,7 +193,7 @@ export default class RoomDetail extends Component {
         </View>
         <View style={headingContainer}>
           <TextBox type="semi-bold" size={20} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
-            SERVICES INCLUDED
+            AMENITIES
           </TextBox>
           <View style={servicesContainer}>
             {this.renderBedIcon(bedType)}

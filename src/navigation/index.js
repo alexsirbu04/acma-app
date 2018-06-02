@@ -1,21 +1,120 @@
 import React from 'react';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
-import DashboardTabBar from './DashboardTabBar';
+import UserTabBar from './UserTabBar';
+import ReceptionTabBar from './ReceptionTabBar';
+
 import Welcome from '../screens/Welcome';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
-import Hotels from '../screens/Hotels';
-import Account from '../screens/Account';
-import Rooms from '../screens/Rooms';
-import Booking from '../screens/Booking';
 
-const TabStack = createBottomTabNavigator(
+import Hotels from '../screens/user/Hotels';
+import Account from '../screens/user/Account';
+import Rooms from '../screens/user/Rooms';
+import Booking from '../screens/user/Booking';
+import Reservations from '../screens/user/Reservations';
+import CheckIn from '../screens/user/CheckIn';
+
+import Dashboard from '../screens/reception/Dashboard';
+import ReservationExpanded from '../screens/reception/ReservationExpanded';
+import Occupancy from '../screens/reception/Occupancy';
+
+const AccountStack = createStackNavigator(
+  {
+    Account: {
+      screen: Account
+    },
+    Reservations: {
+      screen: Reservations
+    },
+    CheckIn: {
+      path: '/:persons',
+      screen: CheckIn
+    }
+  },
+  {
+    headerMode: 'none'
+  }
+);
+
+const UserTabStack = createBottomTabNavigator(
   {
     Home: {
       screen: Hotels
     },
-    Account: {
+    Profile: {
+      screen: AccountStack
+    }
+  },
+  {
+    navigationOptions: () => ({
+      header: null
+    }),
+    tabBarComponent: ({ navigation }) => <UserTabBar navigation={navigation} />
+  }
+);
+
+const UserStack = createStackNavigator(
+  {
+    User: {
+      screen: UserTabStack,
+      navigationOptions: {
+        gesturesEnabled: false
+      }
+    },
+    Rooms: {
+      path: 'hotel/:id',
+      screen: Rooms
+    },
+    Booking: {
+      path: 'hotel/:name/:room',
+      screen: Booking
+    }
+  },
+  {
+    headerMode: 'none'
+  }
+);
+
+const ReceptionDashboardStack = createStackNavigator(
+  {
+    Dashboard: {
+      screen: Dashboard
+    },
+    ReservationExpanded: {
+      path: ':reservation',
+      screen: ReservationExpanded
+    }
+  },
+  {
+    headerMode: 'none'
+  }
+);
+
+const ReceptionOccupancyStack = createStackNavigator(
+  {
+    Occupancy: {
+      screen: Occupancy
+    },
+    ReservationExpanded: {
+      path: ':reservation',
+      screen: ReservationExpanded
+    }
+  },
+  {
+    headerMode: 'none'
+  }
+);
+
+const ReceptionTabStack = createBottomTabNavigator(
+  {
+    Dashboard: {
+      screen: ReceptionDashboardStack
+    },
+    Occupancy: {
+      screen: ReceptionOccupancyStack
+    },
+    Profile: {
       screen: Account
     }
   },
@@ -23,7 +122,7 @@ const TabStack = createBottomTabNavigator(
     navigationOptions: () => ({
       header: null
     }),
-    tabBarComponent: ({ navigation }) => <DashboardTabBar navigation={navigation} />
+    tabBarComponent: ({ navigation }) => <ReceptionTabBar navigation={navigation} />
   }
 );
 
@@ -38,19 +137,14 @@ const AppStack = createStackNavigator(
     SignUp: {
       screen: SignUp
     },
-    Dashboard: {
-      screen: TabStack,
+    User: {
+      screen: UserStack
+    },
+    Reception: {
+      screen: ReceptionTabStack,
       navigationOptions: {
         gesturesEnabled: false
       }
-    },
-    Rooms: {
-      path: 'hotel/:id',
-      screen: Rooms
-    },
-    Booking: {
-      path: 'hotel/:name/:room',
-      screen: Booking
     }
   },
   {

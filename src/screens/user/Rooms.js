@@ -5,18 +5,18 @@ import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
 
-import RoomList from '../components/rooms/RoomList';
-import { Header } from '../components/common';
-import { DARK_BLUE, LIGHT_BLUE } from '../../assets/colors';
+import RoomList from '../../components/rooms/RoomList';
+import { Header } from '../../components/common';
+import { DARK_BLUE, LIGHT_BLUE } from '../../../assets/colors';
 
 class Rooms extends Component {
   constructor(props) {
     super(props);
-    const hotelId = this.props.navigation.state.params.id._id;
+    const hotelId = props.navigation.getParam('id');
     this.selectedHotel = {};
 
-    for (const hotel of this.props.hotels) {
-      if (hotel._id === hotelId) {
+    for (const hotel of props.hotels) {
+      if (hotel._id === hotelId._id) {
         this.selectedHotel = hotel;
       }
     }

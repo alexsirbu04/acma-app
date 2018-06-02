@@ -16,17 +16,17 @@ import {
   TextBox,
   Hr,
   Loading
-} from '../components/common';
-import { LIGHT_GREY, GREY, WHITE, MAIN_BLUE, GOLD } from '../../assets/colors';
+} from '../../components/common';
+import { LIGHT_GREY, GREY, WHITE, MAIN_BLUE, GOLD } from '../../../assets/colors';
 import {
   CAROUSEL_PERSONS,
   CAROUSEL_ROOMS,
   getDates,
   myIndexOf
-} from '../components/booking/CarouselService';
-import BookingCarousel from '../components/booking/BookingCarousel';
-import { BOOK } from '../endpoints';
-import { addReservation } from '../actions';
+} from '../../components/booking/CarouselService';
+import BookingCarousel from '../../components/booking/BookingCarousel';
+import { BOOK } from '../../endpoints';
+import { addReservation } from '../../actions';
 
 let overlayTop = 20;
 if (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812) {
@@ -39,19 +39,19 @@ class Booking extends Component {
 
     this.onPressBook = this.onPressBook.bind(this);
 
-    const roomId = this.props.navigation.state.params.id._id;
-    const { hotelName } = this.props.navigation.state.params.name;
+    const roomId = props.navigation.getParam('id');
+    const { hotelName } = props.navigation.getParam('name');
     this.selectedRoom = {};
     this.selectedHotel = {};
 
-    for (const hotel of this.props.hotels) {
+    for (const hotel of props.hotels) {
       if (hotel.name === hotelName) {
         this.selectedHotel = hotel;
       }
     }
 
     for (const room of this.selectedHotel.rooms.roomTypes) {
-      if (room._id === roomId) {
+      if (room._id === roomId._id) {
         this.selectedRoom = room;
       }
     }
@@ -133,7 +133,8 @@ class Booking extends Component {
       nightsBooked: 1,
       pricePerRoom: this.selectedRoom.price,
       priceMultiplier: 2,
-      loading: false
+      loading: false,
+      scroll: false
     };
   }
 
@@ -192,7 +193,7 @@ class Booking extends Component {
   }
 
   onPressBook() {
-    const { firstName, lastName, email, id } = this.props.user;
+    const { firstName, lastName, picture, id } = this.props.user;
     const {
       nightsBooked,
       pricePerRoom,
@@ -209,41 +210,46 @@ class Booking extends Component {
     const price = nightsBooked * pricePerRoom * priceMultiplier;
     const { dayOfMonth, month } = checkIn;
     const { name, street, city, country, firstImage } = this.selectedHotel;
-    const { roomTypeName } = this.selectedRoom;
+    const { roomTypeName, roomImage } = this.selectedRoom;
 
     let { year } = today;
     if (month < months.indexOf(today.month) || dayOfMonth < today.dayOfMonth) {
       year++;
     }
-    checkIn.year = year;
-    checkIn.dayOfWeek = moment()
-      .date(checkIn.dayOfMonth)
-      .format('dddd');
 
-    checkOut.year = year;
-    checkOut.dayOfWeek = moment()
-      .date(checkOut.dayOfMonth)
-      .format('dddd');
+    const checkInObject = checkIn;
+    checkInObject.year = year;
+    checkInObject.dayOfWeek = moment(
+      `${checkIn.dayOfMonth}-${checkIn.month}-${year}`,
+      'DD-MMM-YYYY'
+    ).format('dddd');
+
+    const checkOutObject = checkOut;
+    checkOutObject.year = year;
+    checkOutObject.dayOfWeek = moment(
+      `${checkOut.dayOfMonth}-${checkOut.month}-${year}`,
+      'DD-MMM-YYYY'
+    ).format('dddd');
 
     const reservation = {
       id: uuid.v4(),
       userId: id,
+      userImage: picture,
       firstName,
       lastName,
-      email,
       hotel: name,
       hotelImage: firstImage,
       street,
       city,
       country,
       room: roomTypeName,
+      roomImage,
       price,
       nightsBooked,
       persons,
       roomsBooked: rooms,
-      checkIn,
-      checkOut,
-      cancelled: false
+      checkIn: checkInObject,
+      checkOut: checkOutObject
     };
 
     Alert.alert(
@@ -373,6 +379,11 @@ class Booking extends Component {
     }
   }
 
+  getContainerHeight(event) {
+    const { height } = event.nativeEvent.layout;
+    if (height < 690) this.setState({ scroll: true });
+  }
+
   editChecks(check) {
     if (check === 'in') {
       this.setState({ editCheckIn: !this.state.editCheckIn });
@@ -412,126 +423,133 @@ class Booking extends Component {
           backArrow
           home
           onBackPress={() => this.props.navigation.goBack()}
-          onHomePress={() => this.props.navigation.navigate('Dashboard')}
+          onHomePress={() => this.props.navigation.navigate('User')}
         />
-        <ScrollView>
-          <View style={imageContainer}>
-            <CachedImage source={{ uri: roomImage }} style={image} />
-            <LinearGradient
-              colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
-              start={[0.5, 1]}
-              end={[0.5, 0]}
-              locations={[0.4, 1]}
-              style={styles.gradient}
+        <View
+          onLayout={event => {
+            this.getContainerHeight(event);
+          }}
+          style={container}
+        >
+          <ScrollView scrollEnabled={this.state.scroll} showsVerticalScrollIndicator={false}>
+            <View style={imageContainer}>
+              <CachedImage source={{ uri: roomImage }} style={image} />
+              <LinearGradient
+                colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
+                start={[0.5, 1]}
+                end={[0.5, 0]}
+                locations={[0.4, 1]}
+                style={styles.gradient}
+              />
+            </View>
+            <View style={imageOverlayContainer}>
+              <TextBox type="regular" size={22} color={WHITE}>
+                {this.state.nightsBooked === 1
+                  ? `PRICE FOR ${this.state.nightsBooked} NIGHT`
+                  : `PRICE FOR ${this.state.nightsBooked} NIGHTS`}
+              </TextBox>
+              <Hr containerStyle={{ width: 70, margin: 5 }} lineStyle={{ backgroundColor: GOLD }} />
+              <TextBox type="regular" size={26} color={WHITE}>
+                €{this.state.nightsBooked * this.state.pricePerRoom * this.state.priceMultiplier}
+              </TextBox>
+            </View>
+            <View style={rowContainer}>
+              <TouchableWithoutFeedback onPress={() => this.editChecks('in')}>
+                <View style={[checksContainer, this.state.editCheckIn ? editChecks : null]}>
+                  <View style={checkTextContainer}>
+                    <TextBox type="regular" color={GREY} size={12}>
+                      CHECK IN
+                    </TextBox>
+                  </View>
+                  <View style={dates}>
+                    <TextBox type="semi-bold" color={MAIN_BLUE} size={20}>
+                      {this.state.editCheckIn
+                        ? this.state.displayDates[this.state.activeDayIndex].dayOfMonth
+                        : this.state.checkIn.dayOfMonth}
+                    </TextBox>
+                    <TextBox type="semi-bold" color={MAIN_BLUE} size={12}>
+                      {this.state.editCheckIn
+                        ? this.state.months[this.state.activeMonthIndex].toUpperCase()
+                        : this.state.checkIn.month.toUpperCase()}
+                    </TextBox>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+              <Button
+                title="SET"
+                textColor={WHITE}
+                gradient
+                onPress={() => this.setDate()}
+                buttonStyle={setButton}
+              />
+              <TouchableWithoutFeedback onPress={() => this.editChecks('out')}>
+                <View style={[checksContainer, this.state.editCheckOut ? editChecks : null]}>
+                  <View style={checkTextContainer}>
+                    <TextBox type="regular" color={GREY} size={12}>
+                      CHECK OUT
+                    </TextBox>
+                  </View>
+                  <View style={dates}>
+                    <TextBox type="semi-bold" color={MAIN_BLUE} size={20}>
+                      {this.state.editCheckOut
+                        ? this.state.displayDates[this.state.activeDayIndex].dayOfMonth
+                        : this.state.checkOut.dayOfMonth}
+                    </TextBox>
+                    <TextBox type="semi-bold" color={MAIN_BLUE} size={12}>
+                      {this.state.editCheckOut
+                        ? this.state.months[this.state.activeMonthIndex].toUpperCase()
+                        : this.state.checkOut.month.toUpperCase()}
+                    </TextBox>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+            <BookingCarousel
+              reference={c => {
+                this.carousel = c;
+              }}
+              type="days"
+              data={this.state.displayDates}
+              active={this.state.activeDayIndex}
+              onSnapToItem={slideIndex => {
+                this.onChangeDays(slideIndex);
+              }}
             />
-          </View>
-          <View style={imageOverlayContainer}>
-            <TextBox type="regular" size={22} color={WHITE}>
-              {this.state.nightsBooked === 1
-                ? `PRICE FOR ${this.state.nightsBooked} NIGHT`
-                : `PRICE FOR ${this.state.nightsBooked} NIGHTS`}
-            </TextBox>
-            <Hr containerStyle={{ width: 70, margin: 5 }} lineStyle={{ backgroundColor: GOLD }} />
-            <TextBox type="regular" size={26} color={WHITE}>
-              €{this.state.nightsBooked * this.state.pricePerRoom * this.state.priceMultiplier}
-            </TextBox>
-          </View>
-          <View style={rowContainer}>
-            <TouchableWithoutFeedback onPress={() => this.editChecks('in')}>
-              <View style={[checksContainer, this.state.editCheckIn ? editChecks : null]}>
-                <View style={checkTextContainer}>
-                  <TextBox type="regular" color={GREY} size={12}>
-                    CHECK IN
-                  </TextBox>
-                </View>
-                <View style={dates}>
-                  <TextBox type="semi-bold" color={MAIN_BLUE} size={20}>
-                    {this.state.editCheckIn
-                      ? this.state.displayDates[this.state.activeDayIndex].dayOfMonth
-                      : this.state.checkIn.dayOfMonth}
-                  </TextBox>
-                  <TextBox type="semi-bold" color={MAIN_BLUE} size={12}>
-                    {this.state.editCheckIn
-                      ? this.state.months[this.state.activeMonthIndex].toUpperCase()
-                      : this.state.checkIn.month.toUpperCase()}
-                  </TextBox>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-            <Button
-              title="SET"
-              textColor={WHITE}
-              gradient
-              onPress={() => this.setDate()}
-              buttonStyle={setButton}
+            <BookingCarousel
+              type="months"
+              data={this.state.months}
+              active={this.state.activeMonthIndex}
+              onSnapToItem={slideIndex => {
+                this.onChangeMonths(slideIndex);
+              }}
             />
-            <TouchableWithoutFeedback onPress={() => this.editChecks('out')}>
-              <View style={[checksContainer, this.state.editCheckOut ? editChecks : null]}>
-                <View style={checkTextContainer}>
-                  <TextBox type="regular" color={GREY} size={12}>
-                    CHECK OUT
-                  </TextBox>
-                </View>
-                <View style={dates}>
-                  <TextBox type="semi-bold" color={MAIN_BLUE} size={20}>
-                    {this.state.editCheckOut
-                      ? this.state.displayDates[this.state.activeDayIndex].dayOfMonth
-                      : this.state.checkOut.dayOfMonth}
-                  </TextBox>
-                  <TextBox type="semi-bold" color={MAIN_BLUE} size={12}>
-                    {this.state.editCheckOut
-                      ? this.state.months[this.state.activeMonthIndex].toUpperCase()
-                      : this.state.checkOut.month.toUpperCase()}
-                  </TextBox>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-          <BookingCarousel
-            reference={c => {
-              this.carousel = c;
-            }}
-            type="days"
-            data={this.state.displayDates}
-            active={this.state.activeDayIndex}
-            onSnapToItem={slideIndex => {
-              this.onChangeDays(slideIndex);
-            }}
-          />
-          <BookingCarousel
-            type="months"
-            data={this.state.months}
-            active={this.state.activeMonthIndex}
-            onSnapToItem={slideIndex => {
-              this.onChangeMonths(slideIndex);
-            }}
-          />
-          <BookingCarousel
-            type="occupancy"
-            data={this.state.persons}
-            active={this.state.activePersonsIndex}
-            onSnapToItem={slideIndex => {
-              this.setState({ activePersonsIndex: slideIndex });
-            }}
-          />
-          <BookingCarousel
-            type="occupancy"
-            data={this.state.rooms}
-            active={this.state.activeRoomsIndex}
-            onSnapToItem={slideIndex => {
-              this.onChangeRooms(slideIndex);
-            }}
-          />
-          <View style={buttonContainer}>
-            <Button
-              title="BOOK NOW"
-              textColor={WHITE}
-              gradient
-              onPress={this.onPressBook}
-              buttonStyle={button}
+            <BookingCarousel
+              type="occupancy"
+              data={this.state.persons}
+              active={this.state.activePersonsIndex}
+              onSnapToItem={slideIndex => {
+                this.setState({ activePersonsIndex: slideIndex });
+              }}
             />
-          </View>
-        </ScrollView>
+            <BookingCarousel
+              type="occupancy"
+              data={this.state.rooms}
+              active={this.state.activeRoomsIndex}
+              onSnapToItem={slideIndex => {
+                this.onChangeRooms(slideIndex);
+              }}
+            />
+            <View style={buttonContainer}>
+              <Button
+                title="BOOK NOW"
+                textColor={WHITE}
+                gradient
+                onPress={this.onPressBook}
+                buttonStyle={button}
+              />
+            </View>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
@@ -637,8 +655,6 @@ const styles = StyleSheet.create({
   button: {
     height: 50,
     width: SCREEN_WIDTH - 50,
-    borderWidth: 1,
-    borderColor: WHITE,
     overflow: 'hidden',
     borderRadius: 7,
     justifyContent: 'center',

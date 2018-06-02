@@ -7,11 +7,11 @@ import { DARK_GOLD, LIGHT_GOLD } from '../../../assets/colors';
 import { TextBox } from './TextBox';
 
 export const Button = props => {
-  const { title, onPress, gradient, textColor, buttonStyle } = props;
+  const { title, onPress, gradient, textColor, buttonStyle, disabled } = props;
 
   if (gradient === true) {
     return (
-      <TouchableOpacity onPress={onPress} style={buttonStyle}>
+      <TouchableOpacity onPress={onPress} disabled={disabled} style={buttonStyle}>
         <LinearGradient
           colors={[DARK_GOLD, LIGHT_GOLD]}
           start={[0, 1]}
@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
 
 Button.propTypes = {
   title: PropTypes.string.isRequired,
-  onPress: PropTypes.func.isRequired,
+  onPress: PropTypes.func,
   gradient: PropTypes.bool,
-  textColor: PropTypes.string
+  textColor: PropTypes.string,
+  disabled: PropTypes.bool
 };

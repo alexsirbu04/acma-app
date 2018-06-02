@@ -1,22 +1,21 @@
 import {
   STORE_RESERVATIONS,
   ADD_RESERVATION,
+  UPDATE_RESERVATION_STATUS,
   CANCEL_RESERVATION,
-  RESERVATION_CANCELLED,
   CLEAR_RESERVATIONS
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  reservations: [],
-  cancelled: false
+  reservations: []
 };
 
 const defaultReservation = {
   id: 'id',
   userId: 'userId',
+  userImage: 'url',
   firstName: 'John',
   lastName: 'Doe',
-  email: 'email@domain.com',
   hotel: 'Hotel',
   hotelImage: 'url',
   street: {
@@ -27,6 +26,7 @@ const defaultReservation = {
   city: 'City',
   country: 'Country',
   room: 'Room',
+  roomImage: 'url',
   price: 0,
   nightsBooked: 0,
   persons: 0,
@@ -43,7 +43,7 @@ const defaultReservation = {
     month: 'Jan',
     year: 2017
   },
-  cancelled: false
+  status: 'upcoming'
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -51,10 +51,21 @@ export default (state = INITIAL_STATE, action) => {
     case STORE_RESERVATIONS:
       return { ...state, reservations: action.payload };
     case ADD_RESERVATION:
-      const reservation = Object.assign({}, defaultReservation, action.payload);
+      const newReservation = Object.assign({}, defaultReservation, action.payload);
       return Object.assign({}, state, {
-        reservations: [...state.reservations, reservation]
+        reservations: [...state.reservations, newReservation]
       });
+    case UPDATE_RESERVATION_STATUS:
+      return {
+        ...state,
+        reservations: state.reservations.map(reservation => {
+          if (reservation.id === action.payload.id) {
+            return Object.assign({}, reservation, { status: action.payload.status });
+          }
+
+          return reservation;
+        })
+      };
     case CANCEL_RESERVATION:
       return {
         ...state,
@@ -63,8 +74,6 @@ export default (state = INITIAL_STATE, action) => {
           ...state.reservations.slice(action.payload + 1)
         ]
       };
-    case RESERVATION_CANCELLED:
-      return { ...state, cancelled: action.payload };
     case CLEAR_RESERVATIONS:
       return INITIAL_STATE;
     default:

@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import { TextBox } from './TextBox';
 import { GREY } from '../../../assets/colors';
 
-export const Hr = ({ text, textSize, color, lineStyle, containerStyle }) => {
+export const Hr = ({ text, textSize, color, width, lineStyle, containerStyle }) => {
   const { container, textStyle, line } = styles;
   if (text) {
     return (
-      <View style={[container, containerStyle]}>
+      <View style={[container, containerStyle, { width }]}>
         <View style={[line, lineStyle, { backgroundColor: color }]} />
         <TextBox type="semi-bold" size={textSize || 13} color={color || GREY} style={textStyle}>
           {text}
@@ -20,8 +20,8 @@ export const Hr = ({ text, textSize, color, lineStyle, containerStyle }) => {
   }
 
   return (
-    <View style={[container, containerStyle]}>
-      <View style={[line, lineStyle]} />
+    <View style={[container, containerStyle, { width }]}>
+      <View style={[line, lineStyle, { backgroundColor: color }]} />
     </View>
   );
 };
@@ -29,7 +29,8 @@ export const Hr = ({ text, textSize, color, lineStyle, containerStyle }) => {
 Hr.propTypes = {
   text: PropTypes.string,
   textSize: PropTypes.number,
-  textColor: PropTypes.string
+  textColor: PropTypes.string,
+  width: PropTypes.number
 };
 
 const styles = StyleSheet.create({
@@ -43,7 +44,6 @@ const styles = StyleSheet.create({
   },
   line: {
     flex: 1,
-    height: 1,
-    backgroundColor: GREY
+    height: 1
   }
 });
