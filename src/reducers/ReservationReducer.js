@@ -1,13 +1,17 @@
 import {
   STORE_RESERVATIONS,
+  STORE_USER_RESERVATIONS,
   ADD_RESERVATION,
   UPDATE_RESERVATION_STATUS,
-  CANCEL_RESERVATION,
+  DELETE_RESERVATION,
   CLEAR_RESERVATIONS
 } from '../actions/types';
 
 const INITIAL_STATE = {
-  reservations: []
+  arrivals: [],
+  departures: [],
+  staying: [],
+  userReservations: []
 };
 
 const defaultReservation = {
@@ -49,16 +53,27 @@ const defaultReservation = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case STORE_RESERVATIONS:
-      return { ...state, reservations: action.payload };
+      return {
+        ...state,
+        arrivals: action.payload.arrivals,
+        departures: action.payload.departures,
+        staying: action.payload.staying
+      };
+    case STORE_USER_RESERVATIONS:
+      return {
+        ...state,
+        userReservations: action.payload
+      };
     case ADD_RESERVATION:
       const newReservation = Object.assign({}, defaultReservation, action.payload);
       return Object.assign({}, state, {
-        reservations: [...state.reservations, newReservation]
+        userReservations: [...state.userReservations, newReservation]
       });
     case UPDATE_RESERVATION_STATUS:
+      const { category } = action.payload;
       return {
         ...state,
-        reservations: state.reservations.map(reservation => {
+        [category]: state[category].map(reservation => {
           if (reservation.id === action.payload.id) {
             return Object.assign({}, reservation, { status: action.payload.status });
           }
@@ -66,12 +81,12 @@ export default (state = INITIAL_STATE, action) => {
           return reservation;
         })
       };
-    case CANCEL_RESERVATION:
+    case DELETE_RESERVATION:
       return {
         ...state,
-        reservations: [
-          ...state.reservations.slice(0, action.payload),
-          ...state.reservations.slice(action.payload + 1)
+        userReservations: [
+          ...state.userReservations.slice(0, action.payload),
+          ...state.userReservations.slice(action.payload + 1)
         ]
       };
     case CLEAR_RESERVATIONS:

@@ -1,6 +1,9 @@
-export const MAIN_BLUE = '#1d7cf4';
-export const DARK_BLUE = '#186cc4';
-export const LIGHT_BLUE = '#67a8ec';
+//export const MAIN_BLUE = '#1d7cf4';
+export const MAIN_BLUE = '#4766da';
+// export const DARK_BLUE = '#186cc4';
+export const DARK_BLUE = '#1A2F7F';
+// export const LIGHT_BLUE = '#67a8ec';
+export const LIGHT_BLUE = '#395ad7';
 export const WHITE = '#fff';
 export const GREY = '#555';
 export const LIGHT_GREY = '#ddd';

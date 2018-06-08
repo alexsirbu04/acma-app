@@ -6,7 +6,7 @@ import {
   CLEAR_ERROR,
   STORE_RESERVATIONS,
   ADD_RESERVATION,
-  CANCEL_RESERVATION,
+  DELETE_RESERVATION,
   CLEAR_RESERVATIONS
 } from './types';
 
@@ -58,6 +58,13 @@ export const addReservation = reservation => {
 export const clearReservations = () => {
   return {
     type: CLEAR_RESERVATIONS
+  };
+};
+
+export const deleteReservation = index => {
+  return {
+    type: DELETE_RESERVATION,
+    payload: index
   };
 };
 

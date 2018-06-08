@@ -4,4 +4,5 @@ export const SOCIAL_LOGIN = 'https://secure-stream-51486.herokuapp.com/socialLog
 export const HOTELS = 'https://secure-stream-51486.herokuapp.com/hotels';
 export const BOOK = 'https://secure-stream-51486.herokuapp.com/book';
 export const RESERVATIONS = 'https://secure-stream-51486.herokuapp.com/reservations';
-export const DELETE_RESERVATION = 'https://secure-stream-51486.herokuapp.com/reservations/cancel';
+export const ADD_CLIENTS = 'https://secure-stream-51486.herokuapp.com/clients/add';
+export const STATISTICS = 'https://secure-stream-51486.herokuapp.com/statistics';

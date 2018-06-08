@@ -36,6 +36,10 @@ class Welcome extends Component {
     if (user.role === 'receptionist' && token) {
       navigation.navigate('Reception');
     }
+
+    if (user.role === 'manager' && token) {
+      navigation.navigate('Manager');
+    }
   }
 
   render() {

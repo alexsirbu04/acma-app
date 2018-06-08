@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    reservations: state.reservationsArray.reservations
+    reservations: state.reservations.userReservations
   };
 };
 

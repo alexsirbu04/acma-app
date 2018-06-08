@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 
 import StoreProvider from '../../store/StoreProvider';
 import BookingsList from '../../components/reception/bookings/BookingsList';
-import { UPCOMING, ONGOING } from '../../constants';
 import { Header, Loading } from '../../components/common';
 import { clearReservations } from '../../actions';
 import { DARK_BLUE, LIGHT_BLUE } from '../../../assets/colors';
@@ -36,8 +35,8 @@ class Dashboard extends Component {
         {this.state.loading ? <Loading /> : null}
         <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
         <Header title="Reservations" refresh onRefreshPress={this.refreshAsync} />
-        <BookingsList navigation={navigation} status={UPCOMING} scroll={false} />
-        <BookingsList navigation={navigation} departures status={ONGOING} scroll={false} />
+        <BookingsList navigation={navigation} checkIn scroll={false} />
+        <BookingsList navigation={navigation} checkOut scroll={false} />
       </SafeAreaView>
     );
   }
@@ -61,4 +60,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { clearReservations })(Dashboard);
+export default connect(
+  mapStateToProps,
+  { clearReservations }
+)(Dashboard);

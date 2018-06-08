@@ -19,7 +19,7 @@ import { signInSocial, login } from '../actions/auth';
 import { addError } from '../actions';
 import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Hr, Loading, Input } from '../components/common';
 import Error from '../components/Error';
-import { GREY, WHITE, MAIN_BLUE, TRANSPARENT } from '../../assets/colors';
+import { WHITE, MAIN_BLUE, TRANSPARENT } from '../../assets/colors';
 
 export class SignIn extends Component {
   constructor(props) {
@@ -46,7 +46,7 @@ export class SignIn extends Component {
   };
 
   static getDerivedStateFromProps(props) {
-    if ((props.token || props.user.token) && props.account && props.user.role === 'user') {
+    if ((props.token || props.user.token) && props.user.role === 'user') {
       StoreProvider.loadUserReservations();
       props.navigation.navigate('User');
       return {
@@ -57,6 +57,14 @@ export class SignIn extends Component {
     if ((props.token || props.user.token) && props.user.role === 'receptionist') {
       StoreProvider.loadReceptionReservations();
       props.navigation.navigate('Reception');
+      return {
+        loading: false
+      };
+    }
+
+    if ((props.token || props.user.token) && props.user.role === 'manager') {
+      StoreProvider.loadStatistics();
+      props.navigation.navigate('Manager');
       return {
         loading: false
       };
@@ -113,6 +121,13 @@ export class SignIn extends Component {
     }).start();
   }
 
+  validateEmail() {
+    // eslint-disable-next-line
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      this.state.email
+    );
+  }
+
   render() {
     const {
       container,
@@ -161,6 +176,7 @@ export class SignIn extends Component {
                 underlineColorAndroid={TRANSPARENT}
                 width={SCREEN_WIDTH - 60}
                 icon="email"
+                valid={this.validateEmail()}
               />
               <Input
                 value={this.state.password}
@@ -171,6 +187,7 @@ export class SignIn extends Component {
                 width={SCREEN_WIDTH - 60}
                 icon="lock"
                 iconType="font-awesome"
+                valid={this.state.password !== ''}
               />
               <Button
                 title="LOGIN"
@@ -272,4 +289,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { signInSocial, login, addError })(SignIn);
+export default connect(
+  mapStateToProps,
+  { signInSocial, login, addError }
+)(SignIn);

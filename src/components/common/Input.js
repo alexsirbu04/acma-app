@@ -46,6 +46,8 @@ export class Input extends Component {
       width,
       icon,
       iconType,
+      iconSize,
+      valid,
       label,
       containerStyle,
       inputStyle
@@ -58,12 +60,12 @@ export class Input extends Component {
             type={iconType}
             color={this.state.color}
             containerStyle={styles.icon}
-            size={32}
+            size={iconSize || 32}
           />
         ) : null}
         {label ? (
           <View style={[styles.label, { backgroundColor: this.state.color }]}>
-            <TextBox type="regular" color={this.state.labelColor} size={18}>
+            <TextBox type="regular" color={this.state.labelColor} size={16}>
               {label}
             </TextBox>
           </View>
@@ -82,6 +84,11 @@ export class Input extends Component {
           onBlur={this.onBlur}
           style={[styles.input, inputStyle, { width, color: this.state.textColor }]}
         />
+        {valid ? (
+          <Icon name="check-box" color={this.state.color} containerStyle={styles.icon} size={32} />
+        ) : (
+          <View style={styles.icon} />
+        )}
       </View>
     );
   }
@@ -97,11 +104,13 @@ Input.propTypes = {
   width: PropTypes.number,
   icon: PropTypes.string,
   iconType: PropTypes.string,
+  iconSize: PropTypes.number,
   iconColor: PropTypes.string,
   mainColor: PropTypes.string,
   focusColor: PropTypes.string,
   textColor: PropTypes.string,
-  label: PropTypes.string
+  label: PropTypes.string,
+  valid: PropTypes.bool
 };
 
 const styles = StyleSheet.create({
@@ -112,7 +121,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     height: 45,
-    marginBottom: 15
+    marginBottom: 10
   },
   input: {
     flex: 6,
@@ -120,7 +129,6 @@ const styles = StyleSheet.create({
     fontFamily: 'regular',
     height: '100%',
     fontSize: 18,
-    paddingRight: 15,
     paddingLeft: 10
   },
   icon: {

@@ -3,6 +3,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import UserTabBar from './UserTabBar';
 import ReceptionTabBar from './ReceptionTabBar';
+import ManagerTabBar from './ManagerTabBar';
 
 import Welcome from '../screens/Welcome';
 import SignIn from '../screens/SignIn';
@@ -18,6 +19,8 @@ import CheckIn from '../screens/user/CheckIn';
 import Dashboard from '../screens/reception/Dashboard';
 import ReservationExpanded from '../screens/reception/ReservationExpanded';
 import Occupancy from '../screens/reception/Occupancy';
+
+import ManagerDashboard from '../screens/manager/Dashboard';
 
 const AccountStack = createStackNavigator(
   {
@@ -126,6 +129,23 @@ const ReceptionTabStack = createBottomTabNavigator(
   }
 );
 
+const ManagerTabStack = createBottomTabNavigator(
+  {
+    Dashboard: {
+      screen: ManagerDashboard
+    },
+    Profile: {
+      screen: Account
+    }
+  },
+  {
+    navigationOptions: () => ({
+      header: null
+    }),
+    tabBarComponent: ({ navigation }) => <ManagerTabBar navigation={navigation} />
+  }
+);
+
 const AppStack = createStackNavigator(
   {
     Welcome: {
@@ -142,6 +162,12 @@ const AppStack = createStackNavigator(
     },
     Reception: {
       screen: ReceptionTabStack,
+      navigationOptions: {
+        gesturesEnabled: false
+      }
+    },
+    Manager: {
+      screen: ManagerTabStack,
       navigationOptions: {
         gesturesEnabled: false
       }

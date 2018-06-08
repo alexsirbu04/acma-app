@@ -68,10 +68,10 @@ class SignUp extends Component {
   onPressButton() {
     const { name, email, password, confirmPassword } = this.state;
     if (
-      name.length == 0 ||
-      email.length == 0 ||
-      password.length == 0 ||
-      confirmPassword.length == 0
+      name.length === 0 ||
+      email.length === 0 ||
+      password.length === 0 ||
+      confirmPassword.length === 0
     ) {
       this.props.addError('Fields cannot be empty');
     } else {
@@ -114,6 +114,26 @@ class SignUp extends Component {
     }).start();
   }
 
+  validateInput(type) {
+    switch (type) {
+      case 'name':
+        return /^[a-z ,.'-]+$/i.test(this.state.name);
+      case 'email':
+        // eslint-disable-next-line
+        return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+          this.state.email
+        );
+      case 'password':
+        return this.state.password !== '';
+      case 'confirmPassword':
+        return (
+          this.state.confirmPassword != '' && this.state.confirmPassword === this.state.password
+        );
+      default:
+        break;
+    }
+  }
+
   render() {
     const { container, logo, logoContainer, dataContainer, button, overlay, overlayImage } = styles;
 
@@ -145,6 +165,7 @@ class SignUp extends Component {
                 underlineColorAndroid={TRANSPARENT}
                 width={SCREEN_WIDTH - 60}
                 icon="account-box"
+                valid={this.validateInput('name')}
               />
               <Input
                 value={this.state.email}
@@ -154,6 +175,7 @@ class SignUp extends Component {
                 underlineColorAndroid={TRANSPARENT}
                 width={SCREEN_WIDTH - 60}
                 icon="email"
+                valid={this.validateInput('email')}
               />
               <Input
                 value={this.state.password}
@@ -164,6 +186,7 @@ class SignUp extends Component {
                 width={SCREEN_WIDTH - 60}
                 icon="lock"
                 iconType="font-awesome"
+                valid={this.validateInput('password')}
               />
               <Input
                 value={this.state.confirmPassword}
@@ -174,6 +197,7 @@ class SignUp extends Component {
                 width={SCREEN_WIDTH - 60}
                 icon="lock"
                 iconType="font-awesome"
+                valid={this.validateInput('confirmPassword')}
               />
               <Button
                 title="CREATE ACCOUNT"
@@ -196,8 +220,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   logo: {
-    width: SCREEN_HEIGHT / 6,
-    height: SCREEN_HEIGHT / 6
+    width: SCREEN_WIDTH / 3,
+    height: SCREEN_WIDTH / 3
   },
   logoContainer: {
     flex: 2,
@@ -252,4 +276,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { storeUser, registerAccount, addError })(SignUp);
+export default connect(
+  mapStateToProps,
+  { storeUser, registerAccount, addError }
+)(SignUp);

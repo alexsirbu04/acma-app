@@ -31,14 +31,14 @@ class ReservationsDetail extends Component {
   }
 
   onCancel(index) {
-    StoreProvider.cancelReservation(index);
+    StoreProvider.deleteReservation(index);
     this.setState({ loading: true });
   }
 
   onCheckIn() {
-    const { persons } = this.props.reservation;
-    const { navigation } = this.props;
-    navigation.navigate('CheckIn', { persons });
+    const { id, persons } = this.props.reservation;
+    const { navigation, index } = this.props;
+    navigation.navigate('CheckIn', { persons, id, index });
   }
 
   render() {

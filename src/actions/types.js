@@ -1,8 +1,10 @@
 export const STORE_HOTELS = 'store_hotels';
+
 export const STORE_RESERVATIONS = 'store_reservations';
+export const STORE_USER_RESERVATIONS = 'store_user_reservations';
 export const ADD_RESERVATION = 'add_reservation';
 export const UPDATE_RESERVATION_STATUS = 'update_reservation_status';
-export const CANCEL_RESERVATION = 'cancel_reservation';
+export const DELETE_RESERVATION = 'delete_reservation';
 export const CLEAR_RESERVATIONS = 'clear_reservations';
 
 export const STORE_USER = 'store_user';
@@ -17,3 +19,5 @@ export const CLEAR_TOKENS = 'clear_tokens';
 
 export const ADD_ERROR = 'add_error';
 export const CLEAR_ERROR = 'clear_error';
+
+export const STORE_TOTAL_AVAILABLE_ROOMS = 'store_total_available_rooms';

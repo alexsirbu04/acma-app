@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import StoreProvider from '../../../store/StoreProvider';
 import BookingsDetail from './BookingsDetail';
-import { ONHOLD, ONGOING } from '../../../constants';
 import { clearReservations } from '../../../actions';
 import { SCREEN_WIDTH, TextBox, Hr } from '../../common';
 import { WHITE, LIGHT_GREY } from '../../../../assets/colors';
@@ -19,50 +17,24 @@ class BookingsList extends Component {
   }
 
   state = {
-    reservations: [],
-    expiring: [],
-    refreshing: false
+    refreshing: false,
+    renderData: []
   };
 
   static getDerivedStateFromProps(props) {
-    const reservations = [];
-    const expiring = [];
-    const ongoing = [];
-    const now = moment().format('YYYY-MM-DD');
-
-    if (props.allReservations.length > 0) {
-      for (const reservation of props.allReservations) {
-        if (!props.occupancy) {
-          if (reservation.status === props.status || reservation.status === ONHOLD) {
-            reservations.push(reservation);
-          }
-
-          if (props.status === ONGOING) {
-            const checkOutDate = moment(
-              `${reservation.checkOut.dayOfMonth}-${reservation.checkOut.month}-${
-                reservation.year
-              }`,
-              'DD-MMM-YYYY'
-            ).format('YYYY-MM-DD');
-            if (reservation.status === ONGOING && moment(checkOutDate).isSame(now)) {
-              expiring.push(reservation);
-            }
-          }
-        } else {
-          if (reservation.status === props.status) {
-            reservations.push(reservation);
-          }
-        }
-      }
-
-      return {
-        reservations,
-        expiring,
-        ongoing
-      };
+    const { checkIn, checkOut, occupancy, arrivals, departures, staying } = props;
+    let data = [];
+    if (checkIn) {
+      data = arrivals;
+    } else if (checkOut) {
+      data = departures;
+    } else if (occupancy) {
+      data = staying;
     }
 
-    return null;
+    return {
+      renderData: data
+    };
   }
 
   async refreshAsync() {
@@ -73,7 +45,7 @@ class BookingsList extends Component {
   }
 
   renderReservation(reservation, index) {
-    if (index === this.state.reservations.length - 1) {
+    if (index === this.state.renderData.length - 1) {
       return (
         <BookingsDetail
           reservation={reservation}
@@ -96,18 +68,17 @@ class BookingsList extends Component {
   }
 
   renderSubheader() {
-    const { status, occupancy, departures } = this.props;
-    const { reservations, expiring } = this.state;
-    if (!occupancy && !departures && reservations.length > 0) {
+    const { checkIn, checkOut, departures, arrivals } = this.props;
+    if (checkIn && arrivals.length > 0) {
       return (
         <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 10 }}>
-          {status === 'upcoming' ? `TODAY'S ARRIVALS (${reservations.length})` : null}
+          {`TODAY'S ARRIVALS (${arrivals.length})`}
         </TextBox>
       );
-    } else if (!occupancy && departures && expiring.length > 0) {
+    } else if (checkOut && departures.length > 0) {
       return (
         <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 10 }}>
-          {status === 'ongoing' && departures ? `TODAY'S DEPARTURES (${expiring.length})` : null}
+          {`TODAY'S DEPARTURES (${departures.length})`}
         </TextBox>
       );
     }
@@ -117,14 +88,16 @@ class BookingsList extends Component {
 
   render() {
     const { container } = styles;
-    const { reservations, expiring, refreshing } = this.state;
-    const { scroll, departures, occupancy } = this.props;
+    const { refreshing, renderData } = this.state;
+    const { scroll, checkOut, occupancy, arrivals, departures } = this.props;
+
+    const length = checkOut ? departures.length : arrivals.length;
 
     return (
-      <View style={[container, { height: scroll ? '100%' : 30 + reservations.length * 110 }]}>
+      <View style={[container, { height: scroll ? '100%' : 30 + length * 110 }]}>
         {this.renderSubheader()}
         <FlatList
-          data={departures ? expiring : reservations}
+          data={renderData}
           keyExtractor={item => item.id}
           renderItem={({ item, index }) => this.renderReservation(item, index)}
           showsVerticalScrollIndicator={false}
@@ -147,9 +120,10 @@ class BookingsList extends Component {
 
 BookingsList.propTypes = {
   navigation: PropTypes.object.isRequired,
-  status: PropTypes.string.isRequired,
   scroll: PropTypes.bool.isRequired,
-  departures: PropTypes.bool
+  checkOut: PropTypes.bool,
+  checkIn: PropTypes.bool,
+  occupancy: PropTypes.bool
 };
 
 const styles = StyleSheet.create({
@@ -170,8 +144,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    allReservations: state.reservationsArray.reservations
+    arrivals: state.reservations.arrivals,
+    departures: state.reservations.departures,
+    staying: state.reservations.staying
   };
 };
 
-export default connect(mapStateToProps, { clearReservations })(BookingsList);
+export default connect(
+  mapStateToProps,
+  { clearReservations }
+)(BookingsList);

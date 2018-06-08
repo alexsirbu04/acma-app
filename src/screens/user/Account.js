@@ -172,8 +172,11 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     user: state.user,
-    reservations: state.reservationsArray.reservations
+    reservations: state.reservations.userReservations
   };
 };
 
-export default connect(mapStateToProps, { clearUser, clearTokens, clearReservations })(Account);
+export default connect(
+  mapStateToProps,
+  { clearUser, clearTokens, clearReservations }
+)(Account);
