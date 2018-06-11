@@ -10,10 +10,9 @@ import {
   UPDATE_RESERVATION_STATUS,
   DELETE_RESERVATION,
   ADD_ERROR,
-  STORE_TOTAL_AVAILABLE_ROOMS
+  STORE_STATISTICS
 } from '../actions/types';
-import { ONHOLD, ONGOING, FINISHED } from '../constants';
-import { HOTELS, RESERVATIONS, ADD_CLIENTS, STATISTICS } from '../endpoints';
+import { HOTELS, RESERVATIONS, CLIENTS, STATISTICS } from '../endpoints';
 
 export default class StoreProvider {
   static async loadAssets() {
@@ -124,7 +123,7 @@ export default class StoreProvider {
       if (response.data.deleted) {
         store.dispatch({
           type: DELETE_RESERVATION,
-          payload: index
+          payload: { index, array: 'userReservations' }
         });
       } else {
         store.dispatch({
@@ -135,14 +134,8 @@ export default class StoreProvider {
     }
   }
 
-  static async updateReservationStatus(id, status) {
+  static async updateReservationStatus(id, status, category) {
     const state = store.getState();
-    let category = '';
-    if (status === ONHOLD || status === ONGOING) {
-      category = 'arrivals';
-    } else if (status === FINISHED) {
-      category = 'staying';
-    }
 
     if (
       (state.user.role === 'receptionist' || state.user.role === 'user') &&
@@ -181,12 +174,50 @@ export default class StoreProvider {
         }
       };
 
-      await axios.post(ADD_CLIENTS, { clients }, config).catch(() =>
+      await axios.post(`${CLIENTS}/add`, { clients }, config).catch(() =>
         store.dispatch({
           type: ADD_ERROR,
           payload: 'Could not finish the check in process'
         })
       );
+    }
+  }
+
+  static async checkForClients(clients) {
+    const state = store.getState();
+
+    if (state.user.role === 'user' && state.user.id !== '') {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: state.user.token
+        }
+      };
+
+      const response = await axios.post(CLIENTS, { clients }, config).catch(() =>
+        store.dispatch({
+          type: ADD_ERROR,
+          payload: 'Could not finish the check in process'
+        })
+      );
+
+      if (response.status === 200) {
+        for (const client of response.data.clients) {
+          if (!client.existing) {
+            if (response.data.clients.length === 1) {
+              store.dispatch({
+                type: ADD_ERROR,
+                payload: "The phone number doesn't exist in the database"
+              });
+            } else {
+              store.dispatch({
+                type: ADD_ERROR,
+                payload: "The phone numbers don't exist in the database"
+              });
+            }
+          }
+        }
+      }
     }
   }
 
@@ -201,21 +232,23 @@ export default class StoreProvider {
         }
       };
 
-      const response = await axios
-        .get(`${STATISTICS}/total_available_rooms/${state.user.hotel}`, config)
-        .catch(() => {
-          store.dispatch({
-            type: ADD_ERROR,
-            payload: 'Something went wrong'
-          });
+      const hotel = encodeURIComponent(state.user.hotel);
+
+      const response = await axios.get(`${STATISTICS}/${hotel}`, config).catch(() => {
+        store.dispatch({
+          type: ADD_ERROR,
+          payload: 'Something went wrong'
         });
+      });
 
       if (response.status === 200) {
         store.dispatch({
-          type: STORE_TOTAL_AVAILABLE_ROOMS,
+          type: STORE_STATISTICS,
           payload: {
+            months: response.data.months,
+            countries: response.data.countries,
             totalRooms: response.data.totalRooms,
-            months: response.data.months
+            totalClients: response.data.totalClients
           }
         });
       }

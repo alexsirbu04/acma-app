@@ -37,7 +37,8 @@ class CheckIn extends Component {
       address: '',
       postalCode: '',
       city: '',
-      country: ''
+      country: '',
+      onlyPhone: ''
     };
     while (iterator < persons) {
       data.push(iterator);
@@ -63,6 +64,17 @@ class CheckIn extends Component {
       this.keyboardDidHide.bind(this)
     );
     this.onFinish = this.onFinish.bind(this);
+    this.onConfirmation = this.onConfirmation.bind(this);
+  }
+
+  static getDerivedStateFromProps(props) {
+    if (props.error.length > 0) {
+      return {
+        loading: false
+      };
+    }
+
+    return null;
   }
 
   componentWillUnmount() {
@@ -81,10 +93,72 @@ class CheckIn extends Component {
     this.setState({ guests: newState });
   }
 
+  async onConfirmation(newClient, existingClient, clients) {
+    const { guests } = this.state;
+
+    if (newClient && existingClient) {
+      this.setState({ loading: true });
+      await StoreProvider.checkForClients(clients);
+
+      if (this.props.error.length === 0) {
+        const newClients = guests.filter(guest => guest.onlyPhone.length === 0);
+
+        await StoreProvider.addClients(newClients);
+        await StoreProvider.updateReservationStatus(this.reservationId, ONGOING, 'arrivals');
+        this.props.deleteReservation('userReservations', this.reservationIndex);
+
+        this.setState({ loading: false });
+        Alert.alert(
+          'Success',
+          'Check in process has been completed',
+          [{ text: 'OK', onPress: () => this.props.navigation.goBack() }],
+          { cancelable: false }
+        );
+      }
+    } else if (newClient) {
+      this.setState({ loading: true });
+
+      await StoreProvider.addClients(guests);
+      await StoreProvider.updateReservationStatus(this.reservationId, ONGOING, 'arrivals');
+      this.props.deleteReservation('userReservations', this.reservationIndex);
+
+      this.setState({ loading: false });
+      Alert.alert(
+        'Success',
+        'Check in process has been completed',
+        [{ text: 'OK', onPress: () => this.props.navigation.goBack() }],
+        { cancelable: false }
+      );
+    } else if (existingClient) {
+      this.setState({ loading: true });
+      await StoreProvider.checkForClients(clients);
+
+      if (this.props.error.length === 0) {
+        await StoreProvider.updateReservationStatus(this.reservationId, ONGOING, 'arrivals');
+        this.props.deleteReservation('userReservations', this.reservationIndex);
+
+        this.setState({ loading: false });
+        Alert.alert(
+          'Success',
+          'Check in process has been completed',
+          [{ text: 'OK', onPress: () => this.props.navigation.goBack() }],
+          { cancelable: false }
+        );
+      }
+    }
+  }
+
   async onFinish() {
     const { guests } = this.state;
+    let existingClient = false;
+    let newClient = false;
+    const clients = [];
+
     for (const guest of guests) {
-      if (
+      if (guest.onlyPhone.length !== 0) {
+        existingClient = true;
+        clients.push({ phone: guest.onlyPhone });
+      } else if (
         guest.name.length === 0 ||
         guest.phone.length === 0 ||
         guest.address.length === 0 ||
@@ -93,26 +167,28 @@ class CheckIn extends Component {
         guest.country.length === 0
       ) {
         this.props.addError('Fields cannot be empty');
+        newClient = false;
+        existingClient = false;
+      } else {
+        newClient = true;
       }
     }
 
-    if (this.props.error === '') {
-      this.setState({ loading: true });
-      await StoreProvider.addClients(guests);
-      await StoreProvider.updateReservationStatus(this.reservationId, ONGOING);
-      this.props.deleteReservation(this.reservationIndex);
-      this.setState({ loading: false });
+    if (newClient || existingClient) {
       Alert.alert(
-        'Success',
-        'Check in process has been completed',
-        [{ text: 'OK', onPress: () => this.props.navigation.goBack() }],
+        'Confirmation',
+        'Are you sure the data is correct?',
+        [
+          { text: 'Yes', onPress: () => this.onConfirmation(newClient, existingClient, clients) },
+          { text: 'Cancel', style: 'cancel' }
+        ],
         { cancelable: false }
       );
     }
   }
 
   keyboardDidShow() {
-    this.setState({ containerHeight: 200, keyboardUp: true });
+    this.setState({ containerHeight: 250, keyboardUp: true });
   }
 
   keyboardDidHide() {
@@ -133,6 +209,8 @@ class CheckIn extends Component {
         return /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/.test(this.state.guests[index].city);
       case 'country':
         return /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/.test(this.state.guests[index].country);
+      case 'onlyPhone':
+        return /^(?:[0-9]+$)/.test(this.state.guests[index].onlyPhone);
       default:
         break;
     }
@@ -150,7 +228,7 @@ class CheckIn extends Component {
           size={18}
           style={{ textAlign: 'center', paddingBottom: 10 }}
         >
-          Please fill the fields below
+          Please fill the fields below if you have never used the app before
         </TextBox>
         <Input
           value={this.state.guests[index].name}
@@ -235,7 +313,7 @@ class CheckIn extends Component {
           iconSize={28}
           valid={this.validateInput('country', index)}
         />
-        {/* <TextBox
+        <TextBox
           type="regular"
           color={WHITE}
           size={18}
@@ -255,8 +333,8 @@ class CheckIn extends Component {
           focusColor={GOLD}
           textColor={WHITE}
           icon="phone"
-          valid={this.state.guests[index].onlyPhone !== ''}
-        /> */}
+          valid={this.validateInput('onlyPhone', index)}
+        />
       </View>
     );
   }

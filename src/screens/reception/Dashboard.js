@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
@@ -35,8 +35,10 @@ class Dashboard extends Component {
         {this.state.loading ? <Loading /> : null}
         <LinearGradient colors={[DARK_BLUE, LIGHT_BLUE]} start={[1, 1]} style={styles.gradient} />
         <Header title="Reservations" refresh onRefreshPress={this.refreshAsync} />
-        <BookingsList navigation={navigation} checkIn scroll={false} />
-        <BookingsList navigation={navigation} checkOut scroll={false} />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <BookingsList navigation={navigation} checkIn scroll={false} />
+          <BookingsList navigation={navigation} checkOut scroll={false} />
+        </ScrollView>
       </SafeAreaView>
     );
   }

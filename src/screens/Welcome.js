@@ -4,9 +4,9 @@ import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
 
 // import { persistor, store } from '../store';
-
+import StoreProvider from '../store/StoreProvider';
 import { SCREEN_WIDTH, SCREEN_HEIGHT, TextBox, Button } from '../components/common';
-
+import { clearReservations } from '../actions';
 import { DARK_BLUE, LIGHT_BLUE, WHITE, MAIN_BLUE } from '../../assets/colors';
 import Logo from '../../assets/images/logoSecond.png';
 import Background from '../../assets/images/background.jpg';
@@ -23,6 +23,10 @@ class Welcome extends Component {
   //   store.dispatch({ type: 'clear_hotels' });
   // }
 
+  componentDidMount() {
+    this.checkForPreviousLogin();
+  }
+
   async checkForPreviousLogin() {
     const { user, navigation } = this.props;
     const facebookToken = await AsyncStorage.getItem('facebook_token');
@@ -34,6 +38,8 @@ class Welcome extends Component {
     }
 
     if (user.role === 'receptionist' && token) {
+      this.props.clearReservations();
+      await StoreProvider.loadReceptionReservations();
       navigation.navigate('Reception');
     }
 
@@ -159,4 +165,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Welcome);
+export default connect(
+  mapStateToProps,
+  { clearReservations }
+)(Welcome);

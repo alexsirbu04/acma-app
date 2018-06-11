@@ -13,7 +13,7 @@ if (Platform.OS === 'ios' && (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812)) {
 
 class Error extends Component {
   componentDidUpdate() {
-    if (this.props.error != '') {
+    if (this.props.error !== '') {
       setTimeout(() => this.props.clearError(), 3000);
     }
   }
@@ -68,4 +68,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { clearError })(Error);
+export default connect(
+  mapStateToProps,
+  { clearError }
+)(Error);

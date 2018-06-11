@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 
-import Logo from '../../assets/images/logo.png';
+import Logo from '../../assets/images/logo-light.png';
 import Background from '../../assets/images/background.jpg';
 
 import { storeUser, addError } from '../actions';

@@ -435,7 +435,7 @@ class Booking extends Component {
             <View style={imageContainer}>
               <CachedImage source={{ uri: roomImage }} style={image} />
               <LinearGradient
-                colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
+                colors={['rgba(26, 47, 127, 0.8)', 'transparent']}
                 start={[0.5, 1]}
                 end={[0.5, 0]}
                 locations={[0.4, 1]}
@@ -695,4 +695,7 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { addReservation })(Booking);
+export default connect(
+  mapStateToProps,
+  { addReservation }
+)(Booking);

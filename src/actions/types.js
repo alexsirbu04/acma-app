@@ -20,4 +20,5 @@ export const CLEAR_TOKENS = 'clear_tokens';
 export const ADD_ERROR = 'add_error';
 export const CLEAR_ERROR = 'clear_error';
 
-export const STORE_TOTAL_AVAILABLE_ROOMS = 'store_total_available_rooms';
+export const STORE_STATISTICS = 'store_statistics';
+export const CLEAR_STATISTICS = 'clear_statistics';

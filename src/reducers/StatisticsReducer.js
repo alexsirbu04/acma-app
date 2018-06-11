@@ -1,14 +1,24 @@
-import { STORE_TOTAL_AVAILABLE_ROOMS } from '../actions/types';
+import { STORE_STATISTICS, CLEAR_STATISTICS } from '../actions/types';
 
 const INITIAL_STATE = {
   months: [],
-  totalRooms: 0
+  countries: [],
+  totalRooms: 0,
+  totalClients: 0
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case STORE_TOTAL_AVAILABLE_ROOMS:
-      return { ...state, months: action.payload.months, totalRooms: action.payload.totalRooms };
+    case STORE_STATISTICS:
+      return {
+        ...state,
+        months: action.payload.months,
+        countries: action.payload.countries,
+        totalRooms: action.payload.totalRooms,
+        totalClients: action.payload.totalCountries
+      };
+    case CLEAR_STATISTICS:
+      return INITIAL_STATE;
     default:
       return state;
   }

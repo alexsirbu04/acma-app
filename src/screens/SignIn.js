@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-navigation';
 import { SocialIcon } from 'react-native-elements';
 import { connect } from 'react-redux';
 
-import Logo from '../../assets/images/logo.png';
+import Logo from '../../assets/images/logo-light.png';
 import Background from '../../assets/images/background.jpg';
 
 import StoreProvider from '../store/StoreProvider';
@@ -70,7 +70,7 @@ export class SignIn extends Component {
       };
     }
 
-    if (props.error != '') {
+    if (props.error !== '') {
       return {
         loading: false
       };
@@ -85,7 +85,7 @@ export class SignIn extends Component {
 
   onPressLogin() {
     const { email, password } = this.state;
-    if (email.length == 0 || password.length == 0) {
+    if (email.length === 0 || password.length === 0) {
       this.props.addError('Fields cannot be empty');
     } else {
       const credentials = {

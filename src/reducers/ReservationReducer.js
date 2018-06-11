@@ -82,11 +82,12 @@ export default (state = INITIAL_STATE, action) => {
         })
       };
     case DELETE_RESERVATION:
+      const { array } = action.payload;
       return {
         ...state,
-        userReservations: [
-          ...state.userReservations.slice(0, action.payload),
-          ...state.userReservations.slice(action.payload + 1)
+        [array]: [
+          ...state[array].slice(0, action.payload.index),
+          ...state[array].slice(action.payload.index + 1)
         ]
       };
     case CLEAR_RESERVATIONS:

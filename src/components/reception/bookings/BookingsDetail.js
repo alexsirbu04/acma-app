@@ -15,8 +15,8 @@ class BookingsDetail extends Component {
   }
 
   onPress() {
-    const { navigation, reservation } = this.props;
-    navigation.navigate('ReservationExpanded', { reservation });
+    const { navigation, reservation, occupancy } = this.props;
+    navigation.navigate('ReservationExpanded', { reservation, occupancy });
   }
 
   renderAvatar(picture, firstName, lastName) {
@@ -93,7 +93,8 @@ class BookingsDetail extends Component {
 BookingsDetail.propTypes = {
   reservation: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  navigation: PropTypes.object.isRequired
+  navigation: PropTypes.object.isRequired,
+  occupancy: PropTypes.bool
 };
 
 const styles = StyleSheet.create({

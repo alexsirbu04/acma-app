@@ -7,8 +7,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { Icon } from 'react-native-elements';
 
 import StoreProvider from '../../store/StoreProvider';
-import BarChart from '../../components/BarChart';
-import LineChart from '../../components/LineChart';
+import { BarChart, LineChart, PieChart } from '../../components/charts';
 import { SCREEN_WIDTH, Header, Loading } from '../../components/common';
 import { DARK_BLUE, LIGHT_BLUE, WHITE, GOLD, TRANSPARENT } from '../../../assets/colors';
 
@@ -20,17 +19,23 @@ class Dashboard extends Component {
   }
 
   state = {
-    carouselData: ['Total Booked Rooms', 'Average Occupancy Rate'],
+    carouselData: ['Total Booked Rooms', 'Average Occupancy Rate', 'Countries of Origin'],
     totalBookedRoomsData: [],
     averageOccupancyRateData: [],
+    countriesOfOrigin: [],
     loading: false,
     active: 0
   };
 
   static getDerivedStateFromProps(props, state) {
-    if (props.months !== state.totalAvailableRoomsData) {
+    if (
+      props.months !== state.totalAvailableRoomsData ||
+      props.countries !== state.countriesOfOrigin
+    ) {
       const totalBookedRoomsData = [];
       const averageOccupancyRateData = [];
+      const countriesOfOrigin = [];
+
       for (const month of props.months) {
         if (month.roomsBooked > 0) {
           totalBookedRoomsData.push(month);
@@ -41,9 +46,14 @@ class Dashboard extends Component {
         }
       }
 
+      for (const country of props.countries) {
+        countriesOfOrigin.push({ x: country.name, y: country.percent });
+      }
+
       return {
         totalBookedRoomsData,
-        averageOccupancyRateData
+        averageOccupancyRateData,
+        countriesOfOrigin
       };
     }
 
@@ -57,12 +67,14 @@ class Dashboard extends Component {
   }
 
   renderItem({ item, index }) {
+    const { totalBookedRoomsData, averageOccupancyRateData, countriesOfOrigin } = this.state;
+
     switch (index) {
       case 0:
         return (
           <BarChart
             chartLabel={item}
-            data={this.state.totalBookedRoomsData}
+            data={totalBookedRoomsData}
             labels={d => d.roomsBooked}
             x="name"
             y="roomsBooked"
@@ -72,12 +84,14 @@ class Dashboard extends Component {
         return (
           <LineChart
             chartLabel={item}
-            data={this.state.averageOccupancyRateData}
+            data={averageOccupancyRateData}
             labels={d => `${Math.floor(d.percent)}%`}
             x="name"
             y="percent"
           />
         );
+      case 2:
+        return <PieChart chartLabel={item} data={countriesOfOrigin} />;
       default:
         break;
     }
@@ -190,14 +204,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 15
+    bottom: 0
   }
 });
 
 const mapStateToProps = state => {
   return {
     totalRooms: state.statistics.totalRooms,
-    months: state.statistics.months
+    months: state.statistics.months,
+    countries: state.statistics.countries
   };
 };
 

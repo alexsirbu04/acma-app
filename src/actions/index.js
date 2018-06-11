@@ -7,7 +7,8 @@ import {
   STORE_RESERVATIONS,
   ADD_RESERVATION,
   DELETE_RESERVATION,
-  CLEAR_RESERVATIONS
+  CLEAR_RESERVATIONS,
+  CLEAR_STATISTICS
 } from './types';
 
 // //////////////////////////////////////
@@ -61,10 +62,13 @@ export const clearReservations = () => {
   };
 };
 
-export const deleteReservation = index => {
+export const deleteReservation = (array, index) => {
   return {
     type: DELETE_RESERVATION,
-    payload: index
+    payload: {
+      array,
+      index
+    }
   };
 };
 
@@ -82,5 +86,15 @@ export const addError = text => {
 export const clearError = () => {
   return {
     type: CLEAR_ERROR
+  };
+};
+
+// //////////////////////////////////////
+// STATISTICS ACTIONS
+// //////////////////////////////////////
+
+export const clearStatistics = () => {
+  return {
+    type: CLEAR_STATISTICS
   };
 };

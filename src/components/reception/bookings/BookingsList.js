@@ -1,24 +1,16 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import StoreProvider from '../../../store/StoreProvider';
 import BookingsDetail from './BookingsDetail';
 import { clearReservations } from '../../../actions';
 import { SCREEN_WIDTH, TextBox, Hr } from '../../common';
 import { WHITE, LIGHT_GREY } from '../../../../assets/colors';
 
 class BookingsList extends Component {
-  constructor(props) {
-    super(props);
-
-    this.refreshAsync = this.refreshAsync.bind(this);
-  }
-
   state = {
-    refreshing: false,
-    renderData: []
+    data: []
   };
 
   static getDerivedStateFromProps(props) {
@@ -33,24 +25,18 @@ class BookingsList extends Component {
     }
 
     return {
-      renderData: data
+      data
     };
   }
 
-  async refreshAsync() {
-    this.setState({ refreshing: true });
-    this.props.clearReservations();
-    await StoreProvider.loadReceptionReservations();
-    this.setState({ refreshing: false });
-  }
-
   renderReservation(reservation, index) {
-    if (index === this.state.renderData.length - 1) {
+    if (index === this.state.data.length - 1) {
       return (
         <BookingsDetail
           reservation={reservation}
           index={index}
           navigation={this.props.navigation}
+          occupancy={this.props.occupancy}
         />
       );
     }
@@ -61,6 +47,7 @@ class BookingsList extends Component {
           reservation={reservation}
           index={index}
           navigation={this.props.navigation}
+          occupancy={this.props.occupancy}
         />
         <Hr color={LIGHT_GREY} width={SCREEN_WIDTH} />
       </View>
@@ -71,13 +58,13 @@ class BookingsList extends Component {
     const { checkIn, checkOut, departures, arrivals } = this.props;
     if (checkIn && arrivals.length > 0) {
       return (
-        <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 10 }}>
+        <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 12.5 }}>
           {`TODAY'S ARRIVALS (${arrivals.length})`}
         </TextBox>
       );
     } else if (checkOut && departures.length > 0) {
       return (
-        <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 10 }}>
+        <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 12.5 }}>
           {`TODAY'S DEPARTURES (${departures.length})`}
         </TextBox>
       );
@@ -88,30 +75,18 @@ class BookingsList extends Component {
 
   render() {
     const { container } = styles;
-    const { refreshing, renderData } = this.state;
-    const { scroll, checkOut, occupancy, arrivals, departures } = this.props;
-
-    const length = checkOut ? departures.length : arrivals.length;
+    const { data } = this.state;
+    const { scroll } = this.props;
 
     return (
-      <View style={[container, { height: scroll ? '100%' : 30 + length * 110 }]}>
+      <View style={container}>
         {this.renderSubheader()}
         <FlatList
-          data={renderData}
+          data={data}
           keyExtractor={item => item.id}
           renderItem={({ item, index }) => this.renderReservation(item, index)}
           showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
           scrollEnabled={scroll}
-          refreshControl={
-            occupancy ? (
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={this.refreshAsync}
-                tintColor={WHITE}
-              />
-            ) : null
-          }
         />
       </View>
     );
@@ -129,16 +104,7 @@ BookingsList.propTypes = {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginTop: 15
-  },
-  button: {
-    height: 50,
-    marginTop: 15,
-    width: SCREEN_WIDTH - 50,
-    overflow: 'hidden',
-    borderRadius: 7,
-    justifyContent: 'center',
-    alignItems: 'center'
+    marginVertical: 7.5
   }
 });
 

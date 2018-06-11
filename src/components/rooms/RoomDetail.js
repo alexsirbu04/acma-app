@@ -177,9 +177,10 @@ export default class RoomDetail extends Component {
         <View style={imageContainer}>
           <CachedImage source={{ uri: roomImage }} style={image} />
           <LinearGradient
-            colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
+            colors={['rgba(26, 47, 127, 0.8)', 'transparent']}
             start={[0.5, 1]}
             end={[0.5, 0]}
+            locations={[0.3, 1]}
             style={gradient}
           />
           <View style={imageOverlayContainer}>
@@ -271,11 +272,11 @@ const styles = StyleSheet.create({
   imageOverlayContainer: {
     position: 'absolute',
     bottom: 20,
-    left: 25
+    left: 20
   },
   gradient: {
     position: 'absolute',
-    height: '60%',
+    height: '70%',
     width: '100%',
     bottom: 0
   }

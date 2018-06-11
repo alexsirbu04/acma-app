@@ -31,7 +31,6 @@ const AccountStack = createStackNavigator(
       screen: Reservations
     },
     CheckIn: {
-      path: '/:persons',
       screen: CheckIn
     }
   },
@@ -66,11 +65,9 @@ const UserStack = createStackNavigator(
       }
     },
     Rooms: {
-      path: 'hotel/:id',
       screen: Rooms
     },
     Booking: {
-      path: 'hotel/:name/:room',
       screen: Booking
     }
   },
@@ -85,7 +82,6 @@ const ReceptionDashboardStack = createStackNavigator(
       screen: Dashboard
     },
     ReservationExpanded: {
-      path: ':reservation',
       screen: ReservationExpanded
     }
   },
@@ -100,7 +96,6 @@ const ReceptionOccupancyStack = createStackNavigator(
       screen: Occupancy
     },
     ReservationExpanded: {
-      path: ':reservation',
       screen: ReservationExpanded
     }
   },

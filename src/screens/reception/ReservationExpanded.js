@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import { Icon } from 'react-native-elements';
+import { connect } from 'react-redux';
 
 import Error from '../../components/Error';
 import {
@@ -25,14 +26,16 @@ import {
   MEDIUM_GREY
 } from '../../../assets/colors';
 import StoreProvider from '../../store/StoreProvider';
+import { deleteReservation } from '../../actions';
 
-export default class ReservationExpanded extends Component {
+class ReservationExpanded extends Component {
   constructor(props) {
     super(props);
 
     const { navigation } = props;
-    const reservation = navigation.getParam('reservation');
-    this.id = reservation.id;
+    this.reservation = navigation.getParam('reservation');
+    this.occupancy = navigation.getParam('occupancy');
+    this.id = this.reservation.id;
 
     this.onPressCheckIn = this.onPressCheckIn.bind(this);
     this.onPressCheckOut = this.onPressCheckOut.bind(this);
@@ -44,14 +47,27 @@ export default class ReservationExpanded extends Component {
 
   async onPressCheckIn() {
     this.setState({ loading: true });
-    await StoreProvider.updateReservationStatus(this.id, ONHOLD);
+    await StoreProvider.updateReservationStatus(this.id, ONHOLD, 'arrivals');
     this.setState({ loading: false });
     this.props.navigation.goBack();
   }
 
   async onPressCheckOut() {
     this.setState({ loading: true });
-    await StoreProvider.updateReservationStatus(this.id, FINISHED);
+
+    if (!this.occupancy) {
+      const reservation = this.props.departures.find(element => element.id === this.id);
+      const index = this.props.departures.indexOf(reservation);
+      await StoreProvider.updateReservationStatus(this.id, FINISHED, 'departures');
+      this.props.deleteReservation('departures', index);
+      this.props.deleteReservation('staying', index);
+    } else {
+      const reservation = this.props.staying.find(element => element.id === this.id);
+      const index = this.props.staying.indexOf(reservation);
+      await StoreProvider.updateReservationStatus(this.id, FINISHED, 'staying');
+      this.props.deleteReservation('staying', index);
+    }
+
     this.setState({ loading: false });
     this.props.navigation.goBack();
   }
@@ -106,7 +122,6 @@ export default class ReservationExpanded extends Component {
       dateContainer
     } = styles;
     const { navigation } = this.props;
-    const reservation = navigation.getParam('reservation');
     const {
       firstName,
       lastName,
@@ -119,7 +134,7 @@ export default class ReservationExpanded extends Component {
       roomImage,
       roomsBooked,
       status
-    } = reservation;
+    } = this.reservation;
 
     return (
       <SafeAreaView forceInset={{ bottom: 'always', top: 'never' }} style={container}>
@@ -135,7 +150,7 @@ export default class ReservationExpanded extends Component {
           <View>
             <CachedImage source={{ uri: roomImage }} style={image} />
             <LinearGradient
-              colors={['rgba(24, 108, 196, 0.8)', 'transparent']}
+              colors={['rgba(26, 47, 127, 0.8)', 'transparent']}
               start={[0.5, 1]}
               end={[0.5, 0]}
               locations={[0.4, 1]}
@@ -270,3 +285,16 @@ const styles = StyleSheet.create({
     marginTop: 10
   }
 });
+
+const mapStateToProps = state => {
+  return {
+    arrivals: state.reservations.arrivals,
+    departures: state.reservations.departures,
+    staying: state.reservations.staying
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { deleteReservation }
+)(ReservationExpanded);
