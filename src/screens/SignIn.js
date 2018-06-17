@@ -42,16 +42,18 @@ export class SignIn extends Component {
     translateValue: 0,
     email: '',
     password: '',
-    loading: false
+    loading: false,
+    navigated: false
   };
 
-  static getDerivedStateFromProps(props) {
+  static getDerivedStateFromProps(props, state) {
     const { user, hotels, reservations, statistics, navigation } = props;
 
-    if (hotels.length > 0 && user.role === 'user') {
+    if (hotels.length > 0 && user.role === 'user' && !state.navigated) {
       navigation.navigate('User');
       return {
-        loading: false
+        loading: false,
+        navigated: true
       };
     }
 
@@ -59,22 +61,26 @@ export class SignIn extends Component {
       (reservations.arrivals.length > 0 ||
         reservations.departures.length > 0 ||
         reservations.staying.length > 0) &&
-      user.role === 'receptionist'
+      user.role === 'receptionist' &&
+      state.navigated === false
     ) {
       navigation.navigate('Reception');
       return {
-        loading: false
+        loading: false,
+        navigated: true
       };
     }
 
     if (
       statistics.months.length > 0 &&
       statistics.countries.length > 0 &&
-      user.role === 'manager'
+      user.role === 'manager' &&
+      state.navigated === false
     ) {
       navigation.navigate('Manager');
       return {
-        loading: false
+        loading: false,
+        navigated: true
       };
     }
 

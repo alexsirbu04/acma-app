@@ -42,14 +42,16 @@ class SignUp extends Component {
     email: '',
     password: '',
     confirmPassword: '',
-    loading: false
+    loading: false,
+    navigated: false
   };
 
-  static getDerivedStateFromProps(props) {
-    if (props.hotels.length > 0) {
+  static getDerivedStateFromProps(props, state) {
+    if (props.hotels.length > 0 && !state.navigated) {
       props.navigation.navigate('User');
       return {
-        loading: false
+        loading: false,
+        navigated: true
       };
     }
 
