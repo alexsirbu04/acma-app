@@ -62,7 +62,7 @@ export class SignIn extends Component {
         reservations.departures.length > 0 ||
         reservations.staying.length > 0) &&
       user.role === 'receptionist' &&
-      state.navigated === false
+      !state.navigated
     ) {
       navigation.navigate('Reception');
       return {
@@ -75,7 +75,7 @@ export class SignIn extends Component {
       statistics.months.length > 0 &&
       statistics.countries.length > 0 &&
       user.role === 'manager' &&
-      state.navigated === false
+      !state.navigated
     ) {
       navigation.navigate('Manager');
       return {
