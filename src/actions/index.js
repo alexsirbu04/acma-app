@@ -1,14 +1,11 @@
 import {
   STORE_USER,
-  CLEAR_TOKENS,
-  CLEAR_USER,
+  LOGOUT,
   ADD_ERROR,
   CLEAR_ERROR,
   STORE_RESERVATIONS,
-  ADD_RESERVATION,
   DELETE_RESERVATION,
-  CLEAR_RESERVATIONS,
-  CLEAR_STATISTICS
+  CLEAR_RESERVATIONS
 } from './types';
 
 // //////////////////////////////////////
@@ -22,19 +19,9 @@ export const storeUser = user => {
   };
 };
 
-export const clearUser = () => {
+export const logout = () => {
   return {
-    type: CLEAR_USER
-  };
-};
-
-// //////////////////////////////////////
-// SOCIAL ACTIONS
-// //////////////////////////////////////
-
-export const clearTokens = () => {
-  return {
-    type: CLEAR_TOKENS
+    type: LOGOUT
   };
 };
 
@@ -49,19 +36,6 @@ export const storeReservations = reservations => {
   };
 };
 
-export const addReservation = reservation => {
-  return {
-    type: ADD_RESERVATION,
-    payload: reservation
-  };
-};
-
-export const clearReservations = () => {
-  return {
-    type: CLEAR_RESERVATIONS
-  };
-};
-
 export const deleteReservation = (array, index) => {
   return {
     type: DELETE_RESERVATION,
@@ -69,6 +43,12 @@ export const deleteReservation = (array, index) => {
       array,
       index
     }
+  };
+};
+
+export const clearReservations = () => {
+  return {
+    type: CLEAR_RESERVATIONS
   };
 };
 
@@ -86,15 +66,5 @@ export const addError = text => {
 export const clearError = () => {
   return {
     type: CLEAR_ERROR
-  };
-};
-
-// //////////////////////////////////////
-// STATISTICS ACTIONS
-// //////////////////////////////////////
-
-export const clearStatistics = () => {
-  return {
-    type: CLEAR_STATISTICS
   };
 };

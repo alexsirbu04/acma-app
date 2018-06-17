@@ -1,4 +1,4 @@
-import { STORE_STATISTICS, CLEAR_STATISTICS } from '../actions/types';
+import { STORE_STATISTICS, CLEAR_STATISTICS, LOGOUT } from '../actions/types';
 
 const INITIAL_STATE = {
   months: [],
@@ -18,6 +18,8 @@ export default (state = INITIAL_STATE, action) => {
         totalClients: action.payload.totalCountries
       };
     case CLEAR_STATISTICS:
+      return INITIAL_STATE;
+    case LOGOUT:
       return INITIAL_STATE;
     default:
       return state;

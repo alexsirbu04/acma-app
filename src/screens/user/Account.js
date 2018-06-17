@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage, BackHandler, Platform } from 'react-native';
+import { View, StyleSheet, AsyncStorage, BackHandler, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import { Avatar } from 'react-native-elements';
 
 import ReservationsList from '../../components/reservations/ReservationsList';
 import StoreProvider from '../../store/StoreProvider';
-import { clearUser, clearTokens, clearReservations } from '../../actions';
+import { logout } from '../../actions';
 import {
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
@@ -47,21 +47,16 @@ class Account extends Component {
     return true;
   };
 
-  onLogoutPress() {
-    this.props.clearTokens();
-    this.props.clearUser();
-    this.props.clearReservations();
-    const keys = ['token', 'facebook_token', 'google_token', 'persist:root'];
-    AsyncStorage.multiRemove(keys, error => {
-      if (error) {
-        return (
-          <TextBox type="regular" color={WHITE} size={20}>
-            Error trying to log you out!
-          </TextBox>
-        );
-      }
-      this.props.navigation.navigate('Welcome');
+  async onLogoutPress() {
+    this.setState({ loading: true });
+    this.props.logout();
+    await AsyncStorage.clear().catch(() => {
+      Alert.alert('Error', 'Could not log you out. Please try again!', [{ text: 'OK' }], {
+        cancelable: false
+      });
     });
+    this.setState({ loading: false });
+    this.props.navigation.navigate('Welcome');
   }
 
   async onRefreshAsync() {
@@ -178,5 +173,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { clearUser, clearTokens, clearReservations }
+  { logout }
 )(Account);

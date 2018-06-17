@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import BookingsDetail from './BookingsDetail';
-import { clearReservations } from '../../../actions';
 import { SCREEN_WIDTH, TextBox, Hr } from '../../common';
 import { WHITE, LIGHT_GREY } from '../../../../assets/colors';
 
@@ -116,7 +115,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { clearReservations }
-)(BookingsList);
+export default connect(mapStateToProps)(BookingsList);

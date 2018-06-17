@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated, Alert, TouchableOpacity } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import PropTypes from 'prop-types';
 
 import { ONHOLD } from '../../constants';
-import { SCREEN_WIDTH, TextBox, Swipeable, Loading, Button } from '../common';
+import { SCREEN_WIDTH, TextBox, Loading, Button } from '../common';
 import { WHITE, GREY } from '../../../assets/colors';
 import StoreProvider from '../../store/StoreProvider';
 
@@ -13,6 +13,8 @@ class ReservationsDetail extends Component {
     super(props);
 
     this.onCheckIn = this.onCheckIn.bind(this);
+    this.containerPosition = new Animated.Value(0);
+    this.buttonPosition = new Animated.Value(110);
   }
 
   state = {
@@ -30,9 +32,44 @@ class ReservationsDetail extends Component {
     return null;
   }
 
+  componentDidUpdate() {
+    if (this.props.edit) {
+      Animated.parallel([
+        Animated.timing(this.containerPosition, {
+          toValue: -110
+        }),
+        Animated.timing(this.buttonPosition, {
+          toValue: 0
+        })
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(this.containerPosition, {
+          toValue: 0
+        }),
+        Animated.timing(this.buttonPosition, {
+          toValue: 110
+        })
+      ]).start();
+    }
+  }
+
   onCancel(index) {
-    StoreProvider.deleteReservation(index);
-    this.setState({ loading: true });
+    Alert.alert(
+      'Confirmation',
+      'Are you sure you want to cancel the registration?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            StoreProvider.deleteReservation(index);
+            this.setState({ loading: true });
+          }
+        },
+        { text: 'Cancel', style: 'cancel' }
+      ],
+      { cancelable: false }
+    );
   }
 
   onCheckIn() {
@@ -44,12 +81,12 @@ class ReservationsDetail extends Component {
   render() {
     const { reservation, index } = this.props;
     const { hotel, hotelImage, checkIn, persons } = reservation;
-    const { container, image, data, row, iconContainer, focusContainer, button } = styles;
+    const { container, image, data, row, iconContainer, focusContainer, button, cancel } = styles;
 
     return (
-      <Swipeable height={110} onCancel={() => this.onCancel(index)} swipe={!this.state.focus}>
-        <View style={container}>
-          {this.state.loading ? <Loading small /> : null}
+      <View>
+        {this.state.loading ? <Loading small /> : null}
+        <Animated.View style={[container, { transform: [{ translateX: this.containerPosition }] }]}>
           <View style={image}>
             <Avatar width={90} height={90} source={{ uri: hotelImage }} />
           </View>
@@ -74,10 +111,14 @@ class ReservationsDetail extends Component {
               </TextBox>
             </View>
           </View>
-          {/* <View style={arrow}>
-        <Icon name="chevron-right" size={30} color={GREY} iconStyle={{ paddingRight: 5 }} />
-      </View> */}
-        </View>
+        </Animated.View>
+        <Animated.View style={[cancel, { transform: [{ translateX: this.buttonPosition }] }]}>
+          <TouchableOpacity onPress={() => this.onCancel(index)}>
+            <TextBox type="semi-bold" size={18} color={WHITE}>
+              CANCEL
+            </TextBox>
+          </TouchableOpacity>
+        </Animated.View>
         {this.state.focus ? (
           <View style={focusContainer}>
             <Button
@@ -89,7 +130,7 @@ class ReservationsDetail extends Component {
             />
           </View>
         ) : null}
-      </Swipeable>
+      </View>
     );
   }
 }
@@ -97,6 +138,7 @@ class ReservationsDetail extends Component {
 ReservationsDetail.propTypes = {
   navigation: PropTypes.object.isRequired,
   reservation: PropTypes.object.isRequired,
+  edit: PropTypes.bool.isRequired,
   index: PropTypes.number
 };
 
@@ -146,6 +188,16 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH - 50,
     overflow: 'hidden',
     borderRadius: 7,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  cancel: {
+    position: 'absolute',
+    right: 0,
+    // transform: [{ translateX: -110 }],
+    width: 110,
+    height: 110,
+    backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center'
   }

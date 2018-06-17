@@ -46,25 +46,33 @@ export class SignIn extends Component {
   };
 
   static getDerivedStateFromProps(props) {
-    if ((props.token || props.user.token) && props.user.role === 'user') {
-      StoreProvider.loadUserReservations();
-      props.navigation.navigate('User');
+    const { user, hotels, reservations, statistics, navigation } = props;
+
+    if (hotels.length > 0 && user.role === 'user') {
+      navigation.navigate('User');
       return {
         loading: false
       };
     }
 
-    if ((props.token || props.user.token) && props.user.role === 'receptionist') {
-      StoreProvider.loadReceptionReservations();
-      props.navigation.navigate('Reception');
+    if (
+      (reservations.arrivals.length > 0 ||
+        reservations.departures.length > 0 ||
+        reservations.staying.length > 0) &&
+      user.role === 'receptionist'
+    ) {
+      navigation.navigate('Reception');
       return {
         loading: false
       };
     }
 
-    if ((props.token || props.user.token) && props.user.role === 'manager') {
-      StoreProvider.loadStatistics();
-      props.navigation.navigate('Manager');
+    if (
+      statistics.months.length > 0 &&
+      statistics.countries.length > 0 &&
+      user.role === 'manager'
+    ) {
+      navigation.navigate('Manager');
       return {
         loading: false
       };
@@ -75,7 +83,25 @@ export class SignIn extends Component {
         loading: false
       };
     }
+
     return null;
+  }
+
+  componentDidUpdate() {
+    const { token, user } = this.props;
+
+    if ((token || user.token) && user.role === 'user') {
+      StoreProvider.loadHotels();
+      StoreProvider.loadUserReservations();
+    }
+
+    if ((token || user.token) && user.role === 'receptionist') {
+      StoreProvider.loadReceptionReservations();
+    }
+
+    if ((token || user.token) && user.role === 'manager') {
+      StoreProvider.loadStatistics();
+    }
   }
 
   componentWillUnmount() {
@@ -285,7 +311,10 @@ const mapStateToProps = state => {
     token: state.social.token,
     account: state.social.account,
     user: state.user,
-    error: state.errors.error
+    error: state.errors.error,
+    hotels: state.hotelsArray.hotels,
+    reservations: state.reservations,
+    statistics: state.statistics
   };
 };
 

@@ -4,7 +4,8 @@ import {
   FACEBOOK_LOGIN_FAIL,
   GOOGLE_LOGIN_SUCCESS,
   GOOGLE_LOGIN_FAIL,
-  CLEAR_TOKENS
+  CLEAR_TOKENS,
+  LOGOUT
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -25,6 +26,8 @@ export default (state = INITIAL_STATE, action) => {
     case GOOGLE_LOGIN_FAIL:
       return INITIAL_STATE;
     case CLEAR_TOKENS:
+      return INITIAL_STATE;
+    case LOGOUT:
       return INITIAL_STATE;
     default:
       return state;

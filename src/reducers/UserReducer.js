@@ -1,4 +1,4 @@
-import { STORE_USER, CLEAR_USER } from '../actions/types';
+import { STORE_USER, CLEAR_USER, LOGOUT } from '../actions/types';
 
 const INITIAL_STATE = {
   id: '',
@@ -16,6 +16,8 @@ export default (state = INITIAL_STATE, action) => {
     case STORE_USER:
       return Object.assign({}, state, action.payload);
     case CLEAR_USER:
+      return INITIAL_STATE;
+    case LOGOUT:
       return INITIAL_STATE;
     default:
       return state;

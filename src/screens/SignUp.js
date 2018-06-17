@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import Logo from '../../assets/images/logo-light.png';
 import Background from '../../assets/images/background.jpg';
 
+import StoreProvider from '../store/StoreProvider';
 import { storeUser, addError } from '../actions';
 import { registerAccount } from '../actions/auth';
 import { SCREEN_HEIGHT, SCREEN_WIDTH, Button, Loading, Input } from '../components/common';
@@ -45,12 +46,13 @@ class SignUp extends Component {
   };
 
   static getDerivedStateFromProps(props) {
-    if (props.token) {
+    if (props.hotels.length > 0) {
       props.navigation.navigate('User');
       return {
         loading: false
       };
     }
+
     if (props.error !== '') {
       return {
         loading: false
@@ -58,6 +60,12 @@ class SignUp extends Component {
     }
 
     return null;
+  }
+
+  componentDidUpdate() {
+    if (this.props.token) {
+      StoreProvider.loadHotels();
+    }
   }
 
   componentWillUnmount() {
@@ -272,7 +280,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     token: state.user.token,
-    error: state.errors.error
+    error: state.errors.error,
+    hotels: state.hotelsArray.hotels
   };
 };
 

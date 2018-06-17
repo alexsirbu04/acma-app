@@ -3,10 +3,10 @@ import { View, StyleSheet, TouchableWithoutFeedback, ScrollView, Alert } from 'r
 import { LinearGradient } from 'expo';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import moment from 'moment';
 import uuid from 'uuid';
 
+import StoreProvider from '../../store/StoreProvider';
 import {
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
@@ -25,8 +25,6 @@ import {
   myIndexOf
 } from '../../components/booking/CarouselService';
 import BookingCarousel from '../../components/booking/BookingCarousel';
-import { BOOK } from '../../endpoints';
-import { addReservation } from '../../actions';
 
 let overlayTop = 20;
 if (SCREEN_HEIGHT === 812 || SCREEN_WIDTH === 812) {
@@ -266,42 +264,13 @@ class Booking extends Component {
     );
   }
 
-  onPressOk(reservation) {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: this.props.user.token
-      }
-    };
-
+  async onPressOk(reservation) {
     this.setState({ loading: true });
-
-    axios
-      .post(BOOK, reservation, config)
-      .then(response => {
-        if (response.status === 200) {
-          this.setState({ loading: false });
-          this.props.addReservation(reservation);
-          Alert.alert('Success', 'Your request has been registered!', [{ text: 'OK' }], {
-            cancelable: false
-          });
-        }
-      })
-      .catch(err => {
-        if (err) {
-          this.setState({ loading: false });
-          Alert.alert(
-            'Error',
-            'Could not register your request. Please try again!',
-            [
-              {
-                text: 'OK'
-              }
-            ],
-            { cancelable: false }
-          );
-        }
-      });
+    await StoreProvider.addReservation(reservation);
+    this.setState({ loading: false });
+    Alert.alert('Success', 'Your request has been registered!', [{ text: 'OK' }], {
+      cancelable: false
+    });
   }
 
   setDate() {
@@ -695,7 +664,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { addReservation }
-)(Booking);
+export default connect(mapStateToProps)(Booking);

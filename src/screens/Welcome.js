@@ -3,7 +3,6 @@ import { View, StyleSheet, Image, AsyncStorage, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo';
 import { connect } from 'react-redux';
 
-// import { persistor, store } from '../store';
 import StoreProvider from '../store/StoreProvider';
 import { SCREEN_WIDTH, SCREEN_HEIGHT, TextBox, Button } from '../components/common';
 import { clearReservations } from '../actions';
@@ -12,38 +11,25 @@ import Logo from '../../assets/images/logoSecond.png';
 import Background from '../../assets/images/background.jpg';
 
 class Welcome extends Component {
-  constructor(props) {
-    super(props);
-    this.checkForPreviousLogin();
-  }
-
-  // componentDidMount() {
-  //   AsyncStorage.clear();
-  //   persistor.purge();
-  //   store.dispatch({ type: 'clear_hotels' });
-  // }
-
-  componentDidMount() {
-    this.checkForPreviousLogin();
-  }
-
-  async checkForPreviousLogin() {
+  async componentDidMount() {
     const { user, navigation } = this.props;
     const facebookToken = await AsyncStorage.getItem('facebook_token');
     const googleToken = await AsyncStorage.getItem('google_token');
     const token = await AsyncStorage.getItem('token');
 
     if (user.role === 'user' && (facebookToken || googleToken || token)) {
+      await StoreProvider.loadHotels();
+      await StoreProvider.loadUserReservations();
       navigation.navigate('User');
     }
 
     if (user.role === 'receptionist' && token) {
-      this.props.clearReservations();
       await StoreProvider.loadReceptionReservations();
       navigation.navigate('Reception');
     }
 
     if (user.role === 'manager' && token) {
+      await StoreProvider.loadStatistics();
       navigation.navigate('Manager');
     }
   }

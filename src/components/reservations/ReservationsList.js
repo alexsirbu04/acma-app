@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -13,7 +13,8 @@ class ReservationsList extends Component {
 
     this.state = {
       numOfRows: props.numOfRows || 0,
-      renderButton: false
+      renderButton: false,
+      edit: false
     };
   }
 
@@ -53,21 +54,34 @@ class ReservationsList extends Component {
 
   renderReservation(reservation, index) {
     const { navigation } = this.props;
+    const { edit } = this.state;
 
     if (index === this.props.reservations.length - 1) {
-      return <ReservationDetail navigation={navigation} reservation={reservation} index={index} />;
+      return (
+        <ReservationDetail
+          navigation={navigation}
+          reservation={reservation}
+          index={index}
+          edit={edit}
+        />
+      );
     }
 
     return (
       <View>
-        <ReservationDetail navigation={navigation} reservation={reservation} index={index} />
+        <ReservationDetail
+          navigation={navigation}
+          reservation={reservation}
+          index={index}
+          edit={edit}
+        />
         <Hr color={LIGHT_GREY} width={SCREEN_WIDTH} />
       </View>
     );
   }
 
   render() {
-    const { container } = styles;
+    const { container, textContainer } = styles;
     const { reservations, navigation, scroll } = this.props;
 
     return (
@@ -77,9 +91,16 @@ class ReservationsList extends Component {
         }}
         style={container}
       >
-        <TextBox type="semi-bold" size={14} color={WHITE} style={{ marginBottom: 10 }}>
-          UPCOMING RESERVATIONS ({reservations.length})
-        </TextBox>
+        <View style={textContainer}>
+          <TextBox type="semi-bold" size={14} color={WHITE}>
+            RESERVATIONS ({reservations.length})
+          </TextBox>
+          <TouchableOpacity onPress={() => this.setState({ edit: !this.state.edit })}>
+            <TextBox type="semi-bold" size={14} color={WHITE}>
+              {this.state.edit ? 'DONE' : 'EDIT'}
+            </TextBox>
+          </TouchableOpacity>
+        </View>
         <View style={{ height: this.state.numOfRows * 110 }}>
           <FlatList
             data={reservations.slice(0, this.state.numOfRows)}
@@ -124,6 +145,13 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  textContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: SCREEN_WIDTH,
+    paddingHorizontal: 15,
+    marginBottom: 10
   }
 });
 

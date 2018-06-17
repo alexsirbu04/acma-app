@@ -7,10 +7,11 @@ import {
   STORE_HOTELS,
   STORE_RESERVATIONS,
   STORE_USER_RESERVATIONS,
+  ADD_RESERVATION,
   UPDATE_RESERVATION_STATUS,
   DELETE_RESERVATION,
-  ADD_ERROR,
-  STORE_STATISTICS
+  STORE_STATISTICS,
+  ADD_ERROR
 } from '../actions/types';
 import { HOTELS, RESERVATIONS, CLIENTS, STATISTICS } from '../endpoints';
 
@@ -28,25 +29,39 @@ export default class StoreProvider {
       });
     };
 
+    return Promise.all([fontAssets, imageAssets]);
+  }
+
+  static async loadHotels() {
     const state = store.getState();
-    if (!state.hotelsArray.hotels || state.hotelsArray.hotels.length < 1) {
-      const response = await axios.get(HOTELS).catch(() => {
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: state.user.token
+      }
+    };
+
+    if (state.user.role === 'user' && state.user.id !== '') {
+      const response = await axios.get(HOTELS, config).catch(() => {
         store.dispatch({
           type: ADD_ERROR,
           payload: 'Something went wrong'
         });
       });
-      store.dispatch({
-        type: STORE_HOTELS,
-        payload: response.data.hotels
-      });
-    }
 
-    return Promise.all([fontAssets, imageAssets]);
+      if (response.status === 200) {
+        store.dispatch({
+          type: STORE_HOTELS,
+          payload: response.data.hotels
+        });
+      }
+    }
   }
 
   static async loadUserReservations() {
     const state = store.getState();
+
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -63,6 +78,7 @@ export default class StoreProvider {
             payload: 'Something went wrong'
           });
         });
+
       if (response.data.reservations.length > 0) {
         store.dispatch({
           type: STORE_USER_RESERVATIONS,
@@ -97,6 +113,38 @@ export default class StoreProvider {
             departures: response.data.departures,
             staying: response.data.staying
           }
+        });
+      }
+    }
+  }
+
+  static async addReservation(reservation) {
+    const state = store.getState();
+
+    if (state.user.role === 'user' && state.user.id !== '') {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: state.user.token
+        }
+      };
+
+      const response = await axios.post(`${RESERVATIONS}/add`, reservation, config).catch(() => {
+        store.dispatch({
+          type: ADD_ERROR,
+          payload: 'Could not register your reservation'
+        });
+      });
+
+      if (response.status === 200) {
+        store.dispatch({
+          type: ADD_RESERVATION,
+          payload: reservation
+        });
+      } else {
+        store.dispatch({
+          type: ADD_ERROR,
+          payload: 'Could not register your reservation'
         });
       }
     }

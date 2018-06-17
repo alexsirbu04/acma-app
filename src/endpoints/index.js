@@ -1,8 +1,7 @@
-export const REGISTER = 'https://secure-stream-51486.herokuapp.com/register';
-export const LOGIN = 'https://secure-stream-51486.herokuapp.com/login';
-export const SOCIAL_LOGIN = 'https://secure-stream-51486.herokuapp.com/socialLogin';
-export const HOTELS = 'https://secure-stream-51486.herokuapp.com/hotels';
-export const BOOK = 'https://secure-stream-51486.herokuapp.com/book';
-export const RESERVATIONS = 'https://secure-stream-51486.herokuapp.com/reservations';
-export const CLIENTS = 'https://secure-stream-51486.herokuapp.com/clients';
-export const STATISTICS = 'https://secure-stream-51486.herokuapp.com/statistics';
+export const REGISTER = 'https://acma-api.herokuapp.com/register';
+export const LOGIN = 'https://acma-api.herokuapp.com/login';
+export const SOCIAL_LOGIN = 'https://acma-api.herokuapp.com/socialLogin';
+export const HOTELS = 'https://acma-api.herokuapp.com/hotels';
+export const RESERVATIONS = 'https://acma-api.herokuapp.com/reservations';
+export const CLIENTS = 'https://acma-api.herokuapp.com/clients';
+export const STATISTICS = 'https://acma-api.herokuapp.com/statistics';

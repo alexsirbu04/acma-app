@@ -4,7 +4,8 @@ import {
   ADD_RESERVATION,
   UPDATE_RESERVATION_STATUS,
   DELETE_RESERVATION,
-  CLEAR_RESERVATIONS
+  CLEAR_RESERVATIONS,
+  LOGOUT
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -91,6 +92,8 @@ export default (state = INITIAL_STATE, action) => {
         ]
       };
     case CLEAR_RESERVATIONS:
+      return INITIAL_STATE;
+    case LOGOUT:
       return INITIAL_STATE;
     default:
       return state;

@@ -3,7 +3,6 @@ import { Facebook, Google } from 'expo';
 import axios from 'axios';
 
 import {
-  SOCIAL_ACCOUNT,
   FACEBOOK_LOGIN_SUCCESS,
   FACEBOOK_LOGIN_FAIL,
   GOOGLE_LOGIN_SUCCESS,
@@ -116,7 +115,6 @@ const registerSocial = async (user, dispatch) => {
         await loginSocial({ email: user.email, password: user.password }, dispatch);
       } else {
         dispatch({ type: ADD_ERROR, payload: 'Could not create an account' });
-        dispatch({ type: SOCIAL_ACCOUNT, payload: false });
       }
     })
     .catch(error => {
@@ -124,7 +122,6 @@ const registerSocial = async (user, dispatch) => {
         dispatch({ type: ADD_ERROR, payload: 'Email taken' });
       } else {
         dispatch({ type: ADD_ERROR, payload: 'Could not create an account' });
-        dispatch({ type: SOCIAL_ACCOUNT, payload: false });
       }
     });
 };
@@ -148,14 +145,12 @@ const loginSocial = async (user, dispatch) => {
 
       await AsyncStorage.setItem('token', token);
       dispatch({ type: STORE_USER, payload: userObject });
-      dispatch({ type: SOCIAL_ACCOUNT, payload: true });
     })
     .catch(async error => {
       if (String(error).includes('401')) {
         await registerSocial(user, dispatch);
       } else {
         dispatch({ type: ADD_ERROR, payload: 'Could not login' });
-        dispatch({ type: SOCIAL_ACCOUNT, payload: false });
       }
     });
 };
@@ -199,11 +194,9 @@ const loginHelper = async (user, dispatch) => {
 
       await AsyncStorage.setItem('token', token);
       dispatch({ type: STORE_USER, payload: userObject });
-      dispatch({ type: SOCIAL_ACCOUNT, payload: true });
     })
     .catch(() => {
       dispatch({ type: ADD_ERROR, payload: 'Could not login' });
-      dispatch({ type: SOCIAL_ACCOUNT, payload: false });
     });
 };
 

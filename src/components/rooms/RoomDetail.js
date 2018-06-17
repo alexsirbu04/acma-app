@@ -7,8 +7,6 @@ import { LinearGradient } from 'expo';
 import { SCREEN_WIDTH, CachedImage, Button, TextBox } from '../common';
 import { WHITE, GREY, MAIN_BLUE } from '../../../assets/colors';
 
-import SingleBedIcon from '../../../assets/images/single-bed.png';
-import DoubleBedIcon from '../../../assets/images/double-bed.png';
 import Safe from '../../../assets/images/safe.png';
 
 export default class RoomDetail extends Component {
@@ -41,63 +39,63 @@ export default class RoomDetail extends Component {
 
   state = { expanded: false };
 
-  renderBedIcon(bedType) {
-    const { icon } = styles;
-    if (bedType === 'Single') {
-      return <Image source={SingleBedIcon} style={icon} />;
-    } else if (bedType === 'Double') {
-      return <Image source={DoubleBedIcon} style={icon} />;
-    }
-    return null;
-  }
-
-  renderServices() {
-    const { icon } = styles;
+  renderAmenities() {
+    const { icon, amenity } = styles;
     return this.availableServices.map(service => {
       if (service === 'wifi') {
         return (
-          <Icon
-            name="wifi"
-            key={service}
-            color={GREY}
-            type="feather"
-            iconStyle={{ paddingRight: 5 }}
-          />
+          <View key={service} style={amenity}>
+            <Icon name="wifi" color={GREY} type="feather" />
+            <TextBox type="semi-bold" size={14} color={GREY}>
+              WIFI
+            </TextBox>
+          </View>
         );
       } else if (service === 'bathtub') {
         return (
-          <Icon
-            name="bath"
-            key={service}
-            color={GREY}
-            type="font-awesome"
-            iconStyle={{ paddingRight: 5 }}
-          />
+          <View key={service} style={amenity}>
+            <Icon name="bath" size={24} color={GREY} type="font-awesome" />
+            <TextBox type="semi-bold" size={14} color={GREY}>
+              TUB
+            </TextBox>
+          </View>
         );
       } else if (service === 'ac') {
         return (
-          <Icon
-            name="air-conditioner"
-            key={service}
-            color={GREY}
-            type="material-community"
-            iconStyle={{ paddingRight: 5 }}
-          />
+          <View key={service} style={amenity}>
+            <Icon name="fan" color={GREY} type="material-community" />
+            <TextBox type="semi-bold" size={14} color={GREY}>
+              AC
+            </TextBox>
+          </View>
         );
       } else if (service === 'bar') {
         return (
-          <Icon
-            name="fridge"
-            key={service}
-            color={GREY}
-            type="material-community"
-            iconStyle={{ paddingRight: 5 }}
-          />
+          <View key={service} style={amenity}>
+            <Icon name="fridge" color={GREY} type="material-community" />
+            <TextBox type="semi-bold" size={14} color={GREY}>
+              FRIDGE
+            </TextBox>
+          </View>
         );
       } else if (service === 'tv') {
-        return <Icon name="tv" key={service} color={GREY} iconStyle={{ paddingRight: 5 }} />;
+        return (
+          <View key={service} style={amenity}>
+            <Icon name="tv" color={GREY} />
+            <TextBox type="semi-bold" size={14} color={GREY}>
+              TV
+            </TextBox>
+          </View>
+        );
       } else if (service === 'safe') {
-        return <Image source={Safe} key={service} style={icon} />;
+        return (
+          <View key={service} style={amenity}>
+            <Image source={Safe} style={icon} />
+            <TextBox type="semi-bold" size={14} color={GREY}>
+              SAFE
+            </TextBox>
+          </View>
+        );
       }
       return null;
     });
@@ -163,13 +161,12 @@ export default class RoomDetail extends Component {
       container,
       imageContainer,
       image,
-      headingContainer,
-      servicesContainer,
+      amenitiesContainer,
       button,
       imageOverlayContainer,
       gradient
     } = styles;
-    const { _id, roomTypeName, roomTypeDescription, roomImage, bedType, price } = this.props.room;
+    const { _id, roomTypeName, roomTypeDescription, roomImage, price } = this.props.room;
     const { navigate } = this.props.navigation;
     const { hotelName } = this.props;
     return (
@@ -192,15 +189,7 @@ export default class RoomDetail extends Component {
             </TextBox>
           </View>
         </View>
-        <View style={headingContainer}>
-          <TextBox type="semi-bold" size={20} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
-            AMENITIES
-          </TextBox>
-          <View style={servicesContainer}>
-            {this.renderBedIcon(bedType)}
-            {this.renderServices()}
-          </View>
-        </View>
+        <View style={amenitiesContainer}>{this.renderAmenities()}</View>
         <View>
           <TextBox type="semi-bold" size={20} color={MAIN_BLUE} style={{ paddingLeft: 15 }}>
             DESCRIPTION
@@ -245,20 +234,19 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH
   },
   icon: {
-    height: 28,
-    width: 28,
-    tintColor: GREY,
-    marginRight: 5
+    height: 27,
+    width: 27,
+    tintColor: GREY
   },
-  headingContainer: {
-    flex: 1,
-    paddingTop: 10,
-    paddingBottom: 10
-  },
-  servicesContainer: {
+  amenitiesContainer: {
     flexDirection: 'row',
-    paddingTop: 5,
-    paddingLeft: 15
+    paddingTop: 15,
+    paddingBottom: 15
+  },
+  amenity: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   button: {
     height: 50,
