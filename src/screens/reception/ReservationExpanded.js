@@ -57,10 +57,11 @@ class ReservationExpanded extends Component {
 
     if (!this.occupancy) {
       const reservation = this.props.departures.find(element => element.id === this.id);
-      const index = this.props.departures.indexOf(reservation);
+      const dIndex = this.props.departures.indexOf(reservation);
+      const sIndex = this.props.staying.indexOf(reservation);
       await StoreProvider.updateReservationStatus(this.id, FINISHED, 'departures');
-      this.props.deleteReservation('departures', index);
-      this.props.deleteReservation('staying', index);
+      this.props.deleteReservation('departures', dIndex);
+      this.props.deleteReservation('staying', sIndex);
     } else {
       const reservation = this.props.staying.find(element => element.id === this.id);
       const index = this.props.staying.indexOf(reservation);

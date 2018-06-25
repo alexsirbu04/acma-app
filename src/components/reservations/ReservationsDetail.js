@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Animated, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Animated, Alert, TouchableOpacity, Easing } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import PropTypes from 'prop-types';
 
@@ -36,19 +36,27 @@ class ReservationsDetail extends Component {
     if (this.props.edit) {
       Animated.parallel([
         Animated.timing(this.containerPosition, {
-          toValue: -110
+          toValue: -110,
+          duration: 300,
+          easing: Easing.out(Easing.bezier(0, 0, 0.8, 1))
         }),
         Animated.timing(this.buttonPosition, {
-          toValue: 0
+          toValue: 0,
+          duration: 300,
+          easing: Easing.out(Easing.bezier(0, 0, 0.8, 1))
         })
       ]).start();
     } else {
       Animated.parallel([
         Animated.timing(this.containerPosition, {
-          toValue: 0
+          toValue: 0,
+          duration: 300,
+          easing: Easing.out(Easing.bezier(0, 0, 0.8, 1))
         }),
         Animated.timing(this.buttonPosition, {
-          toValue: 110
+          toValue: 110,
+          duration: 300,
+          easing: Easing.out(Easing.bezier(0, 0, 0.8, 1))
         })
       ]).start();
     }
