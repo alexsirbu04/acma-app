@@ -21,7 +21,8 @@
     "redux-persist": "^5.9.1",
     "redux-thunk": "^2.2.0",
     "uuid": "^3.2.1",
-    "victory-native": "^0.18.0"
+    "victory-native": "^0.18.0",
+    "snyk": "^1.116.2"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
@@ -32,5 +33,10 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.8.2",
     "prettier-eslint": "^8.8.1"
-  }
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "snyk": true
 }
